@@ -1,0 +1,23 @@
+/* layout.css */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+section {
+  background: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}

@@ -9,8 +9,15 @@ let mainWindow; // global reference
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 600,
+    width: 880,
+    height: 620,
+
+    minWidth: 820,
+    minHeight: 560,
+
+    resizable: true,
+    maximizable: true,
+
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,

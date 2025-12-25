@@ -1,25 +1,4 @@
-body {
-  font-family: system-ui, sans-serif;
-  padding: 24px;
-}
-
-section {
-  max-width: 420px;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  margin: 6px 0;
-}
-
-button {
-  padding: 8px 12px;
-  margin-top: 8px;
-}
-
-pre {
-  background: #f5f5f5;
-  padding: 12px;
-  margin-top: 12px;
-}
+/* app.css */
+@import "./base.css";
+@import "./layout.css";
+@import "./components.css";
