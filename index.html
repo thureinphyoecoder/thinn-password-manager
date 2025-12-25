@@ -1,11 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>Thinn Password Manager</title>
-    </head>
-    <body>
-        <h1>🔐 Thinn Password Manager</h1>
-        <p>Electron is working.</p>
-    </body>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Thinn Password Manager</title>
+</head>
+
+<body>
+    <h1>🔐 Thinn Password Manager</h1>
+    <button id="btn">Get App Version</button>
+    <p id="out"></p>
+
+    <script>
+        document.getElementById('btn').onclick = async () => {
+            const v = await window.api.getAppVersion()
+            document.getElementById('out').innerText = v
+        }
+    </script>
+</body>
+
 </html>
