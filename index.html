@@ -36,6 +36,43 @@
                 pw.value = ''
             }
         }
+
+        let attempts = 0
+            const MAX_ATTEMPTS = 3
+
+            const clearPassword = () => {
+                pw.value = ''
+            }
+
+            save.onclick = async () => {
+                if (!pw.value) return
+
+                await window.vault.save(pw.value, data)
+                clearPassword()
+                out.textContent = 'saved'
+                attempts = 0
+            }
+
+            load.onclick = async () => {
+                if (!pw.value) return
+
+                try {
+                    const res = await window.vault.load(pw.value)
+                    out.textContent = JSON.stringify(res, null, 2)
+                    attempts = 0
+                } catch {
+                    attempts++
+                    out.textContent = 'invalid credentials'
+                } finally {
+                    clearPassword()
+                }
+
+                if (attempts >= MAX_ATTEMPTS) {
+                    out.textContent = 'temporarily locked'
+                    save.disabled = true
+                    load.disabled = true
+                }
+            }
     </script>
 </body>
 
