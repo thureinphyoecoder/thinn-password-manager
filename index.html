@@ -8,13 +8,33 @@
 
 <body>
     <h1>🔐 Thinn Password Manager</h1>
-    <button id="btn">Get App Version</button>
-    <p id="out"></p>
+
+    <input id="pw" type="password" placeholder="Master password" />
+    <button id="save">Save</button>
+    <button id="load">Load</button>
+
+    <pre id="out"></pre>
 
     <script>
-        document.getElementById('btn').onclick = async () => {
-            const v = await window.api.getAppVersion()
-            document.getElementById('out').innerText = v
+        const data = [
+            { site: 'example.com', user: 'me', pass: '123' },
+        ]
+
+        save.onclick = async () => {
+            await window.vault.save(pw.value, data)
+            out.textContent = 'saved'
+            pw.value = '' // clear password
+        }
+
+        load.onclick = async () => {
+            try {
+                const res = await window.vault.load(pw.value)
+                out.textContent = JSON.stringify(res, null, 2)
+            } catch {
+                out.textContent = 'wrong password'
+            } finally {
+                pw.value = ''
+            }
         }
     </script>
 </body>
