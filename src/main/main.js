@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
 
 const { encrypt, decrypt } = require("./vault/crypto");
 const vault = require("./vault/storage");
@@ -11,16 +12,24 @@ function createWindow() {
     width: 900,
     height: 600,
     webPreferences: {
-      preload: __dirname + "/preload.js",
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
 
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile(path.join(__dirname, "index.html"));
 }
 
 /* ---------------- IPC ---------------- */
+
+ipcMain.handle("app:getLaunchState", () => {
+  if (vault.hasAccount()) {
+    return { state: "LOCKED" }; // account exists
+  } else {
+    return { state: "NO_ACCOUNT" }; // first launch
+  }
+});
 
 ipcMain.on("vault:activity", () => {
   vaultLock.markActivity();

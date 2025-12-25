@@ -13,4 +13,8 @@ function load() {
   return fs.readFileSync(VAULT_FILE());
 }
 
-module.exports = { save, load };
+function hasAccount() {
+  return fs.existsSync(VAULT_FILE());
+}
+
+module.exports = { save, load, hasAccount };

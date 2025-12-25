@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Thinn Password Manager</title>
+    <link rel="stylesheet" href="../styles/app.css" />
+</head>
+
+<body>
+    <h1>🔐 Thinn Password Manager</h1>
+
+    <!-- CREATE -->
+    <section id="create-screen" hidden>
+        <h2>Create Account</h2>
+        <input id="create-username" placeholder="Username" />
+        <input id="create-pw" type="password" placeholder="Master password" />
+        <input id="confirm-pw" type="password" placeholder="Confirm password" />
+        <button id="create-btn">Create Account</button>
+        <p id="create-msg"></p>
+    </section>
+
+    <!-- UNLOCK -->
+    <section id="unlock-screen" hidden>
+        <h2>Unlock</h2>
+        <input id="unlock-pw" type="password" placeholder="Master password" />
+        <button id="unlock-btn">Unlock</button>
+        <p id="unlock-msg"></p>
+    </section>
+
+    <!-- HOME -->
+    <section id="home-screen" hidden>
+        <button id="lock-btn">Lock</button>
+        <button id="save-btn">Save</button>
+        <button id="load-btn">Load</button>
+        <pre id="out"></pre>
+    </section>
+
+    <!-- IMPORTANT -->
+    <script type="module" src="../renderer/app.js"></script>
+</body>
+
+</html>
