@@ -1,23 +1,36 @@
 /* layout.css */
-body {
+.app-header {
+  padding: 18px 24px;
+}
+
+.brand {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
 }
 
-h1 {
-  position: absolute;
-  top: 24px;
-  left: 32px;
-  font-size: 20px;
+.brand-icon {
+  color: var(--accent);
+}
+
+.brand-text {
+  font-size: 16px;
   font-weight: 600;
+  color: #0f172a;
 }
 
-section {
-  background: #fff;
-  padding: 32px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+#create-screen {
+  background: #ffffff;
+  width: 460px;
+  margin: 60px auto;
+  padding: 32px 36px;
+  border-radius: 16px;
+
+  border: 1.5px solid var(--brand-border);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+}
+
+#create-screen h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
 }

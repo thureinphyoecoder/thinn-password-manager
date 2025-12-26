@@ -3,20 +3,35 @@ import { showScreen } from "./ui.js";
 /* =====================================================
    DOM REFERENCES
 ===================================================== */
+// CREATE
 const createUsername = document.getElementById("create-username");
 const createPw = document.getElementById("create-pw");
 const confirmPw = document.getElementById("confirm-pw");
 const createBtn = document.getElementById("create-btn");
 const createMsg = document.getElementById("create-msg");
+const ackCheckbox = document.getElementById("ack-no-recovery");
 
+// UNLOCK
 const unlockPw = document.getElementById("unlock-pw");
 const unlockBtn = document.getElementById("unlock-btn");
 const unlockMsg = document.getElementById("unlock-msg");
 
+// HOME
 const lockBtn = document.getElementById("lock-btn");
 const saveBtn = document.getElementById("save-btn");
 const loadBtn = document.getElementById("load-btn");
 const out = document.getElementById("out");
+
+/* =====================================================
+   ACK CHECKBOX (CREATE)
+===================================================== */
+if (ackCheckbox && createBtn) {
+  createBtn.disabled = true;
+
+  ackCheckbox.addEventListener("change", () => {
+    createBtn.disabled = !ackCheckbox.checked;
+  });
+}
 
 /* =====================================================
    CREATE ACCOUNT
@@ -26,6 +41,11 @@ async function handleCreateAccount() {
   const pw = createPw.value;
   const confirm = confirmPw.value;
 
+  // reset state
+  createMsg.textContent = "";
+  createPw.classList.remove("error");
+  confirmPw.classList.remove("error");
+
   if (!username || !pw || !confirm) {
     createMsg.textContent = "All fields are required";
     return;
@@ -33,10 +53,17 @@ async function handleCreateAccount() {
 
   if (pw !== confirm) {
     createMsg.textContent = "Passwords do not match";
+    createPw.classList.add("error");
+    confirmPw.classList.add("error");
+    confirmPw.focus();
     return;
   }
 
-  // Initial vault structure
+  if (!ackCheckbox.checked) {
+    createMsg.textContent = "Please confirm password recovery notice";
+    return;
+  }
+
   const initialVault = {
     meta: {
       username,
@@ -47,14 +74,33 @@ async function handleCreateAccount() {
 
   await window.vault.save(pw, initialVault);
 
-  // Clean sensitive inputs
+  // cleanup
   createUsername.value = "";
   createPw.value = "";
   confirmPw.value = "";
-  createMsg.textContent = "";
+  ackCheckbox.checked = false;
+  createBtn.disabled = true;
 
   showScreen("home");
 }
+
+/* =====================================================
+   PASSWORD VISIBILITY TOGGLE
+===================================================== */
+document.querySelectorAll(".eye-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.target);
+    if (!input) return;
+
+    const visible = input.type === "password";
+    input.type = visible ? "text" : "password";
+
+    btn.classList.toggle("visible", visible);
+
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  });
+});
 
 /* =====================================================
    UNLOCK
@@ -62,24 +108,41 @@ async function handleCreateAccount() {
 async function handleUnlock() {
   if (!unlockPw.value) return;
 
-  try {
-    const res = await window.vault.load(unlockPw.value);
+  unlockMsg.hidden = true;
+  unlockPw.classList.remove("error", "shake");
 
-    if (!res.ok) {
+  const password = unlockPw.value;
+
+  try {
+    const res = await window.vault.load(password);
+
+    if (!res?.ok) {
       unlockMsg.textContent = "Wrong password";
+      unlockMsg.hidden = false;
+
+      unlockPw.classList.add("error", "shake");
+      unlockPw.value = "";
+      unlockPw.focus();
+
+      setTimeout(() => {
+        unlockPw.classList.remove("shake");
+      }, 300);
+
       return;
     }
 
     out.textContent = JSON.stringify(res.data, null, 2);
-    unlockMsg.textContent = "";
-    showScreen("home");
-  } finally {
     unlockPw.value = "";
+
+    showScreen("home");
+  } catch {
+    unlockMsg.textContent = "Unlock failed";
+    unlockMsg.hidden = false;
   }
 }
 
 /* =====================================================
-   HOME ACTIONS (TEMP SAMPLE)
+   HOME (TEMP SAMPLE)
 ===================================================== */
 const sampleItem = [{ site: "example.com", user: "me", pass: "123" }];
 
@@ -96,17 +159,22 @@ async function handleLoad() {
 }
 
 /* =====================================================
-   MANUAL LOCK
+   LOCK / AUTO-LOCK
 ===================================================== */
 function handleLock() {
   showScreen("unlock");
+  focusUnlock();
 }
 
-/* =====================================================
-   AUTO-LOCK EVENT (FROM MAIN PROCESS)
-===================================================== */
 function handleAutoLock() {
   showScreen("unlock");
+  focusUnlock();
+}
+
+function focusUnlock() {
+  requestAnimationFrame(() => {
+    unlockPw?.focus();
+  });
 }
 
 /* =====================================================
@@ -117,27 +185,27 @@ function markActivity() {
 }
 
 /* =====================================================
-   BIND EVENTS (ENTRY)
+   BIND EVENTS
 ===================================================== */
 export function bindEvents() {
-  /* Create */
+  // CREATE
   createBtn?.addEventListener("click", handleCreateAccount);
 
-  /* Unlock */
+  // UNLOCK
   unlockBtn?.addEventListener("click", handleUnlock);
   unlockPw?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleUnlock();
   });
 
-  /* Home */
+  // HOME
   saveBtn?.addEventListener("click", handleSave);
   loadBtn?.addEventListener("click", handleLoad);
   lockBtn?.addEventListener("click", handleLock);
 
-  /* Auto-lock from main */
+  // AUTO-LOCK FROM MAIN
   window.addEventListener("vault-locked", handleAutoLock);
 
-  /* Activity */
+  // ACTIVITY
   ["mousemove", "keydown", "mousedown", "scroll", "touchstart"].forEach((e) =>
     window.addEventListener(e, markActivity)
   );

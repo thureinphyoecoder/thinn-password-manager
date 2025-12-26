@@ -1,31 +1,187 @@
-/* components.css */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  border: 1.5px solid var(--border);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ---- Inputs ---- */
+
 input {
   width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-soft);
 }
 
-button {
+.password-field {
+  position: relative;
   width: 100%;
-  padding: 12px;
-  margin-top: 16px;
-  font-size: 14px;
-  font-weight: 500;
-  background: #4f46e5;
-  color: #fff;
+  margin-top: 14px;
+}
+
+.password-field input {
+  width: 100%;
+  height: 42px;
+  padding: 0 48px 0 14px;
+  /* 👁 အတွက် ညာဘက်နေရာချန် */
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+}
+
+/* 👁 button */
+.eye-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  width: 28px;
+  height: 28px;
+
+  background: var(--brand-soft);
+  border-radius: 50%;
   border: none;
-  border-radius: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--brand-primary);
+  font-size: 16px;
+
+  opacity: 1;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.eye-btn:hover {
+  background: var(--brand-primary);
+  color: white;
+}
+
+.eye-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.eye-btn:hover {
+  opacity: 1;
+}
+
+/* icon via CSS */
+.eye-btn::before {
+  content: "👁";
+  font-size: 18px;
+}
+
+.eye-btn.visible::before {
+  content: "🙈";
+  font-size: 18px;
+}
+
+/* password mismatch */
+input.error {
+  border-color: #dc2626;
+  background-color: #fff5f5;
+}
+
+/* ---- Button ---- */
+.btn-primary {
+  width: 100%;
+  margin-top: 18px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--brand-primary);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
 }
 
-button:hover {
-  background: #4338ca;
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:active{
+  transform: translateY(1px);
+}
+
+
+
+/* ---- Checkbox Acknowledgement ---- */
+.ack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ack input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+
+.ack span {
+  line-height: 1.4;
+}
+
+/* ---- Warning text ---- */
+.brand-note {
+  font-size: 13px;
+  color: var(--danger);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.error {
+  border-color: #dc2626;
+}
+
+#error-msg,
+.error {
+  color: #dc2626;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
+
+  75% {
+    transform: translateX(-4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shake 0.25s ease-in-out;
 }
