@@ -25,13 +25,15 @@ const out = document.getElementById("out");
 /* =====================================================
    ACK CHECKBOX (CREATE)
 ===================================================== */
-if (ackCheckbox && createBtn) {
-  createBtn.disabled = true;
+ackCheckbox.addEventListener("change", () => {
+  const strength = getPasswordStrength(createPw.value);
 
-  ackCheckbox.addEventListener("change", () => {
-    createBtn.disabled = !ackCheckbox.checked;
-  });
-}
+  if (ackCheckbox.checked && (strength === "medium" || strength === "strong")) {
+    createBtn.disabled = false;
+  } else {
+    createBtn.disabled = true;
+  }
+});
 
 /* =====================================================
    CREATE ACCOUNT
@@ -56,6 +58,13 @@ async function handleCreateAccount() {
     createPw.classList.add("error");
     confirmPw.classList.add("error");
     confirmPw.focus();
+    return;
+  }
+
+  if (pw.length < 8) {
+    createMsg.textContent = "Password must be at least 8 characters";
+    createPw.classList.add("error");
+    createPw.focus();
     return;
   }
 
@@ -101,6 +110,47 @@ document.querySelectorAll(".eye-btn").forEach((btn) => {
     input.setSelectionRange(input.value.length, input.value.length);
   });
 });
+
+/* =====================================================
+   PASSWORD Strength TOGGLE
+===================================================== */
+if (createPw) {
+  createPw.addEventListener("input", () => {
+    const barWrapper = document.querySelector(".password-strength");
+    const bar = document.getElementById("password-strength-bar");
+    if (!barWrapper || !bar) return;
+
+    const strength = getPasswordStrength(createPw.value);
+
+    // reset states
+    bar.classList.remove("weak", "medium", "strong");
+
+    createBtn.disabled = true;
+
+    if (strength === "medium" || strength === "strong") {
+      if (ackCheckbox.checked) {
+        createBtn.disabled = false;
+      }
+    }
+
+    if (!strength) {
+      barWrapper.classList.remove("visible");
+      return;
+    }
+
+    // show bar
+    barWrapper.classList.add("visible");
+    bar.classList.add(strength);
+  });
+}
+
+function getPasswordStrength(password) {
+  const len = password.length;
+  if (len === 0) return null;
+  if (len < 8) return "weak";
+  if (len < 12) return "medium";
+  return "strong";
+}
 
 /* =====================================================
    UNLOCK
