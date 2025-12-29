@@ -1,4 +1,7 @@
-/* app.css */
 @import "./base.css";
 @import "./layout.css";
 @import "./components.css";
+@import "./auth.css";
+@import "./sidebar.css";
+@import "./home.css";
+@import "./header.css";

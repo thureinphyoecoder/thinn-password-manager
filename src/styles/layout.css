@@ -1,36 +1,150 @@
-/* layout.css */
-.app-header {
-  padding: 18px 24px;
+/* AUTH MODE ONLY */
+body[data-screen="auth"] .app-header,
+body[data-screen="auth"] .sidebar,
+body[data-screen="auth"] .main-layout {
+  display: none;
 }
 
-.brand {
+body[data-screen="auth"] .app-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ======================
+   SCREEN VISIBILITY (FINAL)
+====================== */
+
+/* default */
+.auth-layout,
+.main-layout {
+  display: none;
+}
+
+/* AUTH MODE */
+body[data-screen="auth"] .auth-layout {
+  display: flex;
+}
+
+/* HOME MODE */
+body[data-screen="home"] .main-layout {
+  display: grid;
+}
+
+/* ======================
+   APP FRAME
+====================== */
+
+.app-frame {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======================
+   HEADER LAYOUT
+====================== */
+
+.app-header {
+  height: 56px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+/* ======================
+   CONTENT AREA
+====================== */
+
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ======================
+   MAIN LAYOUT (THE TRUTH)
+====================== */
+
+.main-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100%;
+}
+
+/* LEFT */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+/* CENTER */
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+
+
+.header-search {
+  width: 320px;
+  /* 🔽 smaller */
+  max-width: 100%;
+  height: 34px;
+  padding: 0 14px;
+
+  border-radius: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.header-search {
+  pointer-events: auto;
+}
+
+/* RIGHT */
+.header-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.brand-icon {
-  color: var(--accent);
+/* ======================
+   MAIN LAYOUT
+====================== */
+
+.main-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100%;
+  overflow: hidden;
 }
 
-.brand-text {
-  font-size: 16px;
-  font-weight: 600;
-  color: #0f172a;
+.main-container {
+  display: flex;
+  justify-content: center;
 }
 
-#create-screen {
-  background: #ffffff;
-  width: 460px;
-  margin: 60px auto;
-  padding: 32px 36px;
-  border-radius: 16px;
-
-  border: 1.5px solid var(--brand-border);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+.home-body {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#create-screen h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
 }

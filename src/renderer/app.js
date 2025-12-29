@@ -1,20 +1,31 @@
-console.log("renderer app.js loaded", window.vault);
-
 import { showScreen } from "./ui.js";
 import { bindEvents } from "./events.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const { state } = await window.vault.getLaunchState();
+  console.log("DOMContentLoaded");
 
-  if (state === "NO_ACCOUNT") showScreen("create");
+  let launch;
+  try {
+    launch = await window.vault.getLaunchState();
+  } catch (err) {
+    console.error("Failed to get launch state", err);
+    return;
+  }
 
-  if (state === "LOCKED") {
+  const { state } = launch;
+  console.log("Launch state:", state);
+
+  if (state === "NO_ACCOUNT") {
+    showScreen("create");
+  } else if (state === "LOCKED") {
     showScreen("unlock");
-
     requestAnimationFrame(() => {
       document.getElementById("unlock-pw")?.focus();
     });
+  } else if (state === "UNLOCKED") {
+    showScreen("home");
   }
 
   bindEvents();
+  console.log("app.js ready");
 });

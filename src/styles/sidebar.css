@@ -1,0 +1,94 @@
+/* ======================
+   SIDEBAR LAYOUT
+====================== */
+
+.sidebar {
+  width: 240px;
+  min-height: 100%;
+  padding: 16px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======================
+   SIDEBAR TITLE
+====================== */
+
+.sidebar-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ======================
+   ADD CATEGORY BUTTON
+====================== */
+
+
+
+.add-category:hover {
+  background: var(--brand-soft-hover);
+}
+
+/* ======================
+   CATEGORY LIST
+====================== */
+.sidebar .add-category {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+
+  border-radius: 12px;
+  border: 1px solid var(--brand-border);
+
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.sidebar .add-category:hover {
+  background: var(--brand-soft-hover);
+}
+
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ======================
+   CATEGORY ITEM
+====================== */
+
+.sidebar-item {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+
+  transition: background 0.15s ease;
+}
+
+.sidebar-item:hover {
+  background: var(--surface-soft-hover);
+}
+
+.sidebar-item.active {
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+  font-weight: 600;
+}

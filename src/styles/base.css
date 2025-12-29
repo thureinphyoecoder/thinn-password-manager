@@ -1,28 +1,133 @@
-/* base.css */
-
-/* ---- CSS Reset ---- */
+/* =====================
+   CSS RESET
+===================== */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+/* 🔥 CRITICAL: respect hidden attribute */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Ubuntu, sans-serif;
-  background: #f9fafb;
-  color: #064e3b;
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* ---- Brand Variables ---- */
+/* =====================
+   CORE DESIGN TOKENS
+===================== */
 :root {
+  /* Brand */
   --brand-primary: #047857;
-  /* emerald */
   --brand-soft: #d1fae5;
   --brand-border: #6ee7b7;
 
-  --text-main: #064e3b;
-  --text-muted: #6b7280;
+  --radius: 16px;
+  --transition: 0.2s ease;
+
+  /* 🔥 SYSTEM FALLBACK (CRITICAL) */
+  --sys-bg: #f7f8fa;
+  --sys-surface: #ffffff;
+  --sys-surface-soft: #f1f3f6;
+  --sys-text: #111827;
+  --sys-text-muted: #6b7280;
+  --sys-border: #e5e7eb;
+  --sys-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  --sys-primary: #2563eb;
+
+  /* Semantic defaults */
+  --bg: var(--sys-bg);
+  --surface: var(--sys-surface);
+  --surface-soft: var(--sys-surface-soft);
+  --text: var(--sys-text);
+  --text-muted: var(--sys-text-muted);
+  --border: var(--sys-border);
+  --shadow: var(--sys-shadow);
+
+  --primary: var(--brand-primary);
   --danger: #b91c1c;
+}
+
+/* =====================
+   LIGHT THEME
+===================== */
+[data-theme="light"] {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-soft: #f1f3f6;
+
+  --text: #111827;
+  --text-muted: #6b7280;
+
+  --border: #e5e7eb;
+  --shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+
+  --primary: #2563eb;
+}
+
+/* =====================
+   DARK THEME
+===================== */
+[data-theme="dark"] {
+  --bg: #0e0f13;
+  --surface: #15171d;
+  --surface-soft: #1b1e25;
+
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --border: #23262f;
+  --shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+
+  --primary: #60a5fa;
+}
+
+/* =====================
+   SYSTEM THEME
+===================== */
+[data-theme="system"] {
+  --bg: var(--sys-bg);
+  --surface: var(--sys-surface);
+  --surface-soft: var(--sys-surface-soft);
+  --text: var(--sys-text);
+  --text-muted: var(--sys-text-muted);
+  --border: var(--sys-border);
+  --shadow: var(--sys-shadow);
+  --primary: var(--sys-primary);
+}
+
+/* =====================
+   SYSTEM PREFERENCE
+===================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sys-bg: #0e0f13;
+    --sys-surface: #15171d;
+    --sys-surface-soft: #1b1e25;
+    --sys-text: #e5e7eb;
+    --sys-text-muted: #9ca3af;
+    --sys-border: #23262f;
+    --sys-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    --sys-primary: #60a5fa;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --sys-bg: #f7f8fa;
+    --sys-surface: #ffffff;
+    --sys-surface-soft: #f1f3f6;
+    --sys-text: #111827;
+    --sys-text-muted: #6b7280;
+    --sys-border: #e5e7eb;
+    --sys-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    --sys-primary: #2563eb;
+  }
 }

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "src/main/main.js",
   "scripts": {
+    "dev": "electronmon . --no-sandbox",
     "start": "electron . --no-sandbox",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "electron": "^39.2.7"
+    "electron": "^39.2.7",
+    "electronmon": "^2.0.4"
   }
 }

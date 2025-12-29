@@ -1,0 +1,8 @@
+{
+  "patterns": [
+    "src/**/*.js",
+    "src/**/*.html",
+    "src/**/*.css"
+  ],
+  "logLevel": "info"
+}

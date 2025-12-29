@@ -1,0 +1,150 @@
+/* ======================
+   AUTH MODE ONLY
+====================== */
+
+body[data-screen="auth"] .app-header,
+body[data-screen="auth"] .sidebar,
+body[data-screen="auth"] .main-layout {
+  display: none !important;
+}
+
+body[data-screen="auth"] .app-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ======================
+   AUTH LAYOUT (CREATE / UNLOCK)
+====================== */
+
+.auth-layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card */
+.auth-card {
+  width: 420px;
+  padding: 32px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Title */
+.auth-card h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Inputs */
+.auth-card input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+/* Password field spacing override */
+.auth-card .password-field {
+  margin-top: 0;
+}
+
+/* Button */
+.auth-card .btn-primary {
+  margin-top: 10px;
+}
+
+/* Error message */
+.auth-card .error {
+  font-size: 13px;
+  color: var(--danger);
+  text-align: center;
+}
+
+/* ======================
+   CREATE ACCOUNT ONLY
+====================== */
+
+.auth-card .ack {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.auth-card .ack input {
+  width: 16px;
+  height: 16px;
+}
+
+/* Password strength bar */
+.password-strength {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.password-strength.visible {
+  opacity: 1;
+}
+
+#password-strength-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+#password-strength-bar.weak {
+  width: 33%;
+  background: #dc2626;
+}
+
+#password-strength-bar.medium {
+  width: 66%;
+  background: #f59e0b;
+}
+
+#password-strength-bar.strong {
+  width: 100%;
+  background: #16a34a;
+}
+
+/* ======================
+   AUTH MODE BODY
+====================== */
+
+body[data-screen="auth"] .app-header {
+  display: none;
+}
+
+body[data-screen="auth"] .app-content {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -9,14 +9,18 @@ let mainWindow; // global reference
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 880,
-    height: 620,
+    width: 1100,
+    height: 720,
 
-    minWidth: 820,
-    minHeight: 560,
+    minWidth: 960,
+    minHeight: 640,
+
+    backgroundColor: "#0e0f13",
 
     resizable: true,
     maximizable: true,
+
+    show: false, // prevent flicker
 
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -26,6 +30,11 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, "index.html"));
+
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
+  });
+
   mainWindow.webContents.session.clearCache();
 }
 

@@ -1,93 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Thinn Password Manager</title>
     <link rel="stylesheet" href="../styles/app.css" />
-</head>
+  </head>
 
-<body>
-    <header class="app-header">
-        <div class="brand">
-            <svg class="brand-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <!-- hexagon -->
-                <path d="M7 2L17 2L22 12L17 22L7 22L2 12Z" stroke="currentColor" stroke-width="1.8" />
-                <!-- center dot -->
-                <circle cx="12" cy="12" r="2" fill="currentColor" />
-            </svg>
-    
-            <span class="brand-text">Thinn Password Manager</span>
+  <body data-theme="system">
+    <div class="app-frame">
+      <!-- ================= HEADER ================= -->
+      <header class="app-header">
+        <!-- LEFT -->
+        <div class="header-left">
+          <svg
+            class="brand-icon"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M7 2L17 2L22 12L17 22L7 22L2 12Z"
+              stroke="currentColor"
+              stroke-width="1.8"
+            />
+            <circle cx="12" cy="12" r="2" fill="currentColor" />
+          </svg>
+          <span class="brand-text">Thinn Password Manager</span>
         </div>
-    </header>
 
+        <!-- CENTER -->
+        <div class="header-center">
+          <input type="search" class="header-search" placeholder="Search" />
+        </div>
 
-    <!-- CREATE -->
-    <section id="create-screen" hidden>
-        <h2>Create Account</h2>
+        <!-- RIGHT -->
+        <div class="header-right">
+          <button class="btn-primary btn-sm">+ Add item</button>
 
-        <div class="field">
+          <button
+            id="lock-btn"
+            class="icon-btn lock-btn"
+            aria-label="Lock vault"
+          >
+            🔒
+          </button>
+
+          <!-- Avatar -->
+          <div class="avatar-wrap">
+            <button class="avatar-btn">
+              <span class="avatar-circle">TR</span>
+              <span class="avatar-name">Thu Rein</span>
+              <span class="avatar-caret">▾</span>
+            </button>
+
+            <!-- DROPDOWN -->
+            <div class="avatar-menu" hidden>
+              <button class="menu-item">Import vault</button>
+              <button class="menu-item">Export vault</button>
+              <div class="menu-divider"></div>
+              <button class="menu-item">Light theme</button>
+              <button class="menu-item">Dark theme</button>
+              <button class="menu-item">System theme</button>
+              <div class="menu-divider"></div>
+              <button class="menu-item">About</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ================= CONTENT ================= -->
+      <main class="app-content">
+        <!-- ========== AUTH LAYOUT ========== -->
+        <section id="create-screen" class="auth-layout" hidden>
+          <div class="auth-card">
+            <h2>Create Account</h2>
+
             <input id="create-username" type="text" placeholder="Username" />
-        </div>        
 
-        <div class="password-field">
-            <input id="create-pw" type="password" placeholder="Master password" />
-            <button type="button" class="eye-btn" data-target="create-pw" aria-label="Toggle password visibility">
+            <div class="password-field">
+              <input
+                id="create-pw"
+                type="password"
+                placeholder="Master password"
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                data-target="create-pw"
+              ></button>
+            </div>
+
+            <div class="password-strength">
+              <div id="password-strength-bar"></div>
+            </div>
+
+            <div class="password-field">
+              <input
+                id="confirm-pw"
+                type="password"
+                placeholder="Confirm password"
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                data-target="confirm-pw"
+              ></button>
+            </div>
+
+            <label class="ack">
+              <input type="checkbox" id="ack-no-recovery" />
+              <span>I understand that this password cannot be recovered.</span>
+            </label>
+
+            <button id="create-btn" class="btn-primary" disabled>
+              Create Account
             </button>
+
+            <p id="create-msg"></p>
+          </div>
+        </section>
+
+        <section id="unlock-screen" class="auth-layout">
+          <div class="auth-card">
+            <h2>Unlock Vault</h2>
+
+            <input
+              id="unlock-pw"
+              type="password"
+              placeholder="Master password"
+            />
+
+            <button id="unlock-btn" class="btn-primary">Unlock</button>
+
+            <p id="unlock-msg" class="error" hidden>Wrong password</p>
+          </div>
+        </section>
+
+        <!-- ========== MAIN LAYOUT ========== -->
+        <section id="home-screen" class="main-layout">
+          <aside class="sidebar">
+            <div class="sidebar-title">Categories</div>
+
+            <button class="sidebar-item add-category">+ New Category</button>
+
+            <div class="category-list">
+              <!-- user created -->
+              <button class="sidebar-item active">Facebook</button>
+              <button class="sidebar-item">Bank</button>
+            </div>
+          </aside>
+
+          <!-- MAIN CONTENT -->
+          <div class="main-container">
+            <div class="home-body">
+              <div id="vault-empty" class="vault-empty">
+                <div class="empty-icon">🗂️</div>
+                <h3>No items yet</h3>
+                <p>Your vault is empty.</p>
+              </div>
+
+              <div id="vault-list" hidden></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== OVERLAYS ========== -->
+        <div id="add-item-modal" class="modal" hidden>
+          <div class="modal-card">
+            <h3>Add Item</h3>
+
+            <input id="item-site" type="text" placeholder="Website or App" />
+            <input id="item-username" type="text" placeholder="Username" />
+
+            <div class="password-field">
+              <input
+                id="item-password"
+                type="password"
+                placeholder="Password"
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                data-target="item-password"
+              ></button>
+            </div>
+
+            <div class="modal-actions">
+              <button class="ghost-btn">Cancel</button>
+              <button class="btn-primary">Save</button>
+            </div>
+          </div>
         </div>
+      </main>
+    </div>
 
-        <div class="password-strength">
-            <div id="password-strength-bar"></div>
-        </div>
-        
-        <div class="password-field">
-            <input id="confirm-pw" type="password" placeholder="Confirm password" />
-            <button type="button" class="eye-btn" data-target="confirm-pw" aria-label="Toggle password visibility">
-                
-            </button>
-        </div>
-
-
-        <label class="ack">
-            <input type="checkbox" id="ack-no-recovery" />
-            <span>
-                I understand that this password cannot be recovered.
-            </span>
-        </label>
-
-        <button id="create-btn" class="btn-primary" disabled>Create Account</button>
-        <p id="create-msg"></p>
-
-
-    </section>
-
-    <!-- UNLOCK -->
-    <section id="unlock-screen" hidden>
-        <h2>Unlock Vault</h2>
-    
-        <input id="unlock-pw" type="password" placeholder="Master password" autocomplete="current-password" />
-    
-        <button id="unlock-btn" class="primary">
-            Unlock
-        </button>
-    
-        <p id="unlock-msg" class="error" hidden>
-            Wrong password
-        </p>
-    </section>
-
-
-    <!-- HOME -->
-    <section id="home-screen" hidden>
-        <button id="lock-btn">Lock</button>
-        <button id="save-btn">Save</button>
-        <button id="load-btn">Load</button>
-        <pre id="out"></pre>
-    </section>
-
-    <!-- IMPORTANT -->
     <script type="module" src="../renderer/app.js"></script>
-</body>
-
+  </body>
 </html>

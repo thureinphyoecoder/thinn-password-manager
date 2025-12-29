@@ -1,0 +1,107 @@
+/* ======================
+   HOME LAYOUT
+====================== */
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: 100%;
+}
+
+/* ======================
+   SIDEBAR
+====================== */
+
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.sidebar-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background: var(--surface-soft);
+}
+
+.sidebar-item.active {
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+}
+
+/* ======================
+   MAIN CONTENT
+====================== */
+.main-container {
+  height: 100%;
+  display: flex;
+}
+
+.home-body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-title h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.home-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ======================
+   EMPTY STATE
+====================== */
+
+.vault-empty {
+  width: 360px;
+  padding: 32px;
+  border-radius: 18px;
+  text-align: center;
+
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.02)),
+    var(--surface);
+
+  border: 1px solid var(--border);
+}
+
+.vault-empty h3 {
+  margin: 8px 0 4px;
+}
+
+.vault-empty p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
