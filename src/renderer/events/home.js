@@ -28,10 +28,6 @@ function handleLock() {
   showScreen("unlock");
 }
 
-function handleAddItem() {
-  alert("Add item (coming soon)");
-}
-
 /* =========================
    BIND
 ========================= */

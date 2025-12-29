@@ -1,5 +1,7 @@
 import { showScreen } from "./ui.js";
 import { bindEvents } from "./events.js";
+import "./events/modal.js";
+import "./shared/eyeToggle.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   console.log("DOMContentLoaded");
