@@ -3,6 +3,8 @@ export function bindAddItemEvents() {
   const saveBtn = document.getElementById("save-item-btn");
 
   const siteInput = document.getElementById("item-site");
+  const urlInput = document.getElementById("item-url");
+  const usernameInput = document.getElementById("item-username");
   const pwInput = document.getElementById("item-password");
   const noteInput = modal.querySelector("textarea");
 
@@ -10,22 +12,28 @@ export function bindAddItemEvents() {
 
   saveBtn.addEventListener("click", async () => {
     const site = siteInput.value.trim();
+    const url = urlInput?.value.trim() || "";
+    const username = usernameInput?.value.trim() || "";
     const password = pwInput.value.trim();
 
     if (!site || !password) return;
 
     const payload = {
       site,
-      username: "",
+      url,
+      username,
       password,
       notes: noteInput?.value ?? "",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
 
-    // ✅ JUST INSERT
     await window.vault.addItem(payload);
 
-    // reset + close
+    // reset
     siteInput.value = "";
+    urlInput.value = "";
+    usernameInput.value = "";
     pwInput.value = "";
     if (noteInput) noteInput.value = "";
 

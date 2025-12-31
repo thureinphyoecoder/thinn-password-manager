@@ -134,13 +134,14 @@ body[data-screen="home"] .main-layout {
 .main-container {
   display: flex;
   justify-content: center;
+  padding: 20px clamp(16px, 4vw, 32px);
 }
 
 .home-body {
   width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .app-content {
