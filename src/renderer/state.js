@@ -83,3 +83,30 @@ function syncUI(state) {
       break;
   }
 }
+
+// =========================
+// HOME VIEW STATE
+// =========================
+export const HomeViews = {
+  VAULT: "vault",
+  SETTINGS: "settings",
+};
+
+export const HomeState = {
+  view: HomeViews.VAULT,
+};
+
+export function setHomeView(view) {
+  HomeState.view = view;
+  syncHomeView();
+}
+
+function syncHomeView() {
+  const vaultView = document.getElementById("vault-view");
+  const settingsView = document.getElementById("settings-view");
+
+  if (!vaultView || !settingsView) return;
+
+  vaultView.hidden = HomeState.view !== HomeViews.VAULT;
+  settingsView.hidden = HomeState.view !== HomeViews.SETTINGS;
+}

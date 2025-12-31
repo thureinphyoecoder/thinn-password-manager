@@ -10,6 +10,10 @@ const vaultService = require("./vault/vaultService");
 
 let mainWindow;
 
+let lastActivityAt = Date.now();
+let idleTimeoutMs = 60_000; // ✅ DEFAULT = 1 minute
+let isLocked = true;
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -59,6 +63,37 @@ ipcMain.handle("vault:save", async (_event, password, vaultData) => {
     return { ok: false, error: err.message };
   }
 });
+
+/* ---------- Track Activity ---------- */
+ipcMain.on("vault:setIdleTimeout", (_event, ms) => {
+  if (typeof ms === "number" && ms >= 10_000) {
+    idleTimeoutMs = ms;
+    console.log("[vault] idle timeout set to", ms, "ms");
+  }
+});
+
+setInterval(() => {
+  if (isLocked) return;
+
+  const now = Date.now();
+  if (now - lastActivityAt > idleTimeoutMs) {
+    console.log("[vault] idle timeout reached → locking");
+    lockVault();
+  }
+}, 1000);
+
+function lockVault() {
+  if (isLocked) return;
+
+  isLocked = true;
+  mainWindow.webContents.send("vault:locked");
+}
+
+function unlockVaultSuccess() {
+  isLocked = false;
+  lastActivityAt = Date.now(); // reset on unlock
+  mainWindow.webContents.send("vault:unlocked");
+}
 
 /* ---------- Vault Lifecycle ---------- */
 

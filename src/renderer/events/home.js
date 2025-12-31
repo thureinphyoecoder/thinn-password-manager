@@ -1,4 +1,4 @@
-import { showScreen } from "../ui.js";
+import { setHomeView, HomeViews } from "../state.js";
 
 /* =========================
    DOM REFERENCES (HOME)
@@ -7,6 +7,31 @@ const lockBtn = document.getElementById("lock-btn");
 const addBtn = document.getElementById("add-item-btn");
 const emptyState = document.getElementById("vault-empty");
 const list = document.getElementById("vault-list");
+
+const settingsBtn = document.getElementById("settings-btn");
+const backBtn = document.getElementById("settings-back-btn");
+
+const autoLockRadios = document.querySelectorAll("input[name='autoLock']");
+
+function bindAutoLockSettings() {
+  autoLockRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const ms = Number(radio.value);
+      if (!Number.isNaN(ms)) {
+        window.vault.setIdleTimeout(ms);
+        window.vault.activity();
+      }
+    });
+  });
+}
+
+function handleOpenSettings() {
+  setHomeView(HomeViews.SETTINGS);
+}
+
+function handleBackToVault() {
+  setHomeView(HomeViews.VAULT);
+}
 
 /* =========================
    RENDER
@@ -203,7 +228,7 @@ list.addEventListener("click", async (e) => {
    HANDLERS
 ========================= */
 function handleLock() {
-  window.vault.activity();
+  window.vault.lock();
 }
 
 function handleAddItem() {
@@ -246,10 +271,15 @@ function toast(msg) {
 export function bindHomeEvents() {
   lockBtn?.addEventListener("click", handleLock);
   addBtn?.addEventListener("click", handleAddItem);
+
+  settingsBtn?.addEventListener("click", handleOpenSettings);
+  backBtn?.addEventListener("click", handleBackToVault);
 }
 
 export function initHomeScreen() {
   console.log("[UI] initHomeScreen");
 
   bindHomeEvents();
+  bindAutoLockSettings();
+  setHomeView(HomeViews.VAULT);
 }

@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld("vault", {
 
   activity: () => ipcRenderer.send("vault:activity"),
 
+  setIdleTimeout: (ms) => ipcRenderer.send("vault:setIdleTimeout", ms),
+
   loadVault: () => ipcRenderer.invoke("vault:loadVault"),
   addItem: (input) => ipcRenderer.invoke("vault:addItem", input),
   exportVault: () => ipcRenderer.invoke("vault:export"),

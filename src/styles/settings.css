@@ -1,0 +1,317 @@
+/* =========================
+   BACK TO VAULT (TOP RIGHT)
+========================= */
+.settings-back-btn {
+  position: absolute;
+  top: 16px;
+  right: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  cursor: pointer;
+
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.settings-back-btn:hover {
+  background: rgba(0, 200, 150, 0.25);
+}
+
+.settings-back-btn svg {
+  opacity: 0.9;
+}
+
+/* =========================
+   SETTINGS LAYOUT
+========================= */
+
+.settings-layout {
+  display: flex;
+  height: 100%;
+  gap: 32px;
+  background: transparent;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  /* 🔥 ဒီတစ်ကြောင်းက 핵심 */
+  padding: 12px;
+}
+
+.sidebar-footer-item {
+  display: flex;
+  align-items: center;
+  /* 🔥 svg + text တန်း */
+  gap: 8px;
+
+  width: 100%;
+  padding: 10px 12px;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  color: inherit;
+  cursor: pointer;
+}
+
+/* =========================
+   SETTINGS SIDEBAR
+========================= */
+
+#settings-view {
+  height: 100%;
+}
+
+.settings-layout {
+  background: transparent;
+  /* main dark bg ကို inherit */
+}
+
+.settings-sidebar {
+  width: 220px;
+  padding: 16px 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 12px;
+  margin-bottom: 6px;
+
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: background .15s ease, color .15s ease;
+}
+
+.settings-nav-item svg {
+  opacity: 0.9;
+}
+
+.settings-nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.settings-nav-item.active {
+  background: rgba(0, 200, 150, 0.15);
+  color: #c9fff0;
+}
+
+.account-section {
+  margin-top: 32px;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.account-section .settings-title {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-row input {
+  flex: 1;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.account-row .btn-primary {
+  height: 36px;
+}
+
+.account-divider {
+  margin: 16px 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.account-danger .btn-danger {
+  border: 1px solid rgba(255, 80, 80, 0.6);
+  color: #ff6b6b;
+  background: transparent;
+}
+
+.account-danger .btn-danger:hover {
+  background: rgba(255, 80, 80, 0.1);
+}
+
+.settings-nav-item.active svg {
+  color: #6fffd2;
+}
+
+/* =========================
+   SETTINGS CONTENT
+========================= */
+
+.settings-content {
+  position: relative;
+  flex: 1;
+  padding: 16px 32px 24px;
+  max-width: 720px;
+}
+
+.settings-content h2 {
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.settings-section {
+  margin-bottom: 28px;
+  padding-left: 20px;
+  padding-top: 0;
+  border-bottom: none
+}
+
+.settings-content>[data-settings-panel] {
+  margin-top: 12px;
+}
+
+.settings-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.settings-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.settings-title svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  opacity: 0.85;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-row input {
+  flex: 1;
+}
+
+.auto-lock-line {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, .12);
+  margin-left: 7px;
+}
+
+.settings-content {
+  padding-right: 40px;
+}
+.settings-section .muted {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.auto-lock-section {
+  padding-bottom: 28px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spacer {
+  height: 14px;
+}
+
+.danger-row {
+  margin-top: 8px;
+}
+
+.danger-row .btn-danger {
+  opacity: 0.9;
+}
+
+.danger-row .btn-danger:hover {
+  opacity: 1;
+}
+
+/* =========================
+   AUTO LOCK RADIOS
+========================= */
+.auto-lock-list {
+  margin-top: 14px;
+  padding-left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auto-lock-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+}
+
+.auto-lock-item input {
+  display: none;
+}
+
+.auto-lock-item .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #555;
+  flex-shrink: 0;
+}
+
+.auto-lock-item input:checked+.dot {
+  background: #34f5c5;
+  border-color: #34f5c5;
+  box-shadow: 0 0 0 4px rgba(52, 245, 197, 0.15);
+}
+
+.auto-lock-item .label {
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* =========================
+   PLACEHOLDER SECTIONS
+========================= */
+
+.settings-section.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

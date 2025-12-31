@@ -1,6 +1,13 @@
 /* =========================
    HOME GRID
 ========================= */
+#vault-view {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .vault-empty {
   min-height: calc(100vh - 180px);
   /* header + padding compensate */
