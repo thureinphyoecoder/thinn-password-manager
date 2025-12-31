@@ -28,6 +28,18 @@ function handleLock() {
   showScreen("unlock");
 }
 
+function handleAddItem() {
+  const modal = document.getElementById("add-item-modal");
+  if (!modal) return;
+
+  modal.hidden = false;
+
+  requestAnimationFrame(() => {
+    modal.classList.add("is-open");
+    document.getElementById("item-site")?.focus();
+  });
+}
+
 /* =========================
    BIND
 ========================= */

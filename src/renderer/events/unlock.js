@@ -1,5 +1,3 @@
-import { showScreen } from "../ui.js";
-
 /* =========================
    DOM REFERENCES (UNLOCK)
 ========================= */
@@ -18,46 +16,32 @@ async function handleUnlock() {
 
   const password = unlockPw.value;
 
-  try {
-    const res = await window.vault.load(password);
+  const res = await window.vault.load(password);
 
-    if (!res?.ok) {
-      unlockMsg.textContent = "Wrong password";
-      unlockMsg.hidden = false;
-
-      unlockPw.classList.add("error", "shake");
-      unlockPw.value = "";
-      unlockPw.focus();
-
-      setTimeout(() => {
-        unlockPw.classList.remove("shake");
-      }, 300);
-
-      return;
-    }
-
-    unlockPw.value = "";
-    showScreen("home");
-  } catch {
-    unlockMsg.textContent = "Unlock failed";
+  if (!res?.ok) {
+    unlockMsg.textContent = "Wrong password";
     unlockMsg.hidden = false;
+
+    unlockPw.classList.add("error", "shake");
+    unlockPw.value = "";
+    unlockPw.focus();
+
+    setTimeout(() => {
+      unlockPw.classList.remove("shake");
+    }, 300);
+
+    return;
   }
+
+  // ✅ unlock အောင်မြင်ရင်
+  // ❌ showScreen မခေါ်
+  // app.js က onUnlocked() နဲ့ handle လုပ်မယ်
+  unlockPw.value = "";
 }
 
 /* =========================
-   AUTO LOCK + ACTIVITY
+   ACTIVITY TRACKING
 ========================= */
-function focusUnlock() {
-  requestAnimationFrame(() => {
-    unlockPw?.focus();
-  });
-}
-
-function handleAutoLock() {
-  showScreen("unlock");
-  focusUnlock();
-}
-
 function markActivity() {
   window.vault.activity();
 }
@@ -71,8 +55,6 @@ export function bindUnlockEvents() {
   unlockPw?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleUnlock();
   });
-
-  window.addEventListener("vault-locked", handleAutoLock);
 
   ["mousemove", "keydown", "mousedown", "scroll", "touchstart"].forEach((e) =>
     window.addEventListener(e, markActivity)

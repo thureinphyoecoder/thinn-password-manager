@@ -13,6 +13,8 @@ function startAutoLockTimer(lockFn) {
 
     const now = Date.now();
     if (now - lastActivityAt >= AUTO_LOCK_AFTER) {
+      unlocked = false;
+      lastActivityAt = 0;
       lockFn();
     }
   }, 1000);

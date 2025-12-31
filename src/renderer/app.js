@@ -18,15 +18,40 @@ window.addEventListener("DOMContentLoaded", async () => {
   console.log("Launch state:", state);
 
   if (state === "NO_ACCOUNT") {
+    document.body.dataset.vault = "locked";
     showScreen("create");
   } else if (state === "LOCKED") {
+    document.body.dataset.vault = "locked";
     showScreen("unlock");
     requestAnimationFrame(() => {
       document.getElementById("unlock-pw")?.focus();
     });
   } else if (state === "UNLOCKED") {
+    document.body.dataset.vault = "unlocked";
+
     showScreen("home");
   }
+
+  // =========================
+  // Vault runtime events
+  // =========================
+  window.vault.onLocked(() => {
+    console.log("Vault locked → switch to unlock screen");
+
+    document.body.dataset.vault = "locked";
+    showScreen("unlock");
+
+    requestAnimationFrame(() => {
+      document.getElementById("unlock-pw")?.focus();
+    });
+  });
+
+  window.vault.onUnlocked(() => {
+    console.log("Vault unlocked → switch to home");
+
+    document.body.dataset.vault = "unlocked";
+    showScreen("home");
+  });
 
   bindEvents();
   console.log("app.js ready");

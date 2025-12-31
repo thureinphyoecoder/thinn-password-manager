@@ -134,17 +134,4 @@ body[data-screen="auth"] .app-content {
   background: #16a34a;
 }
 
-/* ======================
-   AUTH MODE BODY
-====================== */
-
-body[data-screen="auth"] .app-header {
-  display: none;
-}
-
-body[data-screen="auth"] .app-content {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+        

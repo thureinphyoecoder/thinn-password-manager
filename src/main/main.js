@@ -4,6 +4,7 @@ const path = require("path");
 const { encrypt, decrypt } = require("./vault/crypto");
 const vault = require("./vault/storage");
 const vaultLock = require("./vault/vaultLock");
+const vaultStore = require("./vault/vaultStore");
 
 let mainWindow; // global reference
 
@@ -26,6 +27,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: true,
     },
   });
 
@@ -33,6 +35,8 @@ function createWindow() {
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
+
+    mainWindow.webContents.openDevTools({ mode: "detach" });
   });
 
   mainWindow.webContents.session.clearCache();
@@ -65,11 +69,36 @@ ipcMain.handle("vault:load", (_, password) => {
   try {
     const data = decrypt(password, blob);
 
+    vaultStore.setVault(data);
+
     vaultLock.unlockVault();
+
+    if (mainWindow) {
+      mainWindow.webContents.send("vault:unlocked");
+    }
+
     return { ok: true, data };
   } catch (err) {
     return { ok: false, error: "WRONG_PASSWORD" };
   }
+});
+
+/* ---------------- Vault Content APIs ---------------- */
+
+ipcMain.handle("vault:loadVault", () => {
+  return vaultStore.loadVault();
+});
+
+ipcMain.handle("vault:addItem", (_, input) => {
+  return vaultStore.addItem(input);
+});
+
+ipcMain.handle("vault:export", () => {
+  return vaultStore.exportVault();
+});
+
+ipcMain.handle("vault:import", (_, data) => {
+  return vaultStore.importVault(data);
 });
 
 ipcMain.handle("app:getVersion", () => {
@@ -83,9 +112,9 @@ app.whenReady().then(() => {
 
   vaultLock.startAutoLockTimer(() => {
     console.log("🔒 Vault auto-locked (inactivity)");
-    vaultLock.lockVault();
 
-    // နောက် မှာ သုံးမယ်
-    // mainWindow.webContents.send("vault:locked");
+    if (mainWindow) {
+      mainWindow.webContents.send("vault:locked");
+    }
   });
 });
