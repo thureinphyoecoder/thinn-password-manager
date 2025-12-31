@@ -1,5 +1,6 @@
 import { showScreen } from "./ui.js";
 import { bindEvents } from "./events.js";
+import { renderHome } from "./events/home.js";
 import "./events/modal.js";
 import "./shared/eyeToggle.js";
 
@@ -51,6 +52,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     document.body.dataset.vault = "unlocked";
     showScreen("home");
+  });
+
+  window.vault.onChanged(async () => {
+    console.log("Vault changed → reload vault data");
+
+    const vault = await window.vault.loadVault();
+    renderHome(vault);
   });
 
   bindEvents();

@@ -16,11 +16,12 @@ export function bindAddItemEvents() {
 
     const payload = {
       site,
-      username: "", // later
+      username: "",
       password,
       notes: noteInput?.value ?? "",
     };
 
+    // ✅ JUST INSERT
     await window.vault.addItem(payload);
 
     // reset + close

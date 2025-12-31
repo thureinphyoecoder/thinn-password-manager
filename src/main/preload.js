@@ -16,4 +16,6 @@ contextBridge.exposeInMainWorld("vault", {
 
   onLocked: (cb) => ipcRenderer.on("vault:locked", cb),
   onUnlocked: (cb) => ipcRenderer.on("vault:unlocked", cb),
+
+  onChanged: (cb) => ipcRenderer.on("vault:changed", cb),
 });

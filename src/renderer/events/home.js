@@ -15,10 +15,26 @@ export function renderHome(vault) {
   if (!vault || !vault.items || vault.items.length === 0) {
     emptyState.hidden = false;
     list.hidden = true;
-  } else {
-    emptyState.hidden = true;
-    list.hidden = false;
+    list.innerHTML = "";
+    return;
   }
+
+  emptyState.hidden = true;
+  list.hidden = false;
+  list.innerHTML = vault.items.map(renderItemCard).join("");
+}
+
+function renderItemCard(item) {
+  return `
+    <div class="vault-card">
+      <div class="vault-card__site">${escapeHtml(item.site)}</div>
+      <div class="vault-card__username">${escapeHtml(item.username || "")}</div>
+    </div>
+  `;
+}
+
+function escapeHtml(str = "") {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 /* =========================

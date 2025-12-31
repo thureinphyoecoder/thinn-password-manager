@@ -1,62 +1,49 @@
-const crypto = require("crypto");
+let vault = { items: [] };
+let dirty = false;
+const listeners = new Set();
 
-const VAULT_VERSION = 1;
-
-let vault = null;
-
-/* =========================
-   Init (called after unlock)
-========================= */
-function setVault(decryptedVault) {
-  vault = decryptedVault;
+function notify() {
+  listeners.forEach((fn) => fn(vault));
 }
 
-/* =========================
-   Add Item
-========================= */
-function addItem(input) {
-  if (!vault) {
-    throw new Error("Vault not initialized");
-  }
+function setVault(v) {
+  vault = v;
+  notify(); // unlock / import
+}
 
-  const now = Date.now();
-
-  const item = {
-    id: crypto.randomUUID(),
-    site: input.site,
-    username: input.username || "",
-    password: input.password,
-    notes: input.notes || "",
-    createdAt: now,
-    updatedAt: now,
-  };
-
+function addItem(item) {
   vault.items.push(item);
-  vault.meta.updatedAt = now;
-
-  return item;
+  dirty = true;
+  notify(); // ✅ THIS triggers UI update
 }
 
-/* =========================
-   Export / Import
-========================= */
-function exportVault() {
-  if (!vault) {
-    throw new Error("Vault not initialized");
-  }
+function getItems() {
+  return vault.items;
+}
+
+function subscribe(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+function isDirty() {
+  return dirty;
+}
+
+function markClean() {
+  dirty = false;
+}
+
+function getVault() {
   return vault;
-}
-
-function importVault(data) {
-  if (!data || data.version !== VAULT_VERSION || !Array.isArray(data.items)) {
-    throw new Error("Invalid import data");
-  }
-  vault = data;
 }
 
 module.exports = {
   setVault,
   addItem,
-  exportVault,
-  importVault,
+  getItems,
+  getVault,
+  isDirty,
+  markClean,
+  subscribe,
 };
