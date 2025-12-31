@@ -1,66 +1,67 @@
-import { showScreen } from "./ui.js";
-import { bindEvents } from "./events.js";
+import { setState, AppStates } from "./state.js";
 import { renderHome } from "./events/home.js";
 import "./events/modal.js";
 import "./shared/eyeToggle.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
-  console.log("DOMContentLoaded");
+  console.log("[APP] DOMContentLoaded");
 
   let launch;
   try {
     launch = await window.vault.getLaunchState();
   } catch (err) {
-    console.error("Failed to get launch state", err);
+    console.error("[APP] Failed to get launch state", err);
     return;
   }
 
   const { state } = launch;
-  console.log("Launch state:", state);
+  console.log("[APP] Launch state:", state);
 
-  if (state === "NO_ACCOUNT") {
-    document.body.dataset.vault = "locked";
-    showScreen("create");
-  } else if (state === "LOCKED") {
-    document.body.dataset.vault = "locked";
-    showScreen("unlock");
-    requestAnimationFrame(() => {
-      document.getElementById("unlock-pw")?.focus();
-    });
-  } else if (state === "UNLOCKED") {
-    document.body.dataset.vault = "unlocked";
+  /**
+   * 🔥 IMPORTANT
+   * Normalize external launch state
+   * NEVER pass raw string directly to setState
+   */
+  switch (state) {
+    case "NO_ACCOUNT":
+      setState(AppStates.NO_ACCOUNT);
+      break;
 
-    showScreen("home");
+    case "LOCKED":
+      setState(AppStates.LOCKED);
+      break;
+
+    case "UNLOCKED":
+      setState(AppStates.UNLOCKED);
+      break;
+
+    default:
+      console.warn(
+        "[APP] Unknown launch state, fallback to NO_ACCOUNT:",
+        state
+      );
+      setState(AppStates.NO_ACCOUNT);
   }
 
   // =========================
   // Vault runtime events
   // =========================
+
   window.vault.onLocked(() => {
-    console.log("Vault locked → switch to unlock screen");
-
-    document.body.dataset.vault = "locked";
-    showScreen("unlock");
-
-    requestAnimationFrame(() => {
-      document.getElementById("unlock-pw")?.focus();
-    });
+    console.log("[APP] Vault locked");
+    setState(AppStates.LOCKED);
   });
 
   window.vault.onUnlocked(() => {
-    console.log("Vault unlocked → switch to home");
-
-    document.body.dataset.vault = "unlocked";
-    showScreen("home");
+    console.log("[APP] Vault unlocked");
+    setState(AppStates.UNLOCKED);
   });
 
   window.vault.onChanged(async () => {
-    console.log("Vault changed → reload vault data");
-
+    console.log("[APP] Vault changed → reload vault data");
     const vault = await window.vault.loadVault();
     renderHome(vault);
   });
 
-  bindEvents();
-  console.log("app.js ready");
+  console.log("[APP] app.js ready");
 });

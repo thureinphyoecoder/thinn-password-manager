@@ -2,19 +2,27 @@ const fs = require("fs");
 const path = require("path");
 const { app } = require("electron");
 
-const VAULT_FILE = () => path.join(app.getPath("userData"), "vault.bin");
+let vaultFilePath = null;
+
+function getVaultFile() {
+  if (!vaultFilePath) {
+    vaultFilePath = path.join(app.getPath("userData"), "vault.bin");
+    console.log("[vault] vaultFile =", vaultFilePath);
+  }
+  return vaultFilePath;
+}
 
 function save(blob) {
-  fs.writeFileSync(VAULT_FILE(), blob);
+  fs.writeFileSync(getVaultFile(), blob);
 }
 
 function load() {
-  if (!fs.existsSync(VAULT_FILE())) return null;
-  return fs.readFileSync(VAULT_FILE());
+  if (!fs.existsSync(getVaultFile())) return null;
+  return fs.readFileSync(getVaultFile());
 }
 
 function hasAccount() {
-  return fs.existsSync(VAULT_FILE());
+  return fs.existsSync(getVaultFile());
 }
 
 module.exports = { save, load, hasAccount };

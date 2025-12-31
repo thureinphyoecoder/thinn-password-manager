@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="../styles/app.css" />
   </head>
 
-  <body data-theme="system">
+  <body data-theme="system" data-screen="auth">
     <div class="app-frame">
-      <!-- ================= HEADER ================= -->
-      <header class="app-header" hidden>
+      <!-- ================= HEADER (MAIN APP ONLY) ================= -->
+      <header class="app-header">
         <!-- LEFT -->
         <div class="header-left">
           <svg
@@ -37,7 +37,15 @@
         <!-- RIGHT -->
         <div class="header-right">
           <button id="add-item-btn" class="btn-primary btn-sm">
-            + Add item
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>Add item</span>
           </button>
 
           <button
@@ -45,14 +53,28 @@
             class="icon-btn lock-btn"
             aria-label="Lock vault"
           >
-            🔒
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <rect
+                x="5"
+                y="11"
+                width="14"
+                height="10"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M8 11V8a4 4 0 0 1 8 0v3"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
           </button>
 
           <!-- Avatar -->
           <div class="avatar-wrap">
             <button class="avatar-btn">
               <span class="avatar-circle">TR</span>
-              <span class="avatar-name">Thu Rein</span>
               <span class="avatar-caret">▾</span>
             </button>
 
@@ -60,12 +82,6 @@
             <div class="avatar-menu" hidden>
               <button class="menu-item">Import vault</button>
               <button class="menu-item">Export vault</button>
-              <div class="menu-divider"></div>
-              <button class="menu-item">Light theme</button>
-              <button class="menu-item">Dark theme</button>
-              <button class="menu-item">System theme</button>
-              <div class="menu-divider"></div>
-              <button class="menu-item">About</button>
             </div>
           </div>
         </div>
@@ -73,9 +89,28 @@
 
       <!-- ================= CONTENT ================= -->
       <main class="app-content">
-        <!-- ========== AUTH LAYOUT ========== -->
+        <!-- ========== AUTH SCREENS ========== -->
         <section id="create-screen" class="auth-layout" hidden>
           <div class="auth-card">
+            <!-- BRAND -->
+            <div class="brand">
+              <svg
+                class="brand-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M7 2L17 2L22 12L17 22L7 22L2 12Z"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <circle cx="12" cy="12" r="2" fill="currentColor" />
+              </svg>
+              <span>Thinn Password Manager</span>
+            </div>
+
             <h2>Create Account</h2>
 
             <input id="create-username" type="text" placeholder="Username" />
@@ -87,10 +122,20 @@
                 placeholder="Master password"
               />
               <button
-                type="button"
                 class="eye-btn"
                 data-target="create-pw"
-              ></button>
+                aria-label="Toggle password"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <circle cx="12" cy="12" r="3" fill="currentColor" />
+                </svg>
+              </button>
             </div>
 
             <div class="password-strength">
@@ -104,10 +149,20 @@
                 placeholder="Confirm password"
               />
               <button
-                type="button"
                 class="eye-btn"
                 data-target="confirm-pw"
-              ></button>
+                aria-label="Toggle password"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <circle cx="12" cy="12" r="3" fill="currentColor" />
+                </svg>
+              </button>
             </div>
 
             <label class="ack">
@@ -115,41 +170,52 @@
               <span>I understand that this password cannot be recovered.</span>
             </label>
 
-            <button id="create-btn" class="btn-primary" disabled>
-              Create Account
-            </button>
-
-            <p id="create-msg"></p>
+            <button id="create-btn" class="btn-primary" disabled>Create</button>
+            <p id="create-msg" class="error"></p>
           </div>
         </section>
 
-        <section id="unlock-screen" class="auth-layout">
+        <section id="unlock-screen" class="auth-layout" hidden>
           <div class="auth-card">
             <h2>Unlock Vault</h2>
 
-            <input
-              id="unlock-pw"
-              type="password"
-              placeholder="Master password"
-            />
+            <div class="password-field">
+              <input
+                id="unlock-pw"
+                type="password"
+                placeholder="Master password"
+              />
+              <button class="eye-btn" data-target="unlock-pw"></button>
+            </div>
 
             <button id="unlock-btn" class="btn-primary">Unlock</button>
-
-            <p id="unlock-msg" class="error" hidden>Wrong password</p>
+            <p id="unlock-msg" class="error"></p>
           </div>
         </section>
 
-        <!-- ========== MAIN LAYOUT ========== -->
-        <section id="home-screen" class="main-layout">
+        <!-- ========== MAIN APP ========== -->
+        <section id="home-screen" class="main-layout" hidden>
+          <!-- SIDEBAR -->
           <aside class="sidebar">
-            <div class="sidebar-title">Categories</div>
+            <div class="sidebar-top">
+              <div class="sidebar-title">Categories</div>
+              <button class="sidebar-item add-category">+ New Category</button>
 
-            <button class="sidebar-item add-category">+ New Category</button>
+              <div class="category-list"></div>
+            </div>
 
-            <div class="category-list">
-              <!-- user created -->
-              <button class="sidebar-item active">Facebook</button>
-              <button class="sidebar-item">Bank</button>
+            <!-- SIDEBAR FOOTER -->
+            <div class="sidebar-footer">
+              <button id="settings-btn" class="sidebar-footer-item">
+                <svg>...</svg>
+                <span>Settings</span>
+              </button>
+
+              <div id="settings-menu" hidden>
+                <button>Change Password</button>
+                <button>Activity</button>
+                <button>About</button>
+              </div>
             </div>
           </aside>
 
@@ -157,7 +223,14 @@
           <div class="main-container">
             <div class="home-body">
               <div id="vault-empty" class="vault-empty">
-                <div class="empty-icon">🗂️</div>
+                <svg viewBox="0 0 24 24" width="32" height="32">
+                  <path
+                    d="M3 7h6l2 2h10v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                </svg>
                 <h3>No items yet</h3>
                 <p>Your vault is empty.</p>
               </div>
@@ -167,7 +240,7 @@
           </div>
         </section>
 
-        <!-- ========== OVERLAYS ========== -->
+        <!-- ========== ADD ITEM MODAL ========== -->
         <div id="add-item-modal" class="add-item-modal" hidden>
           <div class="add-item-card">
             <div class="add-item-header">
@@ -175,39 +248,22 @@
             </div>
 
             <div class="add-item-body">
-              <div class="form-group">
-                <input id="item-site" type="text" placeholder="Website Name" />
-              </div>
+              <input id="item-site" placeholder="Website name" />
+              <input id="item-url" placeholder="Website URL (optional)" />
+              <input id="item-username" placeholder="Username" />
 
-              <div class="form-group">
-                <input
-                  id="item-url"
-                  type="text"
-                  placeholder="Website URL (optional)"
-                />
-              </div>
-
-              <div class="form-group">
-                <input id="item-username" type="text" placeholder="Username" />
-              </div>
-
-              <div class="form-group password-field">
+              <div class="password-field">
                 <input
                   id="item-password"
                   type="password"
                   placeholder="Password"
                 />
-                <button
-                  type="button"
-                  class="eye-btn"
-                  data-target="item-password"
-                  aria-label="Toggle password visibility"
-                ></button>
+                <button class="eye-btn" data-target="item-password">
+                  <!-- svg eye -->
+                </button>
               </div>
 
-              <div class="form-group">
-                <textarea placeholder="Notes (optional)"></textarea>
-              </div>
+              <textarea placeholder="Notes (optional)"></textarea>
             </div>
 
             <div class="add-item-footer">

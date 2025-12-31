@@ -39,4 +39,4 @@ function decrypt(password, blob) {
   return JSON.parse(decrypted.toString("utf8"));
 }
 
-module.exports = { encrypt, decrypt };
+module.exports = { encrypt, decrypt, deriveKey };

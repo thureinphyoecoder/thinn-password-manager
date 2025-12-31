@@ -1,11 +1,22 @@
 /* ======================
    AUTH MODE ONLY
 ====================== */
+/* default */
+#create-screen,
+#unlock-screen,
+#home-screen {
+  display: none;
+}
 
-body[data-screen="auth"] .app-header,
-body[data-screen="auth"] .sidebar,
-body[data-screen="auth"] .main-layout {
-  display: none !important;
+/* auth */
+body[data-screen="auth"] #create-screen,
+body[data-screen="auth"] #unlock-screen {
+  display: flex;
+}
+
+/* home */
+body[data-screen="home"] #home-screen {
+  display: grid;
 }
 
 body[data-screen="auth"] .app-content {
@@ -40,6 +51,23 @@ body[data-screen="auth"] .app-content {
   gap: 14px;
 }
 
+/* Brand row inside auth card */
+.auth-card .brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* normalize svg */
+.auth-card .brand svg {
+  display: block;
+}
+
+/* normalize text */
+.auth-card .brand span {
+  line-height: 1;
+}
+
 /* Title */
 .auth-card h2 {
   margin: 0 0 8px;
@@ -60,12 +88,66 @@ body[data-screen="auth"] .app-content {
   font-size: 14px;
 }
 
+/* ======================
+   CHECKBOX (AUTH)
+====================== */
+
+.auth-card input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+
+  border: 1.5px solid var(--border);
+  background: var(--surface-soft);
+  cursor: pointer;
+
+  display: grid;
+  place-items: center;
+}
+
+/* checked state */
+.auth-card input[type="checkbox"]:checked {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+/* check icon */
+.auth-card input[type="checkbox"]:checked::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 2px;
+}
+
 .auth-card input:focus {
   outline: none;
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px var(--brand-soft);
 }
 
+.auth-card input[type="checkbox"]:focus,
+.auth-card input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* mouse click only — keyboard focus မပေါ် */
+.auth-card input[type="checkbox"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* text / password inputs only */
+.auth-card input:not([type="checkbox"]):focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
 /* Password field spacing override */
 .auth-card .password-field {
   margin-top: 0;
@@ -74,6 +156,7 @@ body[data-screen="auth"] .app-content {
 /* Button */
 .auth-card .btn-primary {
   margin-top: 10px;
+  align-self: stretch;
 }
 
 /* Error message */
@@ -92,11 +175,6 @@ body[data-screen="auth"] .app-content {
   gap: 10px;
   font-size: 13px;
   color: var(--text-muted);
-}
-
-.auth-card .ack input {
-  width: 16px;
-  height: 16px;
 }
 
 /* Password strength bar */

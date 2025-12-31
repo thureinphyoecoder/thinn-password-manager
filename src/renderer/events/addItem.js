@@ -1,14 +1,15 @@
 export function bindAddItemEvents() {
   const modal = document.getElementById("add-item-modal");
+  if (!modal) return;
+
   const saveBtn = document.getElementById("save-item-btn");
+  if (!saveBtn) return;
 
   const siteInput = document.getElementById("item-site");
   const urlInput = document.getElementById("item-url");
   const usernameInput = document.getElementById("item-username");
   const pwInput = document.getElementById("item-password");
   const noteInput = modal.querySelector("textarea");
-
-  if (!saveBtn) return;
 
   saveBtn.addEventListener("click", async () => {
     const site = siteInput.value.trim();

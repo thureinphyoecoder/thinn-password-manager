@@ -18,4 +18,8 @@ contextBridge.exposeInMainWorld("vault", {
   onUnlocked: (cb) => ipcRenderer.on("vault:unlocked", cb),
 
   onChanged: (cb) => ipcRenderer.on("vault:changed", cb),
+
+  deleteItem: (id) => ipcRenderer.invoke("vault:delete", id),
+
+  copyField: (id, key) => ipcRenderer.invoke("vault:copy", { id, key }),
 });

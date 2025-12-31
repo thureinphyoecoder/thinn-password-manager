@@ -35,7 +35,7 @@ function renderItemCard(item) {
   const avatar = site ? site[0].toUpperCase() : "?";
 
   return `
-  <div class="vault-card">
+  <div class="vault-card" data-id="${item.id}">
     <!-- HEADER -->
     <div class="vault-card__top">
       <div class="vault-left">
@@ -156,10 +156,54 @@ function copyIcon() {
 }
 
 /* =========================
+   Actions
+========================= */
+list.addEventListener("click", async (e) => {
+  const card = e.target.closest(".vault-card");
+  if (!card) return;
+
+  const id = card.dataset.id;
+  if (!id) return;
+
+  // DELETE
+  if (e.target.closest("[data-action='delete']")) {
+    const ok = confirm("Delete this item?");
+    if (!ok) return;
+
+    const updatedVault = await window.vault.deleteItem(id);
+
+    if (!updatedVault) {
+      alert("Delete failed");
+      return;
+    }
+
+    renderHome(updatedVault); // 🔥 auto refresh
+    toast("Item deleted");
+    return;
+  }
+
+  // EDIT
+  if (e.target.closest("[data-action='edit']")) {
+    openEditModal(id);
+    return;
+  }
+
+  // COPY (robust, SVG-safe)
+  const copyBtn = e.target.closest(".copy-btn");
+  if (copyBtn) {
+    const key = copyBtn.dataset.copy;
+    if (!key) return;
+
+    await window.vault.copyField(id, key);
+    toast("Copied to clipboard");
+  }
+});
+
+/* =========================
    HANDLERS
 ========================= */
 function handleLock() {
-  showScreen("unlock");
+  window.vault.activity();
 }
 
 function handleAddItem() {
@@ -174,10 +218,38 @@ function handleAddItem() {
   });
 }
 
+function openEditModal(id) {
+  // next step: load item data & open modal
+  console.log("Edit item:", id);
+}
+
+function toast(msg) {
+  const el = document.createElement("div");
+  el.textContent = msg;
+  el.style.position = "fixed";
+  el.style.bottom = "24px";
+  el.style.right = "24px";
+  el.style.padding = "10px 14px";
+  el.style.borderRadius = "10px";
+  el.style.background = "rgba(0,0,0,.8)";
+  el.style.color = "#fff";
+  el.style.fontSize = "13px";
+  el.style.zIndex = 9999;
+
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
 /* =========================
    BIND
 ========================= */
 export function bindHomeEvents() {
   lockBtn?.addEventListener("click", handleLock);
   addBtn?.addEventListener("click", handleAddItem);
+}
+
+export function initHomeScreen() {
+  console.log("[UI] initHomeScreen");
+
+  bindHomeEvents();
 }

@@ -1,26 +1,94 @@
+const crypto = require("crypto");
 const vaultStore = require("./vaultStore");
-const vaultPersist = require("./storage");
+const storage = require("./storage");
 const { encrypt, decrypt } = require("./crypto");
 
-function unlockVault(password) {
-  const blob = vaultPersist.load();
-  if (!blob) return null;
+let currentPassword = null;
 
-  const vault = decrypt(password, blob);
+/* =========================
+   CREATE / SAVE (REGISTER)
+========================= */
+function saveVault(password, vaultData) {
+  console.log("[vaultService] saveVault called");
+  console.log("[vaultService] writing vault.bin");
+
+  const encrypted = encrypt(password, vaultData);
+  storage.save(encrypted);
+
+  console.log("[vaultService] saveVault DONE");
+
+  vaultStore.setVault(vaultData);
+}
+
+/* =========================
+   LOAD / UNLOCK
+========================= */
+function unlockVault(password) {
+  const blob = storage.load();
+  if (!blob) throw new Error("NO_VAULT");
+
+  const vault = decrypt(password, blob); // throws if wrong
+  currentPassword = password;
+
+  // migration safety
+  vault.items ??= [];
+  for (const item of vault.items) {
+    item.id ??= crypto.randomUUID();
+    item.createdAt ??= Date.now();
+    item.updatedAt ??= Date.now();
+  }
+
   vaultStore.setVault(vault);
   return vault;
 }
 
-function saveVault(password) {
-  const data = vaultStore.getVault(); // full vault object
-  const encrypted = encrypt(password, data);
+/* =========================
+   INTERNAL PERSIST
+========================= */
+function persist() {
+  if (!currentPassword) throw new Error("Vault locked");
 
-  vaultPersist.save(encrypted); // ✅ FIX HERE
+  const vault = vaultStore.getVault();
+  const encrypted = encrypt(currentPassword, vault);
+  storage.save(encrypted);
+}
 
-  vaultStore.markClean();
+/* =========================
+   ADD
+========================= */
+function addItem(payload) {
+  const vault = vaultStore.getVault();
+  if (!vault) throw new Error("Vault not loaded");
+
+  vault.items.push({
+    id: crypto.randomUUID(),
+    ...payload,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  });
+
+  persist();
+  vaultStore.setVault(vault);
+  return vault;
+}
+
+/* =========================
+   DELETE
+========================= */
+function deleteItem(id) {
+  const vault = vaultStore.getVault();
+  if (!vault) throw new Error("Vault not loaded");
+
+  vault.items = vault.items.filter((i) => i.id !== id);
+
+  persist();
+  vaultStore.setVault(vault);
+  return vault;
 }
 
 module.exports = {
-  unlockVault,
   saveVault,
+  unlockVault,
+  addItem,
+  deleteItem,
 };

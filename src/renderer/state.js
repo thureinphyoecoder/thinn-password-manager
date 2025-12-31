@@ -1,31 +1,85 @@
 import { showScreen } from "./ui.js";
 
+/**
+ * App Meta
+ */
+export const APP_NAME = "Thinn Password Manager";
+
+/**
+ * Canonical App States (State Machine)
+ * -------------------------------
+ * BOOT        : App just started, deciding next state
+ * NO_ACCOUNT  : No vault exists (register / create)
+ * LOCKED      : Vault exists but locked
+ * UNLOCKED    : Vault unlocked (home)
+ */
+export const AppStates = Object.freeze({
+  BOOT: "BOOT",
+  NO_ACCOUNT: "NO_ACCOUNT",
+  LOCKED: "LOCKED",
+  UNLOCKED: "UNLOCKED",
+});
+
+/**
+ * Single Source of Truth
+ */
 export const AppState = {
-  current: null,
+  current: AppStates.BOOT,
 };
 
-export function setState(state) {
-  AppState.current = state;
-  syncUI(state);
+/**
+ * Public API — state transition
+ */
+export function setState(nextState) {
+  if (!Object.values(AppStates).includes(nextState)) {
+    console.warn("[STATE] Invalid state:", nextState);
+    return;
+  }
+
+  if (AppState.current === nextState) {
+    return; // no-op
+  }
+
+  AppState.current = nextState;
+  syncUI(nextState);
+
+  console.log("[STATE] →", nextState);
 }
 
+/**
+ * Read-only getter (optional but safe)
+ */
+export function getState() {
+  return AppState.current;
+}
+
+/**
+ * UI Synchronization
+ * -----------------
+ * IMPORTANT RULE:
+ * - NO vault logic
+ * - NO storage access
+ * - NO condition guessing
+ * - ONLY map state → screen
+ */
 function syncUI(state) {
   switch (state) {
-    case "NO_ACCOUNT":
+    case AppStates.NO_ACCOUNT:
+      document.body.dataset.vault = "locked";
       showScreen("create");
       break;
 
-    case "LOCKED":
+    case AppStates.LOCKED:
+      document.body.dataset.vault = "locked";
       showScreen("unlock");
+      requestAnimationFrame(() => {
+        document.getElementById("unlock-pw")?.focus();
+      });
       break;
 
-    case "UNLOCKED":
+    case AppStates.UNLOCKED:
+      document.body.dataset.vault = "unlocked";
       showScreen("home");
       break;
-
-    default:
-      console.warn("Unknown app state:", state);
   }
-
-  console.log("state.js loaded");
 }

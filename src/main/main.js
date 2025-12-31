@@ -1,13 +1,14 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
-const vault = require("./vault/storage"); // ONLY for hasAccount
+app.setName("thinn-password-manager");
+
+const vault = require("./vault/storage"); // hasAccount only
 const vaultLock = require("./vault/vaultLock");
 const vaultStore = require("./vault/vaultStore");
 const vaultService = require("./vault/vaultService");
 
 let mainWindow;
-let currentPassword = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -17,7 +18,6 @@ function createWindow() {
     minHeight: 640,
     backgroundColor: "#0e0f13",
     show: false,
-
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -32,8 +32,6 @@ function createWindow() {
     mainWindow.show();
     mainWindow.webContents.openDevTools({ mode: "detach" });
   });
-
-  mainWindow.webContents.session.clearCache();
 }
 
 /* ---------------- IPC ---------------- */
@@ -46,77 +44,67 @@ ipcMain.on("vault:activity", () => {
   vaultLock.markActivity();
 });
 
-/* ---------- Vault Lifecycle ---------- */
-// unlock handler
-ipcMain.handle("vault:load", (_, password) => {
+/* ---------- Vault Create / Save ---------- */
+ipcMain.handle("vault:save", async (_event, password, vaultData) => {
   try {
-    const data = vaultService.unlockVault(password);
+    vaultService.saveVault(password, vaultData);
 
-    currentPassword = password; // 🔥 keep password
-    vaultStore.setVault(data); // 🔥 load decrypted vault into memory
-
+    // ✅ account created → unlocked state
     vaultLock.unlockVault();
     mainWindow?.webContents.send("vault:unlocked");
 
-    return { ok: true, data };
+    return { ok: true };
+  } catch (err) {
+    console.error("[vault:save]", err);
+    return { ok: false, error: err.message };
+  }
+});
+
+/* ---------- Vault Lifecycle ---------- */
+
+ipcMain.handle("vault:load", (_, password) => {
+  try {
+    const vaultData = vaultService.unlockVault(password);
+    vaultLock.unlockVault();
+    mainWindow?.webContents.send("vault:unlocked");
+    return { ok: true, data: vaultData };
   } catch {
     return { ok: false, error: "WRONG_PASSWORD" };
   }
 });
 
-ipcMain.handle("vault:save", (_, password) => {
-  vaultService.saveVault(password);
-  return true;
-});
-
 /* ---------- Vault Content ---------- */
 
 ipcMain.handle("vault:loadVault", () => {
-  return {
-    items: vaultStore.getItems(),
-  };
+  return vaultStore.getVault(); // ✅ ONLY source of truth
 });
 
-ipcMain.handle("vault:addItem", (_, input) => {
-  vaultStore.addItem(input);
-
-  if (currentPassword) {
-    vaultService.saveVault(currentPassword); // 🔥 persist now
-  }
-
-  return vaultStore.getItems();
+ipcMain.handle("vault:addItem", (_, payload) => {
+  return vaultService.addItem(payload);
 });
 
-ipcMain.handle("vault:export", () => {
-  return vaultStore.exportVault();
+ipcMain.handle("vault:delete", (_, id) => {
+  return vaultService.deleteItem(id);
 });
 
-ipcMain.handle("vault:import", (_, data) => {
-  return vaultStore.importVault(data);
-});
+/* ---------- App ---------- */
 
 ipcMain.handle("app:getVersion", () => {
   return app.getVersion();
 });
 
-// 🔔 vaultStore change → notify renderer
+/* ---------- Store → Renderer Sync ---------- */
+
 vaultStore.subscribe(() => {
-  if (mainWindow) {
-    mainWindow.webContents.send("vault:changed");
-  }
+  mainWindow?.webContents.send("vault:changed");
 });
 
-/* ---------------- App Lifecycle ---------------- */
+/* ---------- App Lifecycle ---------- */
 
 app.whenReady().then(() => {
   createWindow();
+
   vaultLock.startAutoLockTimer(() => {
-    console.log("🔒 Vault auto-locked");
-
-    if (vaultStore.isDirty()) {
-      vaultService.saveVault(currentPassword);
-    }
-
     mainWindow?.webContents.send("vault:locked");
   });
 });

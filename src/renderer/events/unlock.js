@@ -1,62 +1,66 @@
 /* =========================
-   DOM REFERENCES (UNLOCK)
+   UNLOCK SCREEN (INIT)
 ========================= */
-const unlockPw = document.getElementById("unlock-pw");
-const unlockBtn = document.getElementById("unlock-btn");
-const unlockMsg = document.getElementById("unlock-msg");
 
-/* =========================
-   UNLOCK
-========================= */
-async function handleUnlock() {
-  if (!unlockPw.value) return;
+export function initUnlockScreen() {
+  console.log("[UI] initUnlockScreen");
 
-  unlockMsg.hidden = true;
-  unlockPw.classList.remove("error", "shake");
+  const unlockPw = document.getElementById("unlock-pw");
+  const unlockBtn = document.getElementById("unlock-btn");
+  const unlockMsg = document.getElementById("unlock-msg");
 
-  const password = unlockPw.value;
+  if (!unlockPw || !unlockBtn) return;
 
-  const res = await window.vault.load(password);
+  /* =========================
+     UNLOCK
+  ========================= */
+  async function handleUnlock() {
+    if (!unlockPw.value) return;
 
-  if (!res?.ok) {
-    unlockMsg.textContent = "Wrong password";
-    unlockMsg.hidden = false;
+    unlockMsg.hidden = true;
+    unlockPw.classList.remove("error", "shake");
 
-    unlockPw.classList.add("error", "shake");
-    unlockPw.value = "";
-    unlockPw.focus();
+    try {
+      const res = await window.vault.load(unlockPw.value);
 
-    setTimeout(() => {
-      unlockPw.classList.remove("shake");
-    }, 300);
+      if (!res?.ok) {
+        throw new Error("Wrong password");
+      }
 
-    return;
+      // success:
+      unlockPw.value = "";
+      // main process emits UNLOCKED → app.js → setState()
+    } catch {
+      unlockMsg.textContent = "Wrong password";
+      unlockMsg.hidden = false;
+
+      unlockPw.classList.add("error", "shake");
+      unlockPw.value = "";
+      unlockPw.focus();
+
+      setTimeout(() => {
+        unlockPw.classList.remove("shake");
+      }, 300);
+    }
   }
 
-  // ✅ unlock အောင်မြင်ရင်
-  // ❌ showScreen မခေါ်
-  // app.js က onUnlocked() နဲ့ handle လုပ်မယ်
-  unlockPw.value = "";
-}
+  /* =========================
+     ACTIVITY TRACKING
+  ========================= */
+  function markActivity() {
+    window.vault.activity();
+  }
 
-/* =========================
-   ACTIVITY TRACKING
-========================= */
-function markActivity() {
-  window.vault.activity();
-}
+  /* =========================
+     BIND
+  ========================= */
+  unlockBtn.addEventListener("click", handleUnlock);
 
-/* =========================
-   BIND
-========================= */
-export function bindUnlockEvents() {
-  unlockBtn?.addEventListener("click", handleUnlock);
-
-  unlockPw?.addEventListener("keydown", (e) => {
+  unlockPw.addEventListener("keydown", (e) => {
     if (e.key === "Enter") handleUnlock();
   });
 
-  ["mousemove", "keydown", "mousedown", "scroll", "touchstart"].forEach((e) =>
-    window.addEventListener(e, markActivity)
+  ["mousemove", "keydown", "mousedown", "scroll", "touchstart"].forEach((evt) =>
+    window.addEventListener(evt, markActivity)
   );
 }

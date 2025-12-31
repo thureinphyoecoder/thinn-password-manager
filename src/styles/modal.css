@@ -124,7 +124,7 @@
   /* room for eye */
 }
 
-.eye-btn {
+.add-item-card.eye-btn {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -143,11 +143,6 @@
 
 .eye-btn:hover {
   opacity: 1;
-}
-
-.eye-btn::before {
-  content: "👁";
-  font-size: 14px;
 }
 
 /* footer */
