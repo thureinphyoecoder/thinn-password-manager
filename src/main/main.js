@@ -1,140 +1,62 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
-app.setName("thinn-password-manager");
-
-const vault = require("./vault/storage"); // hasAccount only
+const vault = require("./vault/storage");
 const vaultLock = require("./vault/vaultLock");
-const vaultStore = require("./vault/vaultStore");
 const vaultService = require("./vault/vaultService");
+const vaultStore = require("./vault/vaultStore");
 
 let mainWindow;
-
-let lastActivityAt = Date.now();
-let idleTimeoutMs = 60_000; // ✅ DEFAULT = 1 minute
-let isLocked = true;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 720,
-    minWidth: 960,
-    minHeight: 640,
-    backgroundColor: "#0e0f13",
-    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      devTools: true,
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, "index.html"));
-
-  mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
-    mainWindow.webContents.openDevTools({ mode: "detach" });
-  });
+  mainWindow.loadFile("src/main/index.html");
 }
-
-/* ---------------- IPC ---------------- */
 
 ipcMain.handle("app:getLaunchState", () => {
   return { state: vault.hasAccount() ? "LOCKED" : "NO_ACCOUNT" };
+});
+
+ipcMain.on("SET_AUTO_LOCK", (_, ms) => {
+  vaultLock.setAutoLock(ms);
 });
 
 ipcMain.on("vault:activity", () => {
   vaultLock.markActivity();
 });
 
-/* ---------- Vault Create / Save ---------- */
-ipcMain.handle("vault:save", async (_event, password, vaultData) => {
-  try {
-    vaultService.saveVault(password, vaultData);
-
-    // ✅ account created → unlocked state
-    vaultLock.unlockVault();
-    mainWindow?.webContents.send("vault:unlocked");
-
-    return { ok: true };
-  } catch (err) {
-    console.error("[vault:save]", err);
-    return { ok: false, error: err.message };
-  }
-});
-
-/* ---------- Track Activity ---------- */
-ipcMain.on("vault:setIdleTimeout", (_event, ms) => {
-  if (typeof ms === "number" && ms >= 10_000) {
-    idleTimeoutMs = ms;
-    console.log("[vault] idle timeout set to", ms, "ms");
-  }
-});
-
-setInterval(() => {
-  if (isLocked) return;
-
-  const now = Date.now();
-  if (now - lastActivityAt > idleTimeoutMs) {
-    console.log("[vault] idle timeout reached → locking");
-    lockVault();
-  }
-}, 1000);
-
-function lockVault() {
-  if (isLocked) return;
-
-  isLocked = true;
-  mainWindow.webContents.send("vault:locked");
-}
-
-function unlockVaultSuccess() {
-  isLocked = false;
-  lastActivityAt = Date.now(); // reset on unlock
-  mainWindow.webContents.send("vault:unlocked");
-}
-
-/* ---------- Vault Lifecycle ---------- */
-
 ipcMain.handle("vault:load", (_, password) => {
   try {
-    const vaultData = vaultService.unlockVault(password);
+    const data = vaultService.unlockVault(password);
     vaultLock.unlockVault();
-    mainWindow?.webContents.send("vault:unlocked");
-    return { ok: true, data: vaultData };
+    mainWindow.webContents.send("vault:unlocked");
+    return { ok: true, data };
   } catch {
-    return { ok: false, error: "WRONG_PASSWORD" };
+    return { ok: false };
   }
 });
 
-/* ---------- Vault Content ---------- */
+ipcMain.handle("vault:save", (_, password, data) => {
+  vaultService.saveVault(password, data);
+  vaultLock.unlockVault();
+  mainWindow.webContents.send("vault:unlocked");
+  return { ok: true };
+});
 
 ipcMain.handle("vault:loadVault", () => {
-  return vaultStore.getVault(); // ✅ ONLY source of truth
+  return vaultStore.getVault();
 });
-
-ipcMain.handle("vault:addItem", (_, payload) => {
-  return vaultService.addItem(payload);
-});
-
-ipcMain.handle("vault:delete", (_, id) => {
-  return vaultService.deleteItem(id);
-});
-
-/* ---------- App ---------- */
-
-ipcMain.handle("app:getVersion", () => {
-  return app.getVersion();
-});
-
-/* ---------- Store → Renderer Sync ---------- */
 
 vaultStore.subscribe(() => {
   mainWindow?.webContents.send("vault:changed");
 });
-
-/* ---------- App Lifecycle ---------- */
 
 app.whenReady().then(() => {
   createWindow();

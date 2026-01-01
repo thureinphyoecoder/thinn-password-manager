@@ -1,54 +1,59 @@
-// src/renderer/ui.js
 import { initCreateScreen } from "./events/create.js";
 import { initUnlockScreen } from "./events/unlock.js";
 import { initHomeScreen } from "./events/home.js";
 
-const SCREEN_MAP = {
-  create: "create-screen",
-  unlock: "unlock-screen",
-  home: "home-screen",
-};
+/* =========================
+   SCREEN REGISTRY
+========================= */
+const SCREENS = ["create", "unlock", "home"];
 
+/* =========================
+   FORCE CLOSE OVERLAYS
+========================= */
+function forceCloseOverlays() {
+  const addItemModal = document.getElementById("add-item-modal");
+  if (addItemModal) {
+    addItemModal.hidden = true;
+    addItemModal.classList.remove("is-open");
+  }
+}
+
+/* =========================
+   SHOW SCREEN (SINGLE TRUTH)
+========================= */
 export function showScreen(name) {
-  // 1️⃣ hide all known screens
-  Object.values(SCREEN_MAP).forEach((id) => {
+  // close overlays
+  const modal = document.getElementById("add-item-modal");
+  if (modal) modal.hidden = true;
+
+  // hide all screens
+  ["create-screen", "unlock-screen", "home-screen"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.hidden = true;
   });
 
-  // 2️⃣ show target
-  const targetId = SCREEN_MAP[name];
-  const targetEl = document.getElementById(targetId);
+  // show target
+  const target = document.getElementById(`${name}-screen`);
+  if (target) target.hidden = false;
 
-  if (!targetEl) {
-    console.warn("[UI] Screen not found:", name);
-    return;
-  }
+  const isHome = name === "home";
 
-  targetEl.hidden = false;
+  // 🔥 SINGLE SOURCE OF TRUTH
+  document.body.dataset.screen = isHome ? "home" : "auth";
 
-  // 3️⃣ layout flags
-  const header = document.querySelector(".app-header");
-  document.body.dataset.screen = name === "home" ? "home" : "auth";
+  // 🔓 enable / disable controls
+  const settingsBtn = document.getElementById("settings-btn");
+  const addItemBtn = document.getElementById("add-item-btn");
+  const lockBtn = document.getElementById("lock-btn");
 
-  if (header) {
-    header.hidden = name !== "home";
-  }
+  if (settingsBtn) settingsBtn.disabled = false;
+  if (addItemBtn) addItemBtn.disabled = !isHome;
+  if (lockBtn) lockBtn.disabled = !isHome;
 
-  // 4️⃣ INIT lifecycle
-  switch (name) {
-    case "create":
-      initCreateScreen();
-      break;
-
-    case "unlock":
-      initUnlockScreen();
-      break;
-
-    case "home":
-      initHomeScreen?.();
-      break;
-  }
+  // lifecycle
+  if (name === "unlock") initUnlockScreen();
+  if (name === "create") initCreateScreen();
+  if (name === "home") initHomeScreen();
 
   console.log("[UI] showScreen →", name);
 }

@@ -1,5 +1,5 @@
 import { setHomeView, HomeViews } from "../state.js";
-
+import { initSettingsTabs } from "./settings.js";
 /* =========================
    DOM REFERENCES (HOME)
 ========================= */
@@ -13,24 +13,39 @@ const backBtn = document.getElementById("settings-back-btn");
 
 const autoLockRadios = document.querySelectorAll("input[name='autoLock']");
 
+const AUTOLOCK_KEY = "thinn:autoLock";
+
 function bindAutoLockSettings() {
-  autoLockRadios.forEach((radio) => {
-    radio.addEventListener("change", () => {
-      const ms = Number(radio.value);
-      if (!Number.isNaN(ms)) {
-        window.vault.setIdleTimeout(ms);
-        window.vault.activity();
-      }
-    });
+  const saved = Number(localStorage.getItem(AUTOLOCK_KEY) ?? 30000);
+
+  autoLockRadios.forEach((r) => {
+    if (Number(r.value) === saved) r.checked = true;
+
+    r.onchange = () => {
+      const ms = Number(r.value);
+      localStorage.setItem(AUTOLOCK_KEY, ms);
+      window.vault.setAutoLock(ms);
+    };
   });
+
+  window.vault.setAutoLock(saved);
 }
 
 function handleOpenSettings() {
+  // ❗ Home screen မှာပဲ settings ဖွင့်
   setHomeView(HomeViews.SETTINGS);
+
+  settingsBtn?.classList.add("active");
+
+  requestAnimationFrame(() => {
+    initSettingsTabs();
+    bindAutoLockSettings();
+  });
 }
 
 function handleBackToVault() {
   setHomeView(HomeViews.VAULT);
+  settingsBtn?.classList.remove("active");
 }
 
 /* =========================
@@ -277,9 +292,19 @@ export function bindHomeEvents() {
 }
 
 export function initHomeScreen() {
-  console.log("[UI] initHomeScreen");
-
   bindHomeEvents();
   bindAutoLockSettings();
+  bindActivityTracking();
   setHomeView(HomeViews.VAULT);
+}
+
+function bindActivityTracking() {
+  const vaultView = document.getElementById("vault-view");
+  if (!vaultView) return;
+
+  ["mousemove", "keydown", "mousedown"].forEach((evt) => {
+    vaultView.addEventListener(evt, () => {
+      window.vault.activity();
+    });
+  });
 }

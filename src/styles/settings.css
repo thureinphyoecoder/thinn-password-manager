@@ -3,8 +3,8 @@
 ========================= */
 .settings-back-btn {
   position: absolute;
-  top: 16px;
-  right: 32px;
+  top: 0;
+  right: 0;
 
   display: inline-flex;
   align-items: center;
@@ -31,25 +31,40 @@
   opacity: 0.9;
 }
 
+#settings-screen {
+  display: flex;
+  height: calc(100vh - var(--header-height));
+  padding: 24px;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top,
+      rgba(255, 255, 255, 0.04),
+      rgba(255, 255, 255, 0.015));
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 /* =========================
    SETTINGS LAYOUT
 ========================= */
-
 .settings-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: 240px minmax(0,1fr);
   height: 100%;
-  gap: 32px;
-  background: transparent;
 }
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
+/* sidebar card */
+.settings-sidebar {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  padding: 16px;
 }
 
 .sidebar-footer {
   margin-top: auto;
-  /* 🔥 ဒီတစ်ကြောင်းက 핵심 */
   padding: 12px;
 }
 
@@ -70,19 +85,16 @@
   cursor: pointer;
 }
 
+.sidebar-footer-item.active {
+  background: rgba(0, 255, 180, 0.18);
+  color: #cafff2;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 255, 180, 0.3);
+}
+
 /* =========================
    SETTINGS SIDEBAR
 ========================= */
-
-#settings-view {
-  height: 100%;
-}
-
-.settings-layout {
-  background: transparent;
-  /* main dark bg ကို inherit */
-}
-
 .settings-sidebar {
   width: 220px;
   padding: 16px 8px;
@@ -93,14 +105,15 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  position: relative;
 
-  padding: 10px 12px;
+  padding: 10px 14px;
   margin-bottom: 6px;
 
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
 
   color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
@@ -118,8 +131,13 @@
 }
 
 .settings-nav-item.active {
-  background: rgba(0, 200, 150, 0.15);
-  color: #c9fff0;
+  background: linear-gradient(90deg,
+      rgba(0, 255, 180, 0.22),
+      rgba(0, 255, 180, 0.10));
+  color: #cafff2;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 255, 180, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 .account-section {
@@ -172,9 +190,8 @@
 
 .settings-content {
   position: relative;
-  flex: 1;
-  padding: 16px 32px 24px;
-  max-width: 720px;
+ padding: 32px 48px;
+  max-width: none;
 }
 
 .settings-content h2 {
@@ -235,9 +252,6 @@
   margin-left: 7px;
 }
 
-.settings-content {
-  padding-right: 40px;
-}
 .settings-section .muted {
   font-size: 13px;
   opacity: 0.7;
@@ -314,4 +328,10 @@
 .settings-section.disabled {
   opacity: 0.5;
   pointer-events: none;
+}
+
+.settings-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 16px 0;
 }

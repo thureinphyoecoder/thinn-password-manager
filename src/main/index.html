@@ -185,7 +185,21 @@
                 type="password"
                 placeholder="Master password"
               />
-              <button class="eye-btn" data-target="unlock-pw"></button>
+              <button
+                class="eye-btn"
+                data-target="unlock-pw"
+                aria-label="Toggle password"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <circle cx="12" cy="12" r="3" fill="currentColor" />
+                </svg>
+              </button>
             </div>
 
             <button id="unlock-btn" class="btn-primary">Unlock</button>
@@ -280,202 +294,177 @@
 
                 <div id="vault-list" hidden></div>
               </div>
+            </div>
+          </div>
+        </section>
 
-              <!-- ===== SETTINGS VIEW ===== -->
-              <div id="settings-view" hidden>
-                <div class="settings-layout">
-                  <!-- LEFT: SETTINGS SIDEBAR -->
-                  <aside class="settings-sidebar">
-                    <button
-                      data-settings="security"
-                      class="settings-nav-item active"
-                    >
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          d="M12 3l7 4v5c0 5-3.5 9-7 10
-                   -3.5-1-7-5-7-10V7l7-4z"
-                        />
-                      </svg>
-                      <span>Security</span>
-                    </button>
+        <!-- =========================
+     SETTINGS SCREEN (FINAL)
+========================= -->
+        <section id="settings-screen" class="settings-screen" hidden>
+          <div class="settings-shell">
+            <!-- LEFT : SETTINGS NAV -->
+            <aside class="settings-sidebar">
+              <button class="settings-nav-item active" data-settings="security">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 3l7 4v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V7l7-4z" />
+                </svg>
+                <span>Security</span>
+              </button>
 
-                    <button
-                      data-settings="appearance"
-                      class="settings-nav-item"
-                    >
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <circle cx="12" cy="12" r="5" />
-                        <path
-                          d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42
-                   M18.36 18.36l1.42 1.42
-                   M1 12h2M21 12h2"
-                        />
-                      </svg>
-                      <span>Appearance</span>
-                    </button>
+              <button class="settings-nav-item" data-settings="appearance">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                  <path
+                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42
+                   M18.36 18.36l1.42 1.42M1 12h2M21 12h2"
+                  />
+                </svg>
+                <span>Appearance</span>
+              </button>
 
-                    <button data-settings="about" class="settings-nav-item">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="16" x2="12" y2="12" />
-                        <line x1="12" y1="8" x2="12.01" y2="8" />
-                      </svg>
-                      <span>About</span>
-                    </button>
-                  </aside>
+              <button class="settings-nav-item" data-settings="about">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span>About</span>
+              </button>
+            </aside>
 
-                  <!-- RIGHT: SETTINGS CONTENT -->
-                  <section class="settings-content">
-                    <button id="settings-back-btn" class="settings-back-btn">
-                      <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path
-                          d="M15 18l-6-6 6-6"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                      <span>Back to Vault</span>
-                    </button>
+            <!-- RIGHT : SETTINGS CONTENT -->
+            <section class="settings-content">
+              <!-- Back -->
+              <button id="settings-back-btn" class="settings-back-btn">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <path
+                    d="M15 18l-6-6 6-6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span>Back to Vault</span>
+              </button>
 
-                    <!-- SECURITY -->
-                    <div data-settings-panel="security">
-                      <div class="settings-section auto-lock-section">
-                        <h3>Auto-lock</h3>
-                        <p class="muted">Lock vault after inactivity</p>
+              <!-- ================= SECURITY ================= -->
+              <div data-settings-panel="security">
+                <div class="settings-section auto-lock-section">
+                  <h3>Auto-lock</h3>
+                  <p class="muted">Lock vault after inactivity</p>
 
-                        <div class="auto-lock-list">
-                          <label class="auto-lock-item">
-                            <input type="radio" name="autoLock" value="30000" />
-                            <span class="dot"></span>
-                            <span class="label">30 seconds</span>
-                          </label>
+                  <div class="auto-lock-list">
+                    <label class="auto-lock-item">
+                      <input type="radio" name="autoLock" value="30000" />
+                      <span class="dot"></span>
+                      <span class="label">30 seconds</span>
+                    </label>
 
-                          <span class="auto-lock-line"></span>
+                    <label class="auto-lock-item">
+                      <input
+                        type="radio"
+                        name="autoLock"
+                        value="60000"
+                        checked
+                      />
+                      <span class="dot"></span>
+                      <span class="label">1 minute</span>
+                    </label>
 
-                          <label class="auto-lock-item">
-                            <input
-                              type="radio"
-                              name="autoLock"
-                              value="60000"
-                              checked
-                            />
-                            <span class="dot"></span>
-                            <span class="label">1 minute</span>
-                          </label>
+                    <label class="auto-lock-item">
+                      <input type="radio" name="autoLock" value="120000" />
+                      <span class="dot"></span>
+                      <span class="label">2 minutes</span>
+                    </label>
 
-                          <span class="auto-lock-line"></span>
+                    <label class="auto-lock-item">
+                      <input type="radio" name="autoLock" value="180000" />
+                      <span class="dot"></span>
+                      <span class="label">3 minutes</span>
+                    </label>
 
-                          <label class="auto-lock-item">
-                            <input
-                              type="radio"
-                              name="autoLock"
-                              value="120000"
-                            />
-                            <span class="dot"></span>
-                            <span class="label">2 minutes</span>
-                          </label>
+                    <label class="auto-lock-item">
+                      <input type="radio" name="autoLock" value="300000" />
+                      <span class="dot"></span>
+                      <span class="label">5 minutes</span>
+                    </label>
 
-                          <span class="auto-lock-line"></span>
+                    <label class="auto-lock-item">
+                      <input type="radio" name="autoLock" value="0" />
+                      <span class="dot"></span>
+                      <span class="label">Never</span>
+                    </label>
+                  </div>
+                </div>
 
-                          <label class="auto-lock-item">
-                            <input
-                              type="radio"
-                              name="autoLock"
-                              value="180000"
-                            />
-                            <span class="dot"></span>
-                            <span class="label">3 minutes</span>
-                          </label>
+                <div class="settings-section account-section">
+                  <h3 class="settings-title">Account</h3>
 
-                          <span class="auto-lock-line"></span>
+                  <div class="account-row">
+                    <input type="text" placeholder="New username" />
+                    <button class="btn-primary btn-sm">Update</button>
+                  </div>
 
-                          <label class="auto-lock-item">
-                            <input
-                              type="radio"
-                              name="autoLock"
-                              value="300000"
-                            />
-                            <span class="dot"></span>
-                            <span class="label">5 minutes</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="account-divider"></div>
 
-                    <!-- ACCOUNT -->
-                    <div class="settings-section account-section">
-                      <h3 class="settings-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24">
-                          <path
-                            d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5
-               -5 2.3-5 5 2.3 5 5 5z"
-                          />
-                          <path d="M4 22c0-4 4-7 8-7s8 3 8 7" />
-                        </svg>
-                        Account
-                      </h3>
-
-                      <!-- Username -->
-                      <div class="account-row">
-                        <input
-                          id="update-username"
-                          type="text"
-                          placeholder="New username"
-                        />
-                        <button class="btn-primary btn-sm">Update</button>
-                      </div>
-
-                      <!-- Divider -->
-                      <div class="account-divider"></div>
-
-                      <!-- Password -->
-                      <div class="account-danger">
-                        <button class="btn-danger ghost btn-sm">
-                          Change master password
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- APPEARANCE -->
-                    <div data-settings-panel="appearance" hidden>
-                      <h2>Appearance</h2>
-                      <p class="muted">Theme switching coming soon.</p>
-                    </div>
-
-                    <!-- ABOUT -->
-                    <div data-settings-panel="about" hidden>
-                      <h2>About</h2>
-                      <p>Thinn Password Manager</p>
-                      <p class="muted">Version 1.0.0</p>
-                    </div>
-                  </section>
+                  <button class="btn-danger ghost btn-sm">
+                    Change master password
+                  </button>
                 </div>
               </div>
-            </div>
+
+              <!-- ================= APPEARANCE ================= -->
+              <div data-settings-panel="appearance" hidden>
+                <div class="settings-section appearance-section">
+                  <h3>Appearance</h3>
+                  <p class="muted">Choose how the app looks</p>
+
+                  <div class="theme-switch-group">
+                    <button class="theme-option active" data-theme="system">
+                      System
+                    </button>
+                    <button class="theme-option" data-theme="light">
+                      Light
+                    </button>
+                    <button class="theme-option" data-theme="dark">Dark</button>
+                    <span class="theme-indicator"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ================= ABOUT ================= -->
+              <div data-settings-panel="about" hidden>
+                <div class="settings-section">
+                  <h2>About</h2>
+                  <p>Thinn Password Manager</p>
+                  <p class="muted">Version 1.0.0</p>
+                </div>
+              </div>
+            </section>
           </div>
         </section>
 

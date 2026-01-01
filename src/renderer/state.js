@@ -65,12 +65,12 @@ export function getState() {
 function syncUI(state) {
   switch (state) {
     case AppStates.NO_ACCOUNT:
-      document.body.dataset.vault = "locked";
+      document.body.dataset.screen = "auth";
       showScreen("create");
       break;
 
     case AppStates.LOCKED:
-      document.body.dataset.vault = "locked";
+      document.body.dataset.screen = "auth";
       showScreen("unlock");
       requestAnimationFrame(() => {
         document.getElementById("unlock-pw")?.focus();
@@ -78,7 +78,7 @@ function syncUI(state) {
       break;
 
     case AppStates.UNLOCKED:
-      document.body.dataset.vault = "unlocked";
+      document.body.dataset.screen = "home";
       showScreen("home");
       break;
   }
@@ -103,7 +103,7 @@ export function setHomeView(view) {
 
 function syncHomeView() {
   const vaultView = document.getElementById("vault-view");
-  const settingsView = document.getElementById("settings-view");
+  const settingsView = document.getElementById("settings-screen");
 
   if (!vaultView || !settingsView) return;
 

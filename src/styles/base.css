@@ -16,6 +16,7 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Ubuntu, sans-serif;
+
   background: var(--bg);
   color: var(--text);
 }
@@ -24,35 +25,63 @@ body {
    CORE DESIGN TOKENS
 ===================== */
 :root {
+  /* Radius / Motion */
+  --radius: 16px;
+  --transition: 0.2s ease;
+
   /* Brand */
   --brand-primary: #047857;
   --brand-soft: #d1fae5;
   --brand-border: #6ee7b7;
 
-  --radius: 16px;
-  --transition: 0.2s ease;
+  /* Danger */
+  --danger: #b91c1c;
 
-  /* 🔥 SYSTEM FALLBACK (CRITICAL) */
+  /* =====================
+     SYSTEM TOKENS (BASE)
+  ===================== */
   --sys-bg: #f7f8fa;
   --sys-surface: #ffffff;
   --sys-surface-soft: #f1f3f6;
+
   --sys-text: #111827;
   --sys-text-muted: #6b7280;
+
   --sys-border: #e5e7eb;
   --sys-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   --sys-primary: #2563eb;
 
-  /* Semantic defaults */
+  /* =====================
+     SEMANTIC TOKENS (USED BY UI)
+  ===================== */
   --bg: var(--sys-bg);
   --surface: var(--sys-surface);
   --surface-soft: var(--sys-surface-soft);
+
   --text: var(--sys-text);
   --text-muted: var(--sys-text-muted);
+
   --border: var(--sys-border);
   --shadow: var(--sys-shadow);
 
-  --primary: var(--brand-primary);
-  --danger: #b91c1c;
+  --primary: var(--sys-primary);
+}
+
+/* =====================
+   SYSTEM THEME
+===================== */
+[data-theme="system"] {
+  --bg: var(--sys-bg);
+  --surface: var(--sys-surface);
+  --surface-soft: var(--sys-surface-soft);
+
+  --text: var(--sys-text);
+  --text-muted: var(--sys-text-muted);
+
+  --border: var(--sys-border);
+  --shadow: var(--sys-shadow);
+
+  --primary: var(--sys-primary);
 }
 
 /* =====================
@@ -89,19 +118,6 @@ body {
   --primary: #60a5fa;
 }
 
-/* =====================
-   SYSTEM THEME
-===================== */
-[data-theme="system"] {
-  --bg: var(--sys-bg);
-  --surface: var(--sys-surface);
-  --surface-soft: var(--sys-surface-soft);
-  --text: var(--sys-text);
-  --text-muted: var(--sys-text-muted);
-  --border: var(--sys-border);
-  --shadow: var(--sys-shadow);
-  --primary: var(--sys-primary);
-}
 
 /* =====================
    SYSTEM PREFERENCE
@@ -111,10 +127,13 @@ body {
     --sys-bg: #0e0f13;
     --sys-surface: #15171d;
     --sys-surface-soft: #1b1e25;
+
     --sys-text: #e5e7eb;
     --sys-text-muted: #9ca3af;
+
     --sys-border: #23262f;
     --sys-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+
     --sys-primary: #60a5fa;
   }
 }
@@ -124,10 +143,13 @@ body {
     --sys-bg: #f7f8fa;
     --sys-surface: #ffffff;
     --sys-surface-soft: #f1f3f6;
+
     --sys-text: #111827;
     --sys-text-muted: #6b7280;
+
     --sys-border: #e5e7eb;
     --sys-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+
     --sys-primary: #2563eb;
   }
 }

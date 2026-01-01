@@ -1,6 +1,6 @@
-/* =========================
-   UNLOCK SCREEN (INIT)
-========================= */
+// src/renderer/events/unlock.js
+
+let bound = false;
 
 export function initUnlockScreen() {
   console.log("[UI] initUnlockScreen");
@@ -9,58 +9,58 @@ export function initUnlockScreen() {
   const unlockBtn = document.getElementById("unlock-btn");
   const unlockMsg = document.getElementById("unlock-msg");
 
-  if (!unlockPw || !unlockBtn) return;
+  if (!unlockPw || !unlockBtn || !unlockMsg) return;
 
-  /* =========================
-     UNLOCK
-  ========================= */
+  // RESET ON SCREEN ENTRY
+  unlockPw.value = "";
+  unlockMsg.textContent = "";
+  unlockMsg.classList.remove("show");
+  unlockPw.classList.remove("error", "shake");
+
+  requestAnimationFrame(() => unlockPw.focus());
+
   async function handleUnlock() {
-    if (!unlockPw.value) return;
+    const password = unlockPw.value;
+    if (!password) return;
 
-    unlockMsg.hidden = true;
+    // clear old error
+    unlockMsg.classList.remove("show");
     unlockPw.classList.remove("error", "shake");
 
+    let res;
     try {
-      const res = await window.vault.load(unlockPw.value);
-
-      if (!res?.ok) {
-        throw new Error("Wrong password");
-      }
-
-      // success:
-      unlockPw.value = "";
-      // main process emits UNLOCKED → app.js → setState()
+      res = await window.vault.load(password);
     } catch {
+      res = null;
+    }
+
+    if (!res || res.ok !== true) {
       unlockMsg.textContent = "Wrong password";
-      unlockMsg.hidden = false;
+      unlockMsg.classList.add("show");
 
       unlockPw.classList.add("error", "shake");
-      unlockPw.value = "";
       unlockPw.focus();
 
-      setTimeout(() => {
-        unlockPw.classList.remove("shake");
-      }, 300);
+      setTimeout(() => unlockPw.classList.remove("shake"), 300);
+      return;
     }
+
+    // SUCCESS → main process handles state
+    unlockPw.value = "";
   }
 
-  /* =========================
-     ACTIVITY TRACKING
-  ========================= */
-  function markActivity() {
-    window.vault.activity();
+  if (!bound) {
+    unlockBtn.addEventListener("click", handleUnlock);
+
+    unlockPw.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleUnlock();
+    });
+
+    unlockPw.addEventListener("input", () => {
+      unlockMsg.classList.remove("show");
+      unlockPw.classList.remove("error");
+    });
+
+    bound = true;
   }
-
-  /* =========================
-     BIND
-  ========================= */
-  unlockBtn.addEventListener("click", handleUnlock);
-
-  unlockPw.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleUnlock();
-  });
-
-  ["mousemove", "keydown", "mousedown", "scroll", "touchstart"].forEach((evt) =>
-    window.addEventListener(evt, markActivity)
-  );
 }

@@ -1,36 +1,9 @@
-/* AUTH MODE ONLY */
-body[data-screen="auth"] .app-header,
-body[data-screen="auth"] .sidebar,
-body[data-screen="auth"] .main-layout {
-  display: none;
-}
-
-body[data-screen="auth"] .app-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-/* ======================
-   SCREEN VISIBILITY (FINAL)
-====================== */
-
-/* default */
-.auth-layout,
-.main-layout {
-  display: none;
-}
-
-/* AUTH MODE */
-body[data-screen="auth"] .auth-layout {
-  display: flex;
-}
-
-/* HOME MODE */
-body[data-screen="home"] .main-layout {
-  display: grid;
-}
+/* =========================================================
+   LAYOUT.CSS — SINGLE SOURCE OF LAYOUT TRUTH
+   - Screen visibility: JS (hidden attribute)
+   - Layout only here
+   - NO screen switching logic
+========================================================= */
 
 /* ======================
    APP FRAME
@@ -43,7 +16,30 @@ body[data-screen="home"] .main-layout {
 }
 
 /* ======================
-   HEADER LAYOUT
+   AUTH MODE (LAYOUT ONLY)
+====================== */
+
+body[data-screen="auth"] .app-header,
+body[data-screen="auth"] .sidebar,
+
+body[data-screen="auth"] .app-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* AUTH SCREENS */
+.auth-layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ======================
+   HEADER
 ====================== */
 
 .app-header {
@@ -54,27 +50,6 @@ body[data-screen="home"] .main-layout {
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
-}
-
-/* ======================
-   CONTENT AREA
-====================== */
-
-.app-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-}
-
-/* ======================
-   MAIN LAYOUT (THE TRUTH)
-====================== */
-
-.main-layout {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  height: 100%;
 }
 
 /* LEFT */
@@ -90,26 +65,17 @@ body[data-screen="home"] .main-layout {
   flex: 1;
   display: flex;
   justify-content: center;
-  pointer-events: none;
 }
-
-
 
 .header-search {
   width: 320px;
-  /* 🔽 smaller */
   max-width: 100%;
   height: 34px;
   padding: 0 14px;
-
   border-radius: 10px;
   background: var(--surface-soft);
   border: 1px solid var(--border);
   color: var(--text);
-}
-
-.header-search {
-  pointer-events: auto;
 }
 
 /* RIGHT */
@@ -120,7 +86,17 @@ body[data-screen="home"] .main-layout {
 }
 
 /* ======================
-   MAIN LAYOUT
+   CONTENT AREA
+====================== */
+
+.app-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ======================
+   MAIN APP LAYOUT
 ====================== */
 
 .main-layout {
@@ -131,6 +107,7 @@ body[data-screen="home"] .main-layout {
   overflow: hidden;
 }
 
+/* MAIN CONTAINER */
 .main-container {
   display: flex;
   justify-content: center;
@@ -142,10 +119,4 @@ body[data-screen="home"] .main-layout {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-}
-
-.app-content {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
 }

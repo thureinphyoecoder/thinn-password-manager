@@ -1,48 +1,52 @@
-let unlocked = false;
-let lastActivityAt = Date.now();
-
-const AUTO_LOCK_AFTER = 1 * 60 * 1000;
-
+let autoLockMs = 30_000; // default 30s
 let timer = null;
+let unlocked = false;
+let onLock = null;
 
-function startAutoLockTimer(lockFn) {
-  if (timer) clearInterval(timer);
+function resetTimer() {
+  if (timer) clearTimeout(timer);
 
-  timer = setInterval(() => {
-    if (!unlocked) return;
+  if (!unlocked) return;
+  if (autoLockMs === 0) return; // never
 
-    const now = Date.now();
-    if (now - lastActivityAt >= AUTO_LOCK_AFTER) {
-      unlocked = false;
-      lastActivityAt = 0;
-      lockFn();
-    }
-  }, 1000);
+  timer = setTimeout(() => {
+    lockVault();
+  }, autoLockMs);
+}
+
+function setAutoLock(ms) {
+  autoLockMs = ms;
+  resetTimer();
 }
 
 function markActivity() {
   if (!unlocked) return;
-  lastActivityAt = Date.now();
+  resetTimer();
 }
 
 function unlockVault() {
   unlocked = true;
-  lastActivityAt = Date.now();
+  resetTimer();
 }
 
 function lockVault() {
+  if (!unlocked) return;
+
   unlocked = false;
-  lastActivityAt = 0;
+  if (timer) clearTimeout(timer);
+  timer = null;
+
+  onLock?.();
 }
 
-function isUnlocked() {
-  return unlocked;
+function startAutoLockTimer(cb) {
+  onLock = cb;
 }
 
 module.exports = {
-  startAutoLockTimer,
+  setAutoLock,
   markActivity,
   unlockVault,
   lockVault,
-  isUnlocked,
+  startAutoLockTimer,
 };
