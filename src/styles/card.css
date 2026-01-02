@@ -6,17 +6,13 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
 
   padding: 14px;
   border-radius: 18px;
 
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.02));
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 
   transition:
     transform 0.15s ease,
@@ -24,11 +20,10 @@
     border-color 0.15s ease;
 }
 
-/* visual hover only */
 .vault-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+  border-color: color-mix(in srgb, var(--border), var(--primary) 30%);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.15);
 }
 
 /* =========================
@@ -58,19 +53,19 @@
 
   font-size: 18px;
   font-weight: 700;
-  color: var(--brand-primary);
 
-  background: rgba(108, 140, 255, 0.18);
+  background: color-mix(in srgb, var(--primary), transparent 80%);
+  color: var(--primary);
 }
 
 .vault-site {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 /* =========================
-   HEADER ACTIONS (EDIT / DELETE)
+   HEADER ACTIONS
 ========================= */
 
 .vault-actions {
@@ -78,16 +73,12 @@
   gap: 6px;
 
   opacity: 0;
-  visibility: hidden;
   pointer-events: none;
-
   transition: opacity 0.15s ease;
 }
 
-/* reveal only on header hover */
 .vault-card__top:hover .vault-actions {
   opacity: 1;
-  visibility: visible;
   pointer-events: auto;
 }
 
@@ -106,43 +97,36 @@
   border-radius: 10px;
   border: none;
 
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-primary);
+  background: var(--surface-soft);
+  color: var(--text);
   cursor: pointer;
 
   transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.icon-btn.sm svg,
-.copy-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
 .icon-btn.sm:hover,
 .copy-btn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--surface-soft), var(--primary) 10%);
   transform: translateY(-1px);
 }
 
-/* delete = danger */
+/* danger */
 .icon-btn.danger {
-  background: rgba(255, 77, 79, 0.2);
-  color: #ff4d4f;
+  background: color-mix(in srgb, var(--danger), transparent 85%);
+  color: var(--danger);
 }
 
 .icon-btn.danger:hover {
-  background: rgba(255, 77, 79, 0.35);
+  background: color-mix(in srgb, var(--danger), transparent 70%);
 }
 
 /* =========================
-   TABLE META (ROW UX)
+   TABLE
 ========================= */
 
 .vault-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0;
 }
 
 .vault-row {
@@ -157,7 +141,7 @@
 
 .vault-row .value {
   font-size: 13px;
-  color: var(--text-primary);
+  color: var(--text);
   word-break: break-all;
 }
 
@@ -166,23 +150,17 @@
   text-align: right;
 }
 
-/* =========================
-   COPY BUTTON (ROW-LEVEL ONLY)
-========================= */
-
+/* copy button only on hover */
 .copy-btn {
   opacity: 0;
-  visibility: hidden;
   pointer-events: none;
   color: var(--text-muted);
 }
 
-/* reveal only on row hover */
 .vault-row:hover .copy-btn {
   opacity: 1;
-  visibility: visible;
   pointer-events: auto;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 /* =========================

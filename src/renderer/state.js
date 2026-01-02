@@ -1,4 +1,17 @@
-import { showScreen } from "./ui.js";
+import { initUnlockScreen } from "./events/unlock.js";
+import { initHomeScreen } from "./events/home.js";
+import {
+  showScreen,
+  closeAllOverlays,
+  setHeaderEnabled,
+  focusById,
+} from "./ui.js";
+
+const Screens = Object.freeze({
+  CREATE: "create",
+  UNLOCK: "unlock",
+  HOME: "home",
+});
 
 /**
  * App Meta
@@ -6,12 +19,12 @@ import { showScreen } from "./ui.js";
 export const APP_NAME = "Thinn Password Manager";
 
 /**
- * Canonical App States (State Machine)
- * -------------------------------
- * BOOT        : App just started, deciding next state
- * NO_ACCOUNT  : No vault exists (register / create)
- * LOCKED      : Vault exists but locked
- * UNLOCKED    : Vault unlocked (home)
+ * Canonical App States (GLOBAL)
+ * -----------------------------
+ * BOOT        : App just started
+ * NO_ACCOUNT  : No vault exists → Create
+ * LOCKED      : Vault exists but locked → Unlock
+ * UNLOCKED    : Vault unlocked → Home
  */
 export const AppStates = Object.freeze({
   BOOT: "BOOT",
@@ -21,86 +34,131 @@ export const AppStates = Object.freeze({
 });
 
 /**
- * Single Source of Truth
+ * Single Source of Truth (GLOBAL)
  */
 export const AppState = {
   current: AppStates.BOOT,
 };
 
 /**
- * Public API — state transition
+ * Public API — change app state
  */
 export function setState(nextState) {
+  console.trace("[STATE CALL]", AppState.current, "→", nextState);
+
   if (!Object.values(AppStates).includes(nextState)) {
     console.warn("[STATE] Invalid state:", nextState);
     return;
   }
 
-  if (AppState.current === nextState) {
-    return; // no-op
-  }
+  if (AppState.current === nextState) return;
 
   AppState.current = nextState;
   syncUI(nextState);
-
-  console.log("[STATE] →", nextState);
 }
 
 /**
- * Read-only getter (optional but safe)
+ * Read-only getter
  */
 export function getState() {
   return AppState.current;
 }
 
 /**
- * UI Synchronization
- * -----------------
- * IMPORTANT RULE:
+ * UI Synchronization (GLOBAL)
+ * --------------------------
+ * RULES:
  * - NO vault logic
  * - NO storage access
- * - NO condition guessing
- * - ONLY map state → screen
+ * - NO guessing
+ * - ONLY map AppState → screen + basic UI
  */
+
+/* =========================================================
+   HOME SUB-VIEW STATE (LOCAL TO HOME)
+========================================================= */
+function resetHomeUI() {
+  setHomeView(HomeViews.NONE);
+  document.body.dataset.view = "";
+}
+
 function syncUI(state) {
+  closeAllOverlays();
+
   switch (state) {
-    case AppStates.NO_ACCOUNT:
-      document.body.dataset.screen = "auth";
-      showScreen("create");
-      break;
+    case AppStates.LOCKED: {
+      resetHomeUI();
 
-    case AppStates.LOCKED:
       document.body.dataset.screen = "auth";
-      showScreen("unlock");
-      requestAnimationFrame(() => {
-        document.getElementById("unlock-pw")?.focus();
-      });
-      break;
+      showScreen(Screens.UNLOCK);
+      setHeaderEnabled(false);
 
-    case AppStates.UNLOCKED:
-      document.body.dataset.screen = "home";
-      showScreen("home");
+      initUnlockScreen();
+      break;
+    }
+
+    case AppStates.NO_ACCOUNT: {
+      resetHomeUI();
+
+      document.body.dataset.screen = "auth"; // 🔥 ADD THIS
+      showScreen(Screens.CREATE);
+      setHeaderEnabled(false);
+      break;
+    }
+
+    case AppStates.UNLOCKED: {
+      document.body.dataset.screen = "home"; // 🔥 ADD THIS
+      showScreen(Screens.HOME);
+      setHeaderEnabled(true);
+      initHomeScreen();
+      break;
+    }
+
+    default:
       break;
   }
 }
 
-// =========================
-// HOME VIEW STATE
-// =========================
-export const HomeViews = {
+/**
+ * Home Views (SUB STATE)
+ */
+export const HomeViews = Object.freeze({
+  NONE: "none",
   VAULT: "vault",
   SETTINGS: "settings",
-};
+});
 
+/**
+ * Home State
+ */
 export const HomeState = {
-  view: HomeViews.VAULT,
+  view: HomeViews.NONE,
 };
 
+/**
+ * Public API — switch home view
+ */
 export function setHomeView(view) {
+  if (!Object.values(HomeViews).includes(view)) {
+    console.warn("[HOME] Invalid view:", view);
+    return;
+  }
+
+  if (HomeState.view === view) {
+    return; // no-op
+  }
+
   HomeState.view = view;
   syncHomeView();
 }
 
+/**
+ * Sync Home Sub-Views
+ * ------------------
+ * RULES:
+ * - ONLY hide/show home internals
+ * - NEVER touch dataset.screen
+ */
 function syncHomeView() {
   const vaultView = document.getElementById("vault-view");
   const settingsView = document.getElementById("settings-screen");

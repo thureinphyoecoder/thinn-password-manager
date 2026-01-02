@@ -1,39 +1,3 @@
-/* =========================================================
-   AUTH.CSS — AUTH SCREENS ONLY
-   - NO screen switching
-   - NO pointer-events hacks
-   - NO !important
-   - Inputs must always be focusable
-========================================================= */
-/* 🔥 UNLOCK INPUT VISIBILITY FIX */
-.auth-card input[type="password"] {
-  background: #0f172a;
-  /* darker than card */
-  border: 1px solid #334155;
-  /* visible border */
-  color: #e5e7eb;
-}
-
-.auth-card input[type="password"]::placeholder {
-  color: #94a3b8;
-}
-
-/* AUTH MODE ONLY */
-body[data-screen="auth"] .app-header {
-  display: none !important;
-}
-
-/* AUTH MODE */
-body[data-screen="auth"] .sidebar {
-  display: none;
-}
-
-/* HOME MODE */
-body[data-screen="home"] .sidebar {
-  display: flex;
-  pointer-events: auto;
-}
-
 body[data-screen="auth"] .app-content {
   display: flex;
   justify-content: center;
@@ -41,185 +5,93 @@ body[data-screen="auth"] .app-content {
   height: 100vh;
 }
 
-/* layout only */
-.auth-layout {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.auth-layout {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ======================
-   AUTH CARD
-====================== */
-
 .auth-card {
   width: 420px;
   padding: 32px;
+
   border-radius: 18px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 
-  position: relative;
-
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
-
-/* ======================
-   BRAND
-====================== */
-
-.auth-card .brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.auth-card .brand svg {
-  display: block;
-}
-
-.auth-card .brand span {
-  line-height: 1;
-}
-
-/* ======================
-   TITLE
-====================== */
 
 .auth-card h2 {
-  margin: 0 0 8px;
+  margin-bottom: 18px;
   font-size: 22px;
   font-weight: 600;
   text-align: center;
+  color: var(--text);
 }
-
-/* ======================
-   INPUTS
-====================== */
 
 .auth-card input {
   width: 100%;
   height: 42px;
   padding: 0 14px;
+
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface-soft);
   color: var(--text);
+
   font-size: 14px;
+}
+
+.auth-card .password-field {
+  margin-top: 6px;
+}
+
+.auth-card input::placeholder {
+  color: var(--text-muted);
 }
 
 .auth-card input:focus {
   outline: none;
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 3px var(--brand-soft);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--primary) 25%,
+      transparent);
 }
 
 /* ======================
-   PASSWORD FIELD
+   AUTH CARD ANIMATION
 ====================== */
 
-.password-field {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
+.auth-card {
+  animation: auth-in 0.35s ease-out both;
 }
 
-.password-field input {
-  flex: 1;
-  height: 42px;
-  padding-right: 42px;
-}
+@keyframes auth-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
 
-.password-field .eye-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-
-  background: none;
-  border: none;
-  padding: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.password-field .eye-btn:hover {
-  color: var(--text);
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ======================
-   CHECKBOX
-====================== */
-
-.auth-card input[type="checkbox"] {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 1.5px solid var(--border);
-  background: var(--surface-soft);
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-
-.auth-card input[type="checkbox"]:checked {
-  background: var(--brand-primary);
-  border-color: var(--brand-primary);
-}
-
-.auth-card input[type="checkbox"]:checked::after {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background: white;
-  border-radius: 2px;
-}
-
-.auth-card input[type="checkbox"]:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-/* ======================
-   BUTTON
-====================== */
-
-.auth-card .btn-primary {
-  margin-top: 10px;
-  align-self: stretch;
-}
-
-/* ======================
-   ERROR MESSAGE
+   AUTH ERROR MESSAGE
 ====================== */
 
 .auth-card .error {
-  min-height: 16px;
+  margin-top: 10px;
   font-size: 13px;
-  color: var(--danger);
   text-align: center;
 
+  color: var(--danger);
   opacity: 0;
   transform: translateY(-4px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .auth-card .error.show {
@@ -228,77 +100,16 @@ body[data-screen="auth"] .app-content {
 }
 
 /* ======================
-   CREATE ACCOUNT ONLY
+   AUTH EXIT
 ====================== */
 
-.auth-card .ack {
-  display: flex;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--text-muted);
+.auth-exit {
+  animation: auth-out 0.25s ease-in forwards;
 }
 
-/* ======================
-   PASSWORD STRENGTH
-====================== */
-
-.password-strength {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--border);
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.password-strength.visible {
-  opacity: 1;
-}
-
-#password-strength-bar {
-  height: 100%;
-  width: 0%;
-  transition: width 0.25s ease, background-color 0.25s ease;
-}
-
-#password-strength-bar.weak {
-  width: 33%;
-  background: #dc2626;
-}
-
-#password-strength-bar.medium {
-  width: 66%;
-  background: #f59e0b;
-}
-
-#password-strength-bar.strong {
-  width: 100%;
-  background: #16a34a;
-}
-
-/* 🔥 AUTH MODE – FORCE KILL MODALS */
-body[data-screen="auth"] #add-item-modal {
-  display: none !important;
-}
-
-/* =========================
-   🔒 AUTH INPUT HARD FIX
-========================= */
-body[data-screen="auth"] .auth-card input {
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-
-  height: 42px !important;
-  min-height: 42px !important;
-
-  background: var(--surface-soft) !important;
-  color: var(--text) !important;
-
-  border: 1px solid var(--border) !important;
-}
-
-/* 🔒 AUTH MODE: SETTINGS NEVER VISIBLE */
-body[data-screen="auth"] #settings-screen {
-  display: none;
+@keyframes auth-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
 }

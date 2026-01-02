@@ -1,11 +1,73 @@
 /* =========================
+   SETTINGS — THEME SAFE BASE
+========================= */
+#settings-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+}
+
+.settings-screen {
+  color: var(--text-primary);
+  background: var(--bg);
+}
+
+.settings-header {
+  color: var(--text-primary);
+}
+
+/* Tabs */
+.settings-tab {
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.settings-tab:hover {
+  background: var(--surface);
+}
+
+.settings-tab.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Back button */
+.settings-back-btn {
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.settings-back-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.auto-lock-item .label {
+  color: var(--text-secondary);
+}
+
+.auto-lock-item .dot {
+  border: 2px solid var(--border);
+}
+
+.auto-lock-item input:checked + .dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.settings-section input {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+/* =========================
    BACK TO VAULT (TOP RIGHT)
 ========================= */
 .settings-back-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -32,35 +94,95 @@
 }
 
 #settings-screen {
-  display: flex;
-  height: calc(100vh - var(--header-height));
-  padding: 24px;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at top,
-      rgba(255, 255, 255, 0.04),
-      rgba(255, 255, 255, 0.015));
-  border-radius: 18px;
+  position: relative;
+  width: 100%;
   padding: 32px;
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: var(--bg);
+}
+
+.settings-shell {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* =========================
+   SETTINGS TABS (FINAL)
+========================= */
+.settings-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  height: 36px;
+  padding: 0 14px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border 0.15s ease;
+}
+
+.settings-tab svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.9;
+}
+
+.settings-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.settings-tab.active {
+  background: rgba(0, 255, 180, 0.18);
+  color: #cafff2;
+  border-color: rgba(0, 255, 180, 0.4);
+}
+
+.settings-tab.active svg {
+  color: #6fffd2;
 }
 
 /* =========================
    SETTINGS LAYOUT
 ========================= */
 .settings-layout {
-  display: grid;
-  grid-template-columns: 240px minmax(0,1fr);
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  max-width: 720px;
+  margin: 0 auto 28px;
 }
 
 /* sidebar card */
 .settings-sidebar {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  padding: 16px;
+  display: flex;
+  gap: 8px;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
 
 .sidebar-footer {
@@ -88,42 +210,34 @@
 .sidebar-footer-item.active {
   background: rgba(0, 255, 180, 0.18);
   color: #cafff2;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 255, 180, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 180, 0.3);
 }
 
 /* =========================
    SETTINGS SIDEBAR
 ========================= */
 .settings-sidebar {
-  width: 220px;
-  padding: 16px 8px;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 8px;
+
+  width: auto;
+  padding: 0 0 14px 0;
+  margin-bottom: 24px;
+
+  border-right: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: transparent;
 }
 
 .settings-nav-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
+  margin: 0;
+  padding: 8px 14px;
 
-  padding: 10px 14px;
-  margin-bottom: 6px;
-
-  background: transparent;
-  border: none;
   border-radius: 10px;
-
-  color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
-  cursor: pointer;
 
-  transition: background .15s ease, color .15s ease;
-}
-
-.settings-nav-item svg {
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .settings-nav-item:hover {
@@ -131,13 +245,17 @@
 }
 
 .settings-nav-item.active {
-  background: linear-gradient(90deg,
-      rgba(0, 255, 180, 0.22),
-      rgba(0, 255, 180, 0.10));
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 180, 0.22),
+    rgba(0, 255, 180, 0.1)
+  );
   color: #cafff2;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 255, 180, 0.35),
-    0 6px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 180, 0.35);
+}
+
+.settings-nav-item svg {
+  opacity: 0.9;
 }
 
 .account-section {
@@ -190,8 +308,8 @@
 
 .settings-content {
   position: relative;
- padding: 32px 48px;
-  max-width: none;
+  padding: 32px 48px;
+  max-width: 560px;
 }
 
 .settings-content h2 {
@@ -203,11 +321,19 @@
   margin-bottom: 28px;
   padding-left: 20px;
   padding-top: 0;
-  border-bottom: none
+  border-bottom: none;
 }
 
-.settings-content>[data-settings-panel] {
+.settings-content > [data-settings-panel] {
   margin-top: 12px;
+}
+
+.settings-panel {
+  display: none;
+}
+
+.settings-panel.active {
+  display: block;
 }
 
 .settings-section h3 {
@@ -248,7 +374,7 @@
 .auto-lock-line {
   width: 1px;
   height: 12px;
-  background: rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, 0.12);
   margin-left: 7px;
 }
 
@@ -310,7 +436,7 @@
   flex-shrink: 0;
 }
 
-.auto-lock-item input:checked+.dot {
+.auto-lock-item input:checked + .dot {
   background: #34f5c5;
   border-color: #34f5c5;
   box-shadow: 0 0 0 4px rgba(52, 245, 197, 0.15);

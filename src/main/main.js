@@ -12,6 +12,15 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 720,
+
+    minWidth: 960, // 🔒 critical
+    minHeight: 640, // 🔒 critical
+
+    resizable: true, // allow resize
+    maximizable: true,
+
+    titleBarStyle: "default",
+
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },

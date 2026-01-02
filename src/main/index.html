@@ -6,101 +6,15 @@
     <link rel="stylesheet" href="../styles/app.css" />
   </head>
 
-  <body data-theme="system" data-screen="auth">
+  <body data-screen="auth">
     <div class="app-frame">
-      <!-- ================= HEADER (MAIN APP ONLY) ================= -->
-      <header class="app-header">
-        <!-- LEFT -->
-        <div class="header-left">
-          <svg
-            class="brand-icon"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <path
-              d="M7 2L17 2L22 12L17 22L7 22L2 12Z"
-              stroke="currentColor"
-              stroke-width="1.8"
-            />
-            <circle cx="12" cy="12" r="2" fill="currentColor" />
-          </svg>
-          <span class="brand-text">Thinn Password Manager</span>
-        </div>
-
-        <!-- CENTER -->
-        <div class="header-center">
-          <input type="search" class="header-search" placeholder="Search" />
-        </div>
-
-        <!-- RIGHT -->
-        <div class="header-right">
-          <button id="add-item-btn" class="btn-primary btn-sm">
-            <svg viewBox="0 0 24 24" width="16" height="16">
-              <path
-                d="M12 5v14M5 12h14"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
-            <span>Add item</span>
-          </button>
-
-          <button
-            id="lock-btn"
-            class="icon-btn lock-btn"
-            aria-label="Lock vault"
-          >
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-              <rect
-                x="5"
-                y="11"
-                width="14"
-                height="10"
-                rx="2"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <path
-                d="M8 11V8a4 4 0 0 1 8 0v3"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-            </svg>
-          </button>
-
-          <!-- Avatar -->
-          <div class="avatar-wrap">
-            <button class="avatar-btn">
-              <span class="avatar-circle">TR</span>
-              <span class="avatar-caret">▾</span>
-            </button>
-
-            <!-- DROPDOWN -->
-            <div class="avatar-menu" hidden>
-              <button class="menu-item">Import vault</button>
-              <button class="menu-item">Export vault</button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- ================= CONTENT ================= -->
       <main class="app-content">
         <!-- ========== AUTH SCREENS ========== -->
         <section id="create-screen" class="auth-layout" hidden>
           <div class="auth-card">
             <!-- BRAND -->
             <div class="brand">
-              <svg
-                class="brand-icon"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
+              <svg class="brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M7 2L17 2L22 12L17 22L7 22L2 12Z"
                   stroke="currentColor"
@@ -116,16 +30,8 @@
             <input id="create-username" type="text" placeholder="Username" />
 
             <div class="password-field">
-              <input
-                id="create-pw"
-                type="password"
-                placeholder="Master password"
-              />
-              <button
-                class="eye-btn"
-                data-target="create-pw"
-                aria-label="Toggle password"
-              >
+              <input id="create-pw" type="password" placeholder="Master password" />
+              <button class="eye-btn" data-target="create-pw" aria-label="Toggle password">
                 <svg viewBox="0 0 24 24" width="18" height="18">
                   <path
                     d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
@@ -143,16 +49,8 @@
             </div>
 
             <div class="password-field">
-              <input
-                id="confirm-pw"
-                type="password"
-                placeholder="Confirm password"
-              />
-              <button
-                class="eye-btn"
-                data-target="confirm-pw"
-                aria-label="Toggle password"
-              >
+              <input id="confirm-pw" type="password" placeholder="Confirm password" />
+              <button class="eye-btn" data-target="confirm-pw" aria-label="Toggle password">
                 <svg viewBox="0 0 24 24" width="18" height="18">
                   <path
                     d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
@@ -180,16 +78,8 @@
             <h2>Unlock Vault</h2>
 
             <div class="password-field">
-              <input
-                id="unlock-pw"
-                type="password"
-                placeholder="Master password"
-              />
-              <button
-                class="eye-btn"
-                data-target="unlock-pw"
-                aria-label="Toggle password"
-              >
+              <input id="unlock-pw" type="password" placeholder="Master password" />
+              <button class="eye-btn" data-target="unlock-pw" aria-label="Toggle password">
                 <svg viewBox="0 0 24 24" width="18" height="18">
                   <path
                     d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
@@ -202,269 +92,448 @@
               </button>
             </div>
 
-            <button id="unlock-btn" class="btn-primary">Unlock</button>
+            <button id="unlock-btn" class="btn-primary" disabled>
+              <span class="btn-label">Unlock</span>
+            </button>
             <p id="unlock-msg" class="error"></p>
           </div>
         </section>
 
         <!-- ========== MAIN APP ========== -->
-        <section id="home-screen" class="main-layout" hidden>
-          <!-- SIDEBAR -->
-          <aside class="sidebar">
-            <div class="sidebar-top">
-              <div class="sidebar-title">Categories</div>
-              <button class="sidebar-item add-category">+ New Category</button>
-
-              <div class="category-list"></div>
-            </div>
-
-            <!-- SIDEBAR FOOTER -->
-            <div class="sidebar-footer">
-              <button id="settings-btn" class="sidebar-footer-item">
-                <!-- Gear / Settings icon -->
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path
-                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06
-                    a2 2 0 0 1 0 2.83
-                    a2 2 0 0 1-2.83 0l-.06-.06
-                    a1.65 1.65 0 0 0-1.82-.33
-                    a1.65 1.65 0 0 0-1 1.51V21
-                    a2 2 0 0 1-2 2
-                    a2 2 0 0 1-2-2v-.09
-                    a1.65 1.65 0 0 0-1-1.51
-                    a1.65 1.65 0 0 0-1.82.33l-.06.06
-                    a2 2 0 0 1-2.83 0
-                    a2 2 0 0 1 0-2.83l.06-.06
-                    a1.65 1.65 0 0 0 .33-1.82
-                    a1.65 1.65 0 0 0-1.51-1H3
-                    a2 2 0 0 1-2-2
-                    a2 2 0 0 1 2-2h.09
-                    a1.65 1.65 0 0 0 1.51-1
-                    a1.65 1.65 0 0 0-.33-1.82l-.06-.06
-                    a2 2 0 0 1 0-2.83
-                    a2 2 0 0 1 2.83 0l.06.06
-                    a1.65 1.65 0 0 0 1.82.33H9
-                    a1.65 1.65 0 0 0 1-1.51V3
-                    a2 2 0 0 1 2-2
-                    a2 2 0 0 1 2 2v.09
-                    a1.65 1.65 0 0 0 1 1.51
-                    a1.65 1.65 0 0 0 1.82-.33l.06-.06
-                    a2 2 0 0 1 2.83 0
-                    a2 2 0 0 1 0 2.83l-.06.06
-                    a1.65 1.65 0 0 0-.33 1.82V9
-                    a1.65 1.65 0 0 0 1.51 1H21
-                    a2 2 0 0 1 2 2
-                    a2 2 0 0 1-2 2h-.09
-                    a1.65 1.65 0 0 0-1.51 1z"
-                  />
-                </svg>
-
-                <span>Settings</span>
-              </button>
-            </div>
-          </aside>
-
-          <!-- MAIN CONTENT -->
-          <div class="main-container">
-            <div class="home-body">
-              <!-- ===== VAULT VIEW ===== -->
-              <div id="vault-view">
-                <div id="vault-empty" class="vault-empty">
-                  <svg viewBox="0 0 24 24" width="32" height="32">
+        <section id="home-screen" hidden>
+          <!-- ================= HEADER (MAIN APP ONLY) ================= -->
+          <header class="app-header">
+            <!-- LEFT -->
+            <div class="header-left">
+              <div class="brand">
+                <div class="brand-icon-wrap">
+                  <svg class="brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path
-                      d="M3 7h6l2 2h10v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
-                      fill="none"
+                      d="M7 2L17 2L22 12L17 22L7 22L2 12Z"
                       stroke="currentColor"
                       stroke-width="1.8"
                     />
+                    <circle cx="12" cy="12" r="2" fill="currentColor" />
                   </svg>
-                  <h3>No items yet</h3>
-                  <p>Your vault is empty.</p>
                 </div>
 
-                <div id="vault-list" hidden></div>
+                <span class="brand-text">Thinn Password Manager</span>
               </div>
             </div>
-          </div>
-        </section>
 
-        <!-- =========================
-     SETTINGS SCREEN (FINAL)
-========================= -->
-        <section id="settings-screen" class="settings-screen" hidden>
-          <div class="settings-shell">
-            <!-- LEFT : SETTINGS NAV -->
-            <aside class="settings-sidebar">
-              <button class="settings-nav-item active" data-settings="security">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M12 3l7 4v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V7l7-4z" />
-                </svg>
-                <span>Security</span>
-              </button>
+            <!-- CENTER -->
+            <div class="header-center">
+              <input type="search" class="header-search" placeholder="Search" />
+            </div>
 
-              <button class="settings-nav-item" data-settings="appearance">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <circle cx="12" cy="12" r="5" />
-                  <path
-                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42
-                   M18.36 18.36l1.42 1.42M1 12h2M21 12h2"
-                  />
-                </svg>
-                <span>Appearance</span>
-              </button>
-
-              <button class="settings-nav-item" data-settings="about">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="16" x2="12" y2="12" />
-                  <line x1="12" y1="8" x2="12.01" y2="8" />
-                </svg>
-                <span>About</span>
-              </button>
-            </aside>
-
-            <!-- RIGHT : SETTINGS CONTENT -->
-            <section class="settings-content">
-              <!-- Back -->
-              <button id="settings-back-btn" class="settings-back-btn">
+            <!-- RIGHT -->
+            <div class="header-right">
+              <button id="add-item-btn" class="btn-primary">
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path
-                    d="M15 18l-6-6 6-6"
+                    d="M12 5v14M5 12h14"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <span>Add item</span>
+              </button>
+
+              <button id="lock-btn" class="icon-btn lock-btn" aria-label="Lock vault">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                  <rect
+                    x="5"
+                    y="11"
+                    width="14"
+                    height="10"
+                    rx="2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" />
+                </svg>
+              </button>
+
+              <!-- Avatar -->
+              <div class="avatar-wrap">
+                <button class="avatar-btn">
+                  <span class="avatar-circle">TR</span>
+                  <span class="avatar-caret">▾</span>
+                </button>
+
+                <!-- DROPDOWN -->
+                <div class="avatar-menu" hidden>
+                  <button class="menu-item">
+                    <!-- Import icon -->
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                      <path
+                        d="M12 3v12"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M7 10l5 5 5-5"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M5 21h14"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <span>Import vault</span>
+                  </button>
+
+                  <button class="menu-item">
+                    <!-- Export icon -->
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+                      <path
+                        d="M12 21V9"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M17 14l-5-5-5 5"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M5 3h14"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                    <span>Export vault</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <div class="main-layout">
+            <!-- SIDEBAR -->
+
+            <aside class="sidebar">
+              <!-- ================= TOP ================= -->
+              <div class="sidebar-top">
+                <div class="sidebar-title-row">
+                  <span class="sidebar-title">Categories</span>
+
+                  <button id="add-category-btn" class="icon-btn subtle" aria-label="Add category">
+                    <svg viewBox="0 0 24 24" width="14" height="14">
+                      <path
+                        d="M12 5v14M5 12h14"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="category-input-row" hidden>
+                  <input id="category-input" type="text" placeholder="New category name" />
+                </div>
+
+                <!-- Category list -->
+                <div class="category-list">
+                  <!-- ROW (NOT BUTTON) -->
+                  <div class="category-item active" data-category-id="work">
+                    <span class="category-label">Work</span>
+
+                    <!-- 👇 THIS WRAPPER WAS MISSING -->
+                    <div class="category-actions">
+                      <button
+                        class="icon-btn subtle category-more-btn"
+                        aria-label="Category actions"
+                      >
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                          <circle cx="5" cy="12" r="1.6" fill="currentColor" />
+                          <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                          <circle cx="19" cy="12" r="1.6" fill="currentColor" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="category-item" data-category-id="personal">
+                    <span class="category-label">Personal</span>
+                    <div class="category-actions">
+                      <button class="icon-btn subtle category-more-btn">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                          <circle cx="5" cy="12" r="1.6" fill="currentColor" />
+                          <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                          <circle cx="19" cy="12" r="1.6" fill="currentColor" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="category-item" data-category-id="ideas">
+                    <span class="category-label">Ideas</span>
+                    <div class="category-actions">
+                      <button class="icon-btn subtle category-more-btn">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                          <circle cx="5" cy="12" r="1.6" fill="currentColor" />
+                          <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                          <circle cx="19" cy="12" r="1.6" fill="currentColor" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ================= FOOTER ================= -->
+              <div class="sidebar-footer">
+                <button id="settings-btn" class="sidebar-footer-item">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                      d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06
+      a2 2 0 0 1 0 2.83
+      a2 2 0 0 1-2.83 0l-.06-.06
+      a1.65 1.65 0 0 0-1.82-.33
+      a1.65 1.65 0 0 0-1 1.51V21
+      a2 2 0 0 1-2 2
+      a2 2 0 0 1-2-2v-.09
+      a1.65 1.65 0 0 0-1-1.51
+      a1.65 1.65 0 0 0-1.82.33l-.06.06
+      a2 2 0 0 1-2.83 0
+      a2 2 0 0 1 0-2.83l.06-.06
+      a1.65 1.65 0 0 0 .33-1.82
+      a1.65 1.65 0 0 0-1.51-1H3
+      a2 2 0 0 1-2-2
+      a2 2 0 0 1 2-2h.09
+      a1.65 1.65 0 0 0 1.51-1
+      a1.65 1.65 0 0 0-.33-1.82l-.06-.06
+      a2 2 0 0 1 0-2.83
+      a2 2 0 0 1 2.83 0l.06.06
+      a1.65 1.65 0 0 0 1.82.33H9
+      a1.65 1.65 0 0 0 1-1.51V3
+      a2 2 0 0 1 2-2
+      a2 2 0 0 1 2 2v.09
+      a1.65 1.65 0 0 0 1 1.51
+      a1.65 1.65 0 0 0 1.82-.33l.06-.06
+      a2 2 0 0 1 2.83 0
+      a2 2 0 0 1 0 2.83l-.06.06
+      a1.65 1.65 0 0 0-.33 1.82V9
+      a1.65 1.65 0 0 0 1.51 1H21
+      a2 2 0 0 1 2 2
+      a2 2 0 0 1-2 2h-.09
+      a1.65 1.65 0 0 0-1.51 1z"
+                    />
+                  </svg>
+                  <span>Settings</span>
+                </button>
+              </div>
+            </aside>
+
+            <!-- GLOBAL MENU (ONE ONLY) -->
+            <div id="category-context-menu" class="dropdown-menu" hidden>
+              <button class="dropdown-item" data-action="rename">
+                <svg viewBox="0 0 24 24" width="14" height="14">
+                  <path
+                    d="M4 20h4l10-10-4-4L4 16v4z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    fill="none"
                   />
                 </svg>
-                <span>Back to Vault</span>
+                <span>Rename</span>
               </button>
 
-              <!-- ================= SECURITY ================= -->
-              <div data-settings-panel="security">
-                <div class="settings-section auto-lock-section">
-                  <h3>Auto-lock</h3>
-                  <p class="muted">Lock vault after inactivity</p>
+              <button class="dropdown-item danger" data-action="delete">
+                <svg viewBox="0 0 24 24" width="14" height="14">
+                  <path
+                    d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <span>Delete</span>
+              </button>
+            </div>
 
-                  <div class="auto-lock-list">
-                    <label class="auto-lock-item">
-                      <input type="radio" name="autoLock" value="30000" />
-                      <span class="dot"></span>
-                      <span class="label">30 seconds</span>
-                    </label>
-
-                    <label class="auto-lock-item">
-                      <input
-                        type="radio"
-                        name="autoLock"
-                        value="60000"
-                        checked
+            <!-- MAIN CONTENT -->
+            <div class="main-container">
+              <div class="home-body">
+                <!-- ===== VAULT VIEW ===== -->
+                <div id="vault-view">
+                  <div id="vault-empty" class="vault-empty">
+                    <svg viewBox="0 0 24 24" width="32" height="32">
+                      <path
+                        d="M3 7h6l2 2h10v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
                       />
-                      <span class="dot"></span>
-                      <span class="label">1 minute</span>
-                    </label>
-
-                    <label class="auto-lock-item">
-                      <input type="radio" name="autoLock" value="120000" />
-                      <span class="dot"></span>
-                      <span class="label">2 minutes</span>
-                    </label>
-
-                    <label class="auto-lock-item">
-                      <input type="radio" name="autoLock" value="180000" />
-                      <span class="dot"></span>
-                      <span class="label">3 minutes</span>
-                    </label>
-
-                    <label class="auto-lock-item">
-                      <input type="radio" name="autoLock" value="300000" />
-                      <span class="dot"></span>
-                      <span class="label">5 minutes</span>
-                    </label>
-
-                    <label class="auto-lock-item">
-                      <input type="radio" name="autoLock" value="0" />
-                      <span class="dot"></span>
-                      <span class="label">Never</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div class="settings-section account-section">
-                  <h3 class="settings-title">Account</h3>
-
-                  <div class="account-row">
-                    <input type="text" placeholder="New username" />
-                    <button class="btn-primary btn-sm">Update</button>
+                    </svg>
+                    <h3>No items yet</h3>
+                    <p>Your vault is empty.</p>
                   </div>
 
-                  <div class="account-divider"></div>
-
-                  <button class="btn-danger ghost btn-sm">
-                    Change master password
-                  </button>
+                  <div id="vault-list" hidden></div>
                 </div>
-              </div>
 
-              <!-- ================= APPEARANCE ================= -->
-              <div data-settings-panel="appearance" hidden>
-                <div class="settings-section appearance-section">
-                  <h3>Appearance</h3>
-                  <p class="muted">Choose how the app looks</p>
+                <!-- =========================
+                      SETTINGS SCREEN
+                  ========================= -->
+                <section id="settings-screen" class="settings-screen" hidden>
+                  <div class="settings-shell">
+                    <!-- ================= SETTINGS HEADER ================= -->
+                    <div class="settings-header">
+                      <aside class="settings-tabs">
+                        <button class="settings-tab active" data-settings="security">
+                          <span>Security</span>
+                        </button>
 
-                  <div class="theme-switch-group">
-                    <button class="theme-option active" data-theme="system">
-                      System
-                    </button>
-                    <button class="theme-option" data-theme="light">
-                      Light
-                    </button>
-                    <button class="theme-option" data-theme="dark">Dark</button>
-                    <span class="theme-indicator"></span>
+                        <button class="settings-tab" data-settings="about">
+                          <span>About</span>
+                        </button>
+                      </aside>
+
+                      <button id="settings-back-btn" class="settings-back-btn">
+                        Back to Vault
+                      </button>
+                    </div>
+
+                    <!-- ================= SETTINGS CONTENT ================= -->
+                    <section class="settings-content">
+                      <!-- ========= SECURITY ========= -->
+                      <div class="settings-panel active" data-settings-panel="security">
+                        <div class="settings-section auto-lock-section">
+                          <h3>Auto-lock</h3>
+                          <p class="muted">Lock vault after inactivity</p>
+
+                          <div class="auto-lock-list">
+                            <label class="auto-lock-item">
+                              <input type="radio" name="autoLock" value="30000" />
+                              <span class="dot"></span>
+                              <span class="label">30 seconds</span>
+                            </label>
+
+                            <label class="auto-lock-item">
+                              <input type="radio" name="autoLock" value="60000" checked />
+                              <span class="dot"></span>
+                              <span class="label">1 minute</span>
+                            </label>
+
+                            <label class="auto-lock-item">
+                              <input type="radio" name="autoLock" value="120000" />
+                              <span class="dot"></span>
+                              <span class="label">2 minutes</span>
+                            </label>
+
+                            <label class="auto-lock-item">
+                              <input type="radio" name="autoLock" value="180000" />
+                              <span class="dot"></span>
+                              <span class="label">3 minutes</span>
+                            </label>
+
+                            <label class="auto-lock-item">
+                              <input type="radio" name="autoLock" value="300000" />
+                              <span class="dot"></span>
+                              <span class="label">5 minutes</span>
+                            </label>
+
+                            <label class="auto-lock-item">
+                              <input type="radio" name="autoLock" value="0" />
+                              <span class="dot"></span>
+                              <span class="label">Never</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="settings-section account-section">
+                          <h3 class="settings-title">Account</h3>
+
+                          <div class="account-row">
+                            <input type="text" placeholder="New username" />
+                            <button class="btn-primary btn-sm">Update</button>
+                          </div>
+
+                          <div class="account-divider"></div>
+
+                          <button class="btn-danger ghost btn-sm">Change master password</button>
+                        </div>
+                      </div>
+
+                      <!-- ========= ABOUT ========= -->
+                      <div class="settings-panel" data-settings-panel="about">
+                        <div class="settings-section">
+                          <div class="about-section">
+                            <h2 class="about-title">Thinn Password Manager</h2>
+
+                            <p class="about-intro">This app exists for one reason.</p>
+
+                            <p class="about-lead">
+                              To let you keep your passwords without involving anyone else.
+                            </p>
+
+                            <blockquote class="about-quote">
+                              <span class="quote-text emphasis">
+                                Passwords should belong to you.
+                              </span>
+                              <br />
+                              <span class="quote-sub">
+                                Not to servers. Not to companies. Not to subscriptions.
+                              </span>
+                            </blockquote>
+
+                            <p class="about-body">
+                              Thinn is a local-only password manager. Everything stays on your
+                              machine. There is no account system, no sync service, and no
+                              background connection to the internet.
+                            </p>
+
+                            <p class="about-body subtle">
+                              If something feels boring here, that is probably intentional.
+                            </p>
+
+                            <p class="about-principles">
+                              <span>No cloud.</span>
+                              <br />
+                              <span>No lock-in.</span>
+                              <br />
+                              <span>Just your vault, on your machine.</span>
+                            </p>
+
+                            <div class="about-footer">
+                              <span class="about-version">Version Beta</span>
+                              <span class="about-divider">·</span>
+                              <span class="about-built">
+                                Built by
+                                <span class="about-author">Thu Rein Phyoe</span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
                   </div>
-                </div>
+                </section>
               </div>
-
-              <!-- ================= ABOUT ================= -->
-              <div data-settings-panel="about" hidden>
-                <div class="settings-section">
-                  <h2>About</h2>
-                  <p>Thinn Password Manager</p>
-                  <p class="muted">Version 1.0.0</p>
-                </div>
-              </div>
-            </section>
+            </div>
           </div>
         </section>
 
@@ -481,11 +550,7 @@
               <input id="item-username" placeholder="Username" />
 
               <div class="password-field">
-                <input
-                  id="item-password"
-                  type="password"
-                  placeholder="Password"
-                />
+                <input id="item-password" type="password" placeholder="Password" />
                 <button class="eye-btn" data-target="item-password">
                   <!-- svg eye -->
                 </button>
@@ -495,9 +560,7 @@
             </div>
 
             <div class="add-item-footer">
-              <button class="ghost-btn" data-action="close-add-item">
-                Cancel
-              </button>
+              <button class="ghost-btn" data-action="close-add-item">Cancel</button>
               <button id="save-item-btn" class="btn-primary">Save</button>
             </div>
           </div>

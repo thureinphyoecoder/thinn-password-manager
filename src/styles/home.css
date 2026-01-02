@@ -1,16 +1,21 @@
 /* =========================
-   HOME GRID
+   HOME VIEW
 ========================= */
+
 #vault-view {
   flex: 1;
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
+/* =========================
+   EMPTY STATE
+========================= */
+
 .vault-empty {
-  min-height: calc(100vh - 180px);
-  /* header + padding compensate */
+  min-height: 60vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,7 +23,11 @@
 
   text-align: center;
   gap: 8px;
-} 
+}
+
+/* =========================
+   VAULT GRID
+========================= */
 
 #vault-list {
   width: 100%;
@@ -28,6 +37,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
+
   padding: 20px clamp(12px, 4vw, 24px) 16px;
   align-items: stretch;
 }
@@ -38,7 +48,7 @@
 
 @media (max-width: 1100px) {
   #vault-list {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -46,4 +56,57 @@
   #vault-list {
     grid-template-columns: 1fr;
   }
+}
+
+
+#home-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  animation: home-in 0.35s ease-out both;
+}
+
+#home-screen>.app-header {
+  flex: 0 0 auto;
+}
+
+#home-screen .home-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+#home-screen .sidebar {
+  flex: 0 0 260px;
+  /* or your width */
+}
+
+#home-screen .main-container {
+  flex: 1;
+  min-width: 0;
+}
+
+@keyframes home-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+  transition: background-color 0.25s ease;
+}
+
+body[data-screen="auth"] {
+  background-color: #0e0f13;
+}
+
+body[data-screen="home"] {
+  background-color: var(--bg);
 }

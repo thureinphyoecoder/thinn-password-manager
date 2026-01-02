@@ -1,155 +1,117 @@
-/* =====================
-   CSS RESET
-===================== */
+/* ==================================================
+   RESET & FOUNDATIONS
+================================================== */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* 🔥 CRITICAL: respect hidden attribute */
 [hidden] {
   display: none !important;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Ubuntu, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Ubuntu, sans-serif;
 
   background: var(--bg);
-  color: var(--text);
+  color: var(--text-primary);
+
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* =====================
-   CORE DESIGN TOKENS
-===================== */
 :root {
-  /* Radius / Motion */
-  --radius: 16px;
+  /* Radius & Motion */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+
+  --transition-fast: 0.15s ease;
   --transition: 0.2s ease;
 
-  /* Brand */
-  --brand-primary: #047857;
-  --brand-soft: #d1fae5;
-  --brand-border: #6ee7b7;
+  /* Status */
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.15);
 
-  /* Danger */
-  --danger: #b91c1c;
+  /* =========================
+     DARK THEME TOKENS (LOCKED)
+  ========================= */
 
-  /* =====================
-     SYSTEM TOKENS (BASE)
-  ===================== */
-  --sys-bg: #f7f8fa;
-  --sys-surface: #ffffff;
-  --sys-surface-soft: #f1f3f6;
+  /* Text */
+  --text-primary: #e5e7eb;
+  --text-secondary: #cbd5f5;
+  --text-muted: #9ca3af;
+  --text-disabled: #6b7280;
 
-  --sys-text: #111827;
-  --sys-text-muted: #6b7280;
-
-  --sys-border: #e5e7eb;
-  --sys-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-  --sys-primary: #2563eb;
-
-  /* =====================
-     SEMANTIC TOKENS (USED BY UI)
-  ===================== */
-  --bg: var(--sys-bg);
-  --surface: var(--sys-surface);
-  --surface-soft: var(--sys-surface-soft);
-
-  --text: var(--sys-text);
-  --text-muted: var(--sys-text-muted);
-
-  --border: var(--sys-border);
-  --shadow: var(--sys-shadow);
-
-  --primary: var(--sys-primary);
-}
-
-/* =====================
-   SYSTEM THEME
-===================== */
-[data-theme="system"] {
-  --bg: var(--sys-bg);
-  --surface: var(--sys-surface);
-  --surface-soft: var(--sys-surface-soft);
-
-  --text: var(--sys-text);
-  --text-muted: var(--sys-text-muted);
-
-  --border: var(--sys-border);
-  --shadow: var(--sys-shadow);
-
-  --primary: var(--sys-primary);
-}
-
-/* =====================
-   LIGHT THEME
-===================== */
-[data-theme="light"] {
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --surface-soft: #f1f3f6;
-
-  --text: #111827;
-  --text-muted: #6b7280;
-
-  --border: #e5e7eb;
-  --shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-
-  --primary: #2563eb;
-}
-
-/* =====================
-   DARK THEME
-===================== */
-[data-theme="dark"] {
+  /* Backgrounds */
   --bg: #0e0f13;
   --surface: #15171d;
   --surface-soft: #1b1e25;
+  --surface-elevated: #1f232b;
 
-  --text: #e5e7eb;
-  --text-muted: #9ca3af;
-
+  /* Borders & Shadows */
   --border: #23262f;
+  --border-strong: #2c313c;
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.4);
   --shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
 
-  --primary: #60a5fa;
+  /* Accent */
+  --accent: #34d399;
+  --accent-soft: rgba(52, 211, 153, 0.15);
+  --accent-contrast: #06281a;
 }
 
-
-/* =====================
-   SYSTEM PREFERENCE
-===================== */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --sys-bg: #0e0f13;
-    --sys-surface: #15171d;
-    --sys-surface-soft: #1b1e25;
-
-    --sys-text: #e5e7eb;
-    --sys-text-muted: #9ca3af;
-
-    --sys-border: #23262f;
-    --sys-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-
-    --sys-primary: #60a5fa;
-  }
+button {
+  font-family: inherit;
+  color: inherit;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --sys-bg: #f7f8fa;
-    --sys-surface: #ffffff;
-    --sys-surface-soft: #f1f3f6;
-
-    --sys-text: #111827;
-    --sys-text-muted: #6b7280;
-
-    --sys-border: #e5e7eb;
-    --sys-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-
-    --sys-primary: #2563eb;
-  }
+input,
+textarea {
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
 }
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* ===============================
+   AUTH MODE — SHOW AUTH SCREENS
+================================*/
+
+/* body[data-screen="auth"] .app-header,
+body[data-screen="auth"] .sidebar,
+body[data-screen="auth"] #home-screen,
+body[data-screen="auth"] #settings-screen {
+  display: none !important;
+}
+
+body[data-screen="auth"] #create-screen,
+body[data-screen="auth"] #unlock-screen {
+  display: flex;
+} */
+
+/* ===============================
+   HOME MODE — SHOW APP ONLY
+================================ */
+/* body[data-screen="home"] .app-header,
+body[data-screen="home"] .sidebar,
+body[data-screen="home"] #home-screen {
+  display: flex;
+}
+
+body[data-screen="home"] #create-screen,
+body[data-screen="home"] #unlock-screen,
+body[data-screen="home"] #settings-screen {
+  display: none !important;
+} */
