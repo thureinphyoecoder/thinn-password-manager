@@ -1,27 +1,28 @@
 export function initSettingsTabs() {
-  const navItems = document.querySelectorAll(".settings-nav-item");
-  const panels = document.querySelectorAll("[data-settings-panel]");
+  const tabs = document.querySelectorAll(".settings-tab");
+  const panels = document.querySelectorAll(".settings-panel");
 
-  function activate(name) {
-    navItems.forEach((btn) =>
-      btn.classList.toggle("active", btn.dataset.settings === name)
-    );
+  function showPanel(name) {
+    panels.forEach((p) => {
+      p.hidden = p.dataset.settingsPanel !== name;
+    });
 
-    panels.forEach((panel) =>
-      panel.toggleAttribute("hidden", panel.dataset.settingsPanel !== name)
-    );
+    tabs.forEach((t) => {
+      t.classList.toggle("active", t.dataset.settings === name);
+    });
   }
 
-  navItems.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      activate(btn.dataset.settings);
-    });
+  tabs.forEach((tab) => {
+    tab.onclick = () => {
+      showPanel(tab.dataset.settings);
+    };
   });
 
-  activate("security");
+  // 🔥 THIS IS THE MISSING LINE (ABSOLUTE ROOT CAUSE)
+  showPanel("security");
 }
 
-function initAutoLockSettings() {
+export function initAutoLockSettings() {
   const radios = document.querySelectorAll('input[name="autoLock"]');
 
   radios.forEach((radio) => {

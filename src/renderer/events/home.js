@@ -1,5 +1,7 @@
 import { setHomeView, HomeViews } from "../state.js";
 import { initSettingsTabs } from "./settings.js";
+import { showScreen } from "../ui.js";
+
 /* =========================
    DOM REFERENCES (HOME)
 ========================= */
@@ -9,7 +11,6 @@ const emptyState = document.getElementById("vault-empty");
 const list = document.getElementById("vault-list");
 
 const settingsBtn = document.getElementById("settings-btn");
-const backBtn = document.getElementById("settings-back-btn");
 
 const autoLockRadios = document.querySelectorAll("input[name='autoLock']");
 
@@ -32,19 +33,32 @@ function bindAutoLockSettings() {
 }
 
 function handleOpenSettings() {
-  // ❗ Home screen မှာပဲ settings ဖွင့်
   setHomeView(HomeViews.SETTINGS);
+
+  const settingsScreen = document.getElementById("settings-screen");
+  const vaultView = document.getElementById("vault-view");
+
+  if (vaultView) vaultView.hidden = true; // 🔥 THIS
+  if (settingsScreen) settingsScreen.hidden = false;
 
   settingsBtn?.classList.add("active");
 
   requestAnimationFrame(() => {
     initSettingsTabs();
+    showPanel("security");
     bindAutoLockSettings();
   });
 }
 
 function handleBackToVault() {
   setHomeView(HomeViews.VAULT);
+
+  const settingsScreen = document.getElementById("settings-screen");
+  const vaultView = document.getElementById("vault-view");
+
+  if (settingsScreen) settingsScreen.hidden = true;
+  if (vaultView) vaultView.hidden = false; // 🔥 THIS
+
   settingsBtn?.classList.remove("active");
 }
 
@@ -288,14 +302,18 @@ export function bindHomeEvents() {
   addBtn?.addEventListener("click", handleAddItem);
 
   settingsBtn?.addEventListener("click", handleOpenSettings);
-  backBtn?.addEventListener("click", handleBackToVault);
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("#settings-back-btn");
+    if (!btn) return;
+    handleBackToVault();
+  });
 }
 
 export function initHomeScreen() {
   bindHomeEvents();
   bindAutoLockSettings();
   bindActivityTracking();
-  setHomeView(HomeViews.VAULT);
 }
 
 function bindActivityTracking() {
@@ -306,5 +324,21 @@ function bindActivityTracking() {
     vaultView.addEventListener(evt, () => {
       window.vault.activity();
     });
+  });
+}
+
+export function initAvatarMenu() {
+  const avatarBtn = document.querySelector(".avatar-btn");
+  const avatarMenu = document.querySelector(".avatar-menu");
+
+  if (!avatarBtn || !avatarMenu) return;
+
+  avatarBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    avatarMenu.hidden = !avatarMenu.hidden;
+  });
+
+  document.addEventListener("click", () => {
+    avatarMenu.hidden = true;
   });
 }
