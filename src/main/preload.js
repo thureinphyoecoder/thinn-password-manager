@@ -15,7 +15,8 @@ contextBridge.exposeInMainWorld("vault", {
   /* ---------- Vault Data ---------- */
   loadVault: () => ipcRenderer.invoke("vault:loadVault"),
   addItem: (input) => ipcRenderer.invoke("vault:addItem", input),
-  deleteItem: (id) => ipcRenderer.invoke("vault:delete", id),
+  deleteItem: (id) => ipcRenderer.invoke("vault:deleteItem", id),
+  updateItem: (id, patch) => ipcRenderer.invoke("vault:updateItem", id, patch),
   copyField: (id, key) => ipcRenderer.invoke("vault:copy", { id, key }),
 
   /* ---------- Events ---------- */

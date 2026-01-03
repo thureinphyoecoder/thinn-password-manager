@@ -60,6 +60,10 @@ function addItem(payload) {
   const vault = vaultStore.getVault();
   if (!vault) throw new Error("Vault not loaded");
 
+  if (!payload?.site) {
+    throw new Error("INVALID_PAYLOAD");
+  }
+
   vault.items.push({
     id: crypto.randomUUID(),
     ...payload,
@@ -68,7 +72,30 @@ function addItem(payload) {
   });
 
   persist();
-  vaultStore.setVault(vault);
+  // vaultStore.setVault(vault);
+  return vault;
+}
+
+/* =========================
+   UPDATE
+========================= */
+
+function updateItem(id, patch) {
+  const vault = vaultStore.getVault();
+  if (!vault) throw new Error("Vault not loaded");
+
+  if (!patch || typeof patch !== "object") {
+    throw new Error("INVALID_PATCH");
+  }
+
+  const item = vault.items.find((i) => i.id === id);
+  if (!item) throw new Error("Item not found");
+
+  Object.assign(item, patch, {
+    updatedAt: Date.now(),
+  });
+
+  persist();
   return vault;
 }
 
@@ -82,7 +109,7 @@ function deleteItem(id) {
   vault.items = vault.items.filter((i) => i.id !== id);
 
   persist();
-  vaultStore.setVault(vault);
+  // vaultStore.setVault(vault);
   return vault;
 }
 
@@ -90,5 +117,6 @@ module.exports = {
   saveVault,
   unlockVault,
   addItem,
+  updateItem,
   deleteItem,
 };

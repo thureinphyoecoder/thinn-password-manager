@@ -7,11 +7,15 @@ import { initAvatarMenu } from "./events/home.js";
 import { initCategoryEvents } from "./events/categories.js";
 import { renderCategories } from "./ui.js";
 
+import { bindAddItemEvents, bindItemActions } from "./events/item.js";
+
 window.addEventListener("DOMContentLoaded", async () => {
   console.log("[APP] DOMContentLoaded");
 
-  // 🔥 INIT UI EVENTS (ONCE)
+  // 🔒 INIT EVENTS (ONCE ONLY)
   initCategoryEvents();
+  bindAddItemEvents();
+  bindItemActions();
 
   let launch;
   try {
@@ -41,10 +45,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     setState(AppStates.LOCKED);
   });
 
-  window.vault.onUnlocked(() => {
+  window.vault.onUnlocked(async () => {
     setState(AppStates.UNLOCKED);
+
     initAvatarMenu();
-    renderCategories(); // UI redraw OK
+    renderCategories();
+
+    // 🔥 render vault ONLY (no binding)
+    const vault = await window.vault.loadVault();
+    renderHome(vault);
   });
 
   window.vault.onChanged(async () => {

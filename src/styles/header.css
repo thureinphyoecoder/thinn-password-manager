@@ -253,23 +253,18 @@
 .avatar-circle {
   width: 36px;
   height: 36px;
-
   border-radius: 50%;
 
-  background: var(--accent); /* 🔥 same as Unlock button */
-  color: var(--accent-contrast); /* white text */
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
 
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 35%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--accent), transparent 75%);
+  color: var(--accent);
 
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  border: 1px solid color-mix(in srgb, var(--accent), transparent 55%);
 }
 
 .avatar-btn:hover .avatar-circle {

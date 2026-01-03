@@ -6,12 +6,13 @@
 ========================================================= */
 
 /* ======================
-   ROOT FRAME
+   ROOT / RESET
 ====================== */
 
 html,
 body {
   height: 100%;
+  margin: 0;
 }
 
 .app-frame {
@@ -22,7 +23,7 @@ body {
 }
 
 /* ======================
-   HEADER (FIXED HEIGHT)
+   HEADER (FIXED)
 ====================== */
 
 .app-header {
@@ -44,7 +45,6 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-self: start;
   white-space: nowrap;
 }
 
@@ -52,7 +52,6 @@ body {
 .header-center {
   display: flex;
   justify-content: center;
-  justify-self: center;
   min-width: 0;
 }
 
@@ -66,7 +65,6 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-self: end;
 }
 
 /* ======================
@@ -76,18 +74,17 @@ body {
 .app-content {
   flex: 1;
   display: flex;
-  min-height: 0; /* 🔥 critical for scroll */
+  min-height: 0; /* 🔥 required for scroll */
   overflow: hidden;
 }
 
 /* ======================
-   MAIN LAYOUT (SIDEBAR + MAIN)
+   MAIN LAYOUT
 ====================== */
 
 .main-layout {
   flex: 1;
-  display: grid;
-  grid-template-columns: 260px 1fr;
+  display: flex;
   min-height: 0;
 }
 
@@ -96,12 +93,15 @@ body {
 ====================== */
 
 .sidebar {
-  border-right: 1px solid var(--border);
-  background: var(--surface-soft);
+  width: 260px;
+  flex-shrink: 0;
 
   display: flex;
   flex-direction: column;
   min-height: 0;
+
+  background: var(--surface-soft);
+  border-right: 1px solid var(--border);
 }
 
 .sidebar-content {
@@ -115,6 +115,7 @@ body {
 ====================== */
 
 .main-container {
+  flex: 1;
   min-width: 0;
   min-height: 0;
 
@@ -123,23 +124,65 @@ body {
   overflow: hidden;
 }
 
-.main-scroll {
+/* ======================
+   VAULT VIEW (SCROLL OWNER)
+====================== */
+
+#vault-view {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* 🔥 ONLY scroll here */
   padding: 24px;
 }
 
 /* ======================
-   EMPTY STATE (CENTERED)
+   VAULT GRID
 ====================== */
 
-.empty-state {
-  flex: 1;
+#vault-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ======================
+   VAULT CARD
+====================== */
+
+.vault-card {
+  height: 260px; /* 🔥 fixed height */
+  padding: 20px;
+
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+/* TEXT TRUNCATION */
+.vault-site,
+.vault-table .value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ======================
+   EMPTY STATE
+====================== */
+
+.vault-empty,
+.vault-empty-search {
+  min-height: 240px;
+
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+
   text-align: center;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 /* ======================
@@ -159,14 +202,41 @@ body {
 }
 
 /* ======================
+   SCROLLBAR — DARK & SUBTLE
+====================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+/* WebKit */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.32);
+}
+
+/* ======================
    RESPONSIVE — TABLET
 ====================== */
 
 @media (max-width: 900px) {
-  .main-layout {
-    grid-template-columns: 1fr;
-  }
-
   .sidebar {
     display: none;
   }
@@ -182,11 +252,7 @@ body {
     gap: 8px;
   }
 
-  .header-search {
-    width: 100%;
-  }
-
-  .main-scroll {
+  #vault-view {
     padding: 16px;
   }
 }

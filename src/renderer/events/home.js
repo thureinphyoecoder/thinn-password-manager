@@ -1,6 +1,8 @@
 import { setHomeView, HomeViews } from "../state.js";
 import { initSettingsTabs } from "./settings.js";
-import { showScreen } from "../ui.js";
+import { initCategoryEvents } from "./categories.js";
+
+import { copyIcon, checkIcon, eyeIcon, editIcon, trashIcon } from "../shared/icon.js";
 
 /* =========================
    DOM REFERENCES (HOME)
@@ -15,6 +17,9 @@ const settingsBtn = document.getElementById("settings-btn");
 const autoLockRadios = document.querySelectorAll("input[name='autoLock']");
 
 const AUTOLOCK_KEY = "thinn:autoLock";
+
+const searchInput = document.querySelector(".header-search");
+let lastVault = null;
 
 function bindAutoLockSettings() {
   const saved = Number(localStorage.getItem(AUTOLOCK_KEY) ?? 30000);
@@ -65,22 +70,72 @@ function handleBackToVault() {
 /* =========================
    RENDER
 ========================= */
+searchInput?.addEventListener("input", () => {
+  if (!lastVault) return;
+  renderFilteredItems(lastVault.items);
+});
+
 export function renderHome(vault) {
-  if (!vault || !vault.items || vault.items.length === 0) {
+  lastVault = vault;
+  // safety
+  const items = Array.isArray(vault?.items) ? vault.items : [];
+
+  if (items.length === 0) {
     emptyState.hidden = false;
     list.hidden = true;
     list.innerHTML = "";
     return;
   }
 
+  // show list
   emptyState.hidden = true;
   list.hidden = false;
-  list.innerHTML = vault.items.map(renderItemCard).join("");
+
+  // optional: newest first (UX nicer)
+  const sorted = [...items].sort((a, b) => b.updatedAt - a.updatedAt);
+
+  renderFilteredItems(items);
+}
+
+function renderFilteredItems(items) {
+  const q = searchInput?.value.trim().toLowerCase() || "";
+
+  const filtered = q
+    ? items.filter((item) =>
+        [item.site, item.username, item.url]
+          .filter(Boolean)
+          .some((v) => v.toLowerCase().includes(q))
+      )
+    : items;
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="vault-empty-search">No results</div>`;
+    return;
+  }
+
+  const sorted = [...filtered].sort((a, b) => b.updatedAt - a.updatedAt);
+
+  list.innerHTML = sorted.map(renderItemCard).join("");
 }
 
 /* =========================
    ITEM CARD
 ========================= */
+function renderRow(label, value, key) {
+  return `
+    <div class="vault-row">
+      <div class="row-label">${label}</div>
+      <div class="row-value">${value}</div>
+
+      <div class="row-actions">
+        <button class="icon-btn sm copy-btn"
+                data-copy="${key}">
+          ${copyIcon()}
+        </button>
+      </div>
+    </div>
+  `;
+}
 
 function renderItemCard(item) {
   const site = escapeHtml(item.site || "");
@@ -90,82 +145,119 @@ function renderItemCard(item) {
 
   return `
   <div class="vault-card" data-id="${item.id}">
-    <!-- HEADER -->
-    <div class="vault-card__top">
-      <div class="vault-left">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+    <div class="vault-card__header">
+      <div class="vault-header-left">
         <div class="vault-avatar">${avatar}</div>
         <div class="vault-site">${site}</div>
       </div>
 
-      <div class="vault-actions">
-        <button class="icon-btn sm" data-action="edit" title="Edit">
+      <div class="vault-header-actions">
+        <button class="icon-btn sm" data-action="edit">
           ${editIcon()}
         </button>
-        <button class="icon-btn sm danger" data-action="delete" title="Delete">
+        <button class="icon-btn sm danger" data-action="delete">
           ${trashIcon()}
         </button>
       </div>
     </div>
 
-    <!-- TABLE -->
-    <table class="vault-table">
-      <tbody>
-        ${
-          username
-            ? `
-          <tr class="vault-row">
-            <td class="label">Username</td>
-            <td class="value">${username}</td>
-            <td class="action">
-              <button class="copy-btn" data-copy="username">
-                ${copyIcon()}
-              </button>
-            </td>
-          </tr>`
-            : ""
-        }
+    <!-- =========================
+         BODY (ROWS)
+    ========================== -->
+    <div class="vault-card__body">
 
-        ${
-          url
-            ? `
-          <tr class="vault-row">
-            <td class="label">URL</td>
-            <td class="value">${url}</td>
-            <td class="action">
-              <button class="copy-btn" data-copy="url">
-                ${copyIcon()}
-              </button>
-            </td>
-          </tr>`
-            : ""
-        }
+      ${
+        username
+          ? `
+      <div class="vault-row username">
+        <div class="row-label">Username</div>
+        <div class="row-value">${username}</div>
+        <div class="row-actions">
+          <button class="icon-btn sm copy-btn"
+                  data-copy="username">
+            ${copyIcon()}
+          </button>
+        </div>
+      </div>
+      `
+          : ""
+      }
 
-        <tr class="vault-row">
-          <td class="label">Password</td>
-          <td class="value">••••••••••</td>
-          <td class="action">
-            <button class="copy-btn" data-copy="password">
-              ${copyIcon()}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      ${
+        url
+          ? `
+      <div class="vault-row url">
+        <div class="row-label">URL</div>
+        <div class="row-value">${url}</div>
+        <div class="row-actions">
+          <button class="icon-btn sm copy-btn"
+                  data-copy="url">
+            ${copyIcon()}
+          </button>
+        </div>
+      </div>
+      `
+          : ""
+      }
 
-    <!-- DATES -->
-    <div class="vault-dates">
+      <!-- PASSWORD ROW -->
+      <div class="vault-row password"
+           data-password="${escapeHtml(item.password)}">
+        <div class="row-label">Password</div>
+        <div class="row-value password-value">••••••••••</div>
+        <div class="row-actions">
+          <div class="eye-slot">
+            <button class="icon-btn sm eye-btn"
+                  data-action="toggle-password">
+            ${eyeIcon()}
+          </button>
+          </div>
+          <button class="icon-btn sm copy-btn"
+                  data-copy="password">
+            ${copyIcon()}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+    <div class="vault-card__footer">
       <span>Created · ${formatDate(item.createdAt)}</span>
       <span>Updated · ${formatDate(item.updatedAt)}</span>
     </div>
+
   </div>
 `;
+}
+
+function row(label, value, key) {
+  return `
+    <div class="vault-row">
+      <div class="label">${label}</div>
+      <div class="value">${value}</div>
+      <div class="actions">
+        <button class="icon-btn copy-btn" data-copy="${key}">
+          ${copyIcon()}
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 /* =========================
    HELPERS
 ========================= */
 
-function escapeHtml(str = "") {
+function escapeHtml(str) {
+  if (typeof str !== "string") return "";
+
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
@@ -173,85 +265,6 @@ function formatDate(ts) {
   if (!ts) return "—";
   return new Date(ts).toISOString().slice(0, 10);
 }
-
-function editIcon() {
-  return `
-    <svg viewBox="0 0 24 24" width="14" height="14">
-      <path d="M4 20h4l10-10-4-4L4 16v4z"
-            fill="currentColor"/>
-    </svg>
-  `;
-}
-
-function trashIcon() {
-  return `
-    <svg viewBox="0 0 24 24" width="14" height="14">
-      <path d="M6 7h12l-1 14H7L6 7z"
-            fill="currentColor"/>
-      <path d="M9 4h6l1 2H8l1-2z"
-            fill="currentColor"/>
-    </svg>
-  `;
-}
-
-function copyIcon() {
-  return `
-    <svg viewBox="0 0 24 24" width="14" height="14">
-      <path d="M8 8h12v12H8z"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"/>
-      <path d="M4 4h12v12"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"/>
-    </svg>
-  `;
-}
-
-/* =========================
-   Actions
-========================= */
-list.addEventListener("click", async (e) => {
-  const card = e.target.closest(".vault-card");
-  if (!card) return;
-
-  const id = card.dataset.id;
-  if (!id) return;
-
-  // DELETE
-  if (e.target.closest("[data-action='delete']")) {
-    const ok = confirm("Delete this item?");
-    if (!ok) return;
-
-    const updatedVault = await window.vault.deleteItem(id);
-
-    if (!updatedVault) {
-      alert("Delete failed");
-      return;
-    }
-
-    renderHome(updatedVault); // 🔥 auto refresh
-    toast("Item deleted");
-    return;
-  }
-
-  // EDIT
-  if (e.target.closest("[data-action='edit']")) {
-    openEditModal(id);
-    return;
-  }
-
-  // COPY (robust, SVG-safe)
-  const copyBtn = e.target.closest(".copy-btn");
-  if (copyBtn) {
-    const key = copyBtn.dataset.copy;
-    if (!key) return;
-
-    await window.vault.copyField(id, key);
-    toast("Copied to clipboard");
-  }
-});
 
 /* =========================
    HANDLERS
@@ -312,6 +325,7 @@ export function bindHomeEvents() {
 
 export function initHomeScreen() {
   bindHomeEvents();
+  initCategoryEvents();
   bindAutoLockSettings();
   bindActivityTracking();
 }

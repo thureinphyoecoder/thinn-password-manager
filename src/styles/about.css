@@ -1,51 +1,68 @@
 /* ==================================================
    ABOUT — PRODUCT PHILOSOPHY
+   Calm, readable, top-aligned
    Dark theme only
 ================================================== */
 
-/* About panel positioning */
+/* =========================
+   PANEL LAYOUT
+========================= */
+/* ONLY security gets big padding */
+.settings-panel[data-settings-panel="security"] {
+  padding: 48px 24px;
+}
+
 .settings-panel[data-settings-panel="about"] {
   display: flex;
-  justify-content: center;
-  padding: 48px 24px 64px;
+  justify-content: center; /* horizontal center */
+  align-items: flex-start; /* 🔥 top aligned */
+  padding-top: 16px;
+  overflow-y: auto;
 }
 
-/* Content wrapper */
+/* =========================
+   CONTENT WRAPPER
+========================= */
+
 .about-section {
-  max-width: 560px;
   width: 100%;
+  max-width: 560px;
+  margin-top: 16px; /* subtle breathing space */
 }
 
-/* --------------------------------------------------
+/* =========================
    TITLE
--------------------------------------------------- */
+========================= */
+
 .about-title {
   font-size: 22px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin: 0 0 14px;
   color: var(--text-primary);
 }
 
-/* --------------------------------------------------
-   INTRO
--------------------------------------------------- */
+/* =========================
+   INTRO / LEAD
+========================= */
+
 .about-intro {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .about-lead {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
-/* --------------------------------------------------
+/* =========================
    QUOTE / EMPHASIS
--------------------------------------------------- */
+========================= */
+
 .about-quote {
-  margin: 20px 0 22px;
+  margin: 18px 0 22px;
   padding-left: 14px;
   border-left: 2px solid var(--accent);
 }
@@ -53,7 +70,7 @@
 .quote-text {
   font-size: 16px;
   font-weight: 600;
-  color: #ff4d6d; /* 🔴 emphasis red */
+  color: #ff4d6d; /* intentional contrast */
 }
 
 .quote-sub {
@@ -63,9 +80,10 @@
   color: var(--text-muted);
 }
 
-/* --------------------------------------------------
+/* =========================
    BODY TEXT
--------------------------------------------------- */
+========================= */
+
 .about-body {
   font-size: 14px;
   line-height: 1.6;
@@ -77,24 +95,27 @@
   color: var(--text-muted);
 }
 
-/* --------------------------------------------------
+/* =========================
    PRINCIPLES
--------------------------------------------------- */
+========================= */
+
 .about-principles {
   margin-top: 18px;
   line-height: 1.6;
 }
 
 .about-principles span {
+  display: block;
   font-size: 14px;
   color: var(--text-muted);
 }
 
-/* --------------------------------------------------
-   FOOTER (VERSION + AUTHOR)
--------------------------------------------------- */
+/* =========================
+   FOOTER
+========================= */
+
 .about-footer {
-  margin-top: 24px; /* ⬆ moved upward */
+  margin-top: 28px;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
@@ -110,7 +131,16 @@
 }
 
 .about-author {
-  font-size: 13px; /* 👈 slightly bigger */
-  font-weight: 600; /* 👈 bold */
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-primary);
+}
+
+.settings-panel[data-settings-panel="about"] {
+  display: block; /* ❌ flex မသုံး */
+}
+
+.settings-panel[data-settings-panel="about"] .about-section {
+  margin-top: 0;
+  padding-top: 24px;
 }
