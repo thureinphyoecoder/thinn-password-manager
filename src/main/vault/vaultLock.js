@@ -1,4 +1,4 @@
-let autoLockMs = 30_000; // default 30s
+let autoLockMs = 60_000; // default 30s
 let timer = null;
 let unlocked = false;
 let onLock = null;

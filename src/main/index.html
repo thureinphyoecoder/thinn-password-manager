@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Thinn Password Manager</title>
-    <link rel="stylesheet" href="../styles/app.css" />
+    <link rel="stylesheet" href="../renderer/styles/app.css" />
   </head>
 
   <body data-screen="auth">
@@ -65,10 +65,10 @@
 
             <label class="ack">
               <input type="checkbox" id="ack-no-recovery" />
-              <span>I understand that this password cannot be recovered.</span>
+              <span>I understand. There is no password recovery.</span>
             </label>
 
-            <button id="create-btn" class="btn-primary" disabled>Create</button>
+            <button id="create-btn" class="btn-primary">Create</button>
             <p id="create-msg" class="error"></p>
           </div>
         </section>
@@ -158,7 +158,7 @@
               <!-- Avatar -->
               <div class="avatar-wrap">
                 <button class="avatar-btn">
-                  <span class="avatar-circle">TR</span>
+                  <span class="avatar-circle"></span>
                   <span class="avatar-caret">▾</span>
                 </button>
 
@@ -562,6 +562,35 @@
             <div class="add-item-footer">
               <button class="ghost-btn" data-action="close-add-item">Cancel</button>
               <button id="save-item-btn" class="btn-primary">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== CONFIRM MODAL ========== -->
+        <div id="confirm-modal" class="confirm-modal" hidden>
+          <div class="confirm-card">
+            <!-- ICON -->
+            <div id="confirm-icon" class="confirm-icon danger">
+              <!-- default = trash icon -->
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path
+                  d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+
+            <!-- TEXT -->
+            <h3 id="confirm-title">Delete</h3>
+            <p id="confirm-message"></p>
+
+            <!-- ACTIONS -->
+            <div class="confirm-actions">
+              <button id="confirm-cancel" class="btn ghost">Cancel</button>
+              <button id="confirm-ok" class="btn danger">Delete</button>
             </div>
           </div>
         </div>

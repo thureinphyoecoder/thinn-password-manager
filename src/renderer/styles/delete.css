@@ -1,0 +1,149 @@
+/* =================================================
+   CONFIRM MODAL
+================================================= */
+
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+/* =================================================
+   CARD
+================================================= */
+
+.confirm-card {
+  width: 320px;
+  padding: 22px;
+
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+
+  text-align: center;
+
+  animation: confirm-enter 0.18s ease-out both;
+}
+
+/* =================================================
+   HEADER
+================================================= */
+
+.confirm-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  margin-bottom: 6px;
+}
+
+.confirm-icon {
+  display: inline-flex;
+  color: var(--danger);
+}
+
+.confirm-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* =================================================
+   CONTENT
+================================================= */
+
+.confirm-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.confirm-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+/* =================================================
+   ACTIONS
+================================================= */
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Ghost / Cancel */
+.confirm-actions .btn.ghost {
+  background: transparent;
+  padding: 6px 10px;
+
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.confirm-actions .btn.ghost:hover {
+  opacity: 1;
+  color: var(--text);
+}
+
+/* Danger / Confirm */
+.confirm-actions .btn.danger {
+  padding: 6px 14px;
+  border-radius: 8px;
+
+  background: var(--danger);
+  color: #fff;
+}
+
+.confirm-actions .btn.danger:hover {
+  filter: brightness(1.05);
+}
+
+/* =================================================
+   SUCCESS STATE
+================================================= */
+
+.confirm-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  padding: 16px 0;
+  color: var(--accent);
+}
+
+.confirm-success strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.confirm-success svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* =================================================
+   ANIMATION
+================================================= */
+
+@keyframes confirm-enter {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

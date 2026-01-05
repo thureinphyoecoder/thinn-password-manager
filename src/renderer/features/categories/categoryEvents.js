@@ -1,6 +1,8 @@
-import { CategoryState } from "../shared/categoryState.js";
-import { renderCategories } from "../ui.js";
-import { persistCategories } from "../shared/categoryState.js";
+import { CategoryState } from "./categoryState.js";
+import { renderCategories } from "../../ui/index.js";
+import { persistCategories } from "./categoryState.js";
+
+import { openConfirm } from "../../shared/confirm.js";
 
 let openedCategoryId = null;
 
@@ -164,16 +166,25 @@ function handleMenuAction(type) {
 
   if (type === "delete") {
     closeMenu();
-    if (!confirm(`Delete "${cat.name}"?`)) return;
 
-    CategoryState.categories = CategoryState.categories.filter((c) => c.id !== id);
+    openConfirm({
+      title: "Delete category",
+      message: `Delete "${cat.name}"?`,
+      onConfirm: async ({ showSuccess }) => {
+        CategoryState.categories = CategoryState.categories.filter((c) => c.id !== id);
 
-    if (CategoryState.activeCategoryId === id) {
-      CategoryState.activeCategoryId = "all";
-    }
+        if (CategoryState.activeCategoryId === id) {
+          CategoryState.activeCategoryId = "all";
+        }
 
-    renderCategories();
-    persistCategories();
+        renderCategories();
+        persistCategories();
+
+        showSuccess("Deleted");
+      },
+    });
+
+    return;
   }
 }
 

@@ -1,4 +1,5 @@
-import { setState, AppStates } from "../state.js";
+import { setState, AppStates } from "../../state/state.js";
+import { shake } from "../../shared/shake.js";
 
 export function initUnlockScreen() {
   const unlockPw = document.getElementById("unlock-pw");
@@ -54,15 +55,12 @@ export function initUnlockScreen() {
       unlockMsg.textContent = "Wrong password";
       unlockMsg.classList.add("show");
 
-      unlockPw.classList.add("input-error", "shake");
+      unlockPw.classList.add("input-error");
+      shake(unlockPw); //  shared UI effect only
       unlockPw.focus();
 
       unlockBtn.classList.remove("loading");
       unlockBtn.disabled = false;
-
-      setTimeout(() => {
-        unlockPw.classList.remove("shake");
-      }, 350);
 
       return;
     }

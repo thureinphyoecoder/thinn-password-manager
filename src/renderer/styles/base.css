@@ -18,8 +18,7 @@ body {
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Ubuntu, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
 
   background: var(--bg);
   color: var(--text-primary);
@@ -67,6 +66,12 @@ body {
   --accent: #34d399;
   --accent-soft: rgba(52, 211, 153, 0.15);
   --accent-contrast: #06281a;
+
+  --danger: #dc2626;
+
+  /* ADD THESE */
+  --warning: #facc15; /* yellow-400 */
+  --success: #22c55e; /* green-500 */
 }
 
 button {

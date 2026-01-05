@@ -1,21 +1,25 @@
-import { setState, AppStates } from "./state.js";
-import { renderHome } from "./events/home.js";
-import "./events/modal.js";
+import { setState, AppStates } from "./state/state.js";
+import { renderHome } from "./ui/home.js";
+import "./ui/modal.js";
 import "./shared/eyeToggle.js";
-import { initAvatarMenu } from "./events/home.js";
+import "./shared/confirm.js";
 
-import { initCategoryEvents } from "./events/categories.js";
-import { renderCategories } from "./ui.js";
+import { initAvatarMenu } from "./ui/home.js";
 
-import { bindAddItemEvents, bindItemActions } from "./events/item.js";
+import { initCreateScreen } from "./features/auth/create.js";
+import { initUnlockScreen } from "./features/auth/unlock.js";
+
+import { initCategoryEvents } from "./features/categories/categoryEvents.js";
+import { renderCategories } from "./ui/index.js";
+
+import { bindAddItemEvents, bindItemActions } from "./features/items/itemEvents.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   console.log("[APP] DOMContentLoaded");
 
-  // 🔒 INIT EVENTS (ONCE ONLY)
+  //  INIT EVENTS (ONCE ONLY)
   initCategoryEvents();
   bindAddItemEvents();
-  bindItemActions();
 
   let launch;
   try {
@@ -30,15 +34,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   switch (state) {
     case "NO_ACCOUNT":
       setState(AppStates.NO_ACCOUNT);
+      initCreateScreen();
       break;
     case "LOCKED":
       setState(AppStates.LOCKED);
+      initUnlockScreen();
       break;
     case "UNLOCKED":
       setState(AppStates.UNLOCKED);
       break;
     default:
       setState(AppStates.NO_ACCOUNT);
+      initCreateScreen();
   }
 
   window.vault.onLocked(() => {

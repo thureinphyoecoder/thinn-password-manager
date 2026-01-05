@@ -1,11 +1,15 @@
-import { renderHome } from "./home.js";
-import { checkIcon } from "../shared/icon.js";
+import { renderHome } from "../../ui/home.js";
+import { openConfirm } from "../../shared/confirm.js";
+
+console.log("ITEM EVENTS CONFIRM =", openConfirm);
 
 /* =========================
    ADD / UPDATE
 ========================= */
+
 export function bindAddItemEvents() {
   const modal = document.getElementById("add-item-modal");
+
   if (!modal) return;
 
   const saveBtn = document.getElementById("save-item-btn");
@@ -58,7 +62,6 @@ export function bindAddItemEvents() {
 /* =========================
    ITEM ACTIONS
 ========================= */
-// ITEM ACTIONS
 export function bindItemActions() {
   const list = document.getElementById("vault-list");
   if (!list) return;
@@ -70,31 +73,47 @@ export function bindItemActions() {
     const id = card.dataset.id;
     if (!id) return;
 
+    // EDIT
+    if (e.target.closest("[data-action='edit']")) {
+      console.log("EDIT HIT", id);
+      openEditModal(id);
+      return;
+    }
+
+    // DELETE
+    if (e.target.closest("[data-action='delete']")) {
+      openConfirm({
+        title: "Delete item",
+        message: "Delete this item?",
+        onConfirm: async ({ showSuccess }) => {
+          await window.vault.deleteItem(id);
+
+          showSuccess("Deleted");
+        },
+      });
+      return;
+    }
+
+    // TOGGLE PASSWORD
+    if (e.target.closest("[data-action='toggle-password']")) {
+      const row = card.querySelector(".vault-row.password");
+      if (!row) return;
+
+      const val = row.querySelector(".password-value");
+      const pw = row.dataset.password;
+
+      const visible = val.textContent !== "••••••••••";
+      val.textContent = visible ? "••••••••••" : pw;
+      return;
+    }
+
     // COPY
     const copyBtn = e.target.closest(".copy-btn");
     if (copyBtn) {
       const key = copyBtn.dataset.copy;
-      if (!key) return;
-
-      const original = copyBtn.innerHTML;
-
-      await window.vault.copyField(id, key);
-
-      // show green check
-      copyBtn.innerHTML = checkIcon();
-      copyBtn.classList.add("success");
-      copyBtn.disabled = true;
-
-      setTimeout(() => {
-        copyBtn.innerHTML = original;
-        copyBtn.classList.remove("success");
-        copyBtn.disabled = false;
-      }, 1600);
-
-      toast("Copied");
+      const ok = await window.vault.copyField(id, key);
+      if (ok) toast("Copied");
     }
-
-    // DELETE / EDIT handlers…
   });
 }
 

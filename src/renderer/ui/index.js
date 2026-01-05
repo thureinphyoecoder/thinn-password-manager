@@ -1,4 +1,4 @@
-import { CategoryState } from "./shared/categoryState.js";
+import { CategoryState } from "../features/categories/categoryState.js";
 /* =========================
    SCREEN IDS (CANONICAL)
 ========================= */

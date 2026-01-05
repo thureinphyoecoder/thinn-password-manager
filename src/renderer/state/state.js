@@ -1,11 +1,8 @@
-import { initUnlockScreen } from "./events/unlock.js";
-import { initHomeScreen } from "./events/home.js";
-import {
-  showScreen,
-  closeAllOverlays,
-  setHeaderEnabled,
-  focusById,
-} from "./ui.js";
+import { initUnlockScreen } from "../features/auth/unlock.js";
+import { initHomeScreen } from "../ui/home.js";
+import { showScreen, closeAllOverlays, setHeaderEnabled, focusById } from "../ui/index.js";
+import { initCreateScreen } from "../features/auth/create.js";
+import { renderHome, initAvatarMenu } from "../ui/home.js";
 
 const Screens = Object.freeze({
   CREATE: "create",
@@ -82,7 +79,7 @@ function resetHomeUI() {
   document.body.dataset.view = "";
 }
 
-function syncUI(state) {
+async function syncUI(state) {
   closeAllOverlays();
 
   switch (state) {
@@ -103,14 +100,23 @@ function syncUI(state) {
       document.body.dataset.screen = "auth"; // 🔥 ADD THIS
       showScreen(Screens.CREATE);
       setHeaderEnabled(false);
+      initCreateScreen();
       break;
     }
 
     case AppStates.UNLOCKED: {
-      document.body.dataset.screen = "home"; // 🔥 ADD THIS
+      document.body.dataset.screen = "home";
       showScreen(Screens.HOME);
       setHeaderEnabled(true);
-      initHomeScreen();
+
+      // 🔥 1. render FIRST
+      const vault = await window.vault.loadVault();
+      renderHome(vault);
+
+      // 🔥 2. THEN bind
+      initHomeScreen(); // lock button, item actions
+      initAvatarMenu(); // username dropdown
+
       break;
     }
 

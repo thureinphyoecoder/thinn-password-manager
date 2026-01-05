@@ -1,7 +1,12 @@
-const { app, BrowserWindow, ipcMain, clipboard } = require("electron");
+const { app, BrowserWindow, ipcMain, clipboard, dialog } = require("electron");
+app.disableHardwareAcceleration();
+
+const fs = require("fs");
 const path = require("path");
 
-const vault = require("./vault/storage");
+const { encrypt, decrypt } = require("./vault/crypto");
+
+const vaultStorage = require("./vault/storage");
 const vaultLock = require("./vault/vaultLock");
 const vaultService = require("./vault/vaultService");
 const vaultStore = require("./vault/vaultStore");
@@ -30,7 +35,7 @@ function createWindow() {
 }
 
 ipcMain.handle("app:getLaunchState", () => {
-  return { state: vault.hasAccount() ? "LOCKED" : "NO_ACCOUNT" };
+  return { state: vaultStorage.hasAccount() ? "LOCKED" : "NO_ACCOUNT" };
 });
 
 ipcMain.on("SET_AUTO_LOCK", (_, ms) => {
@@ -47,8 +52,11 @@ ipcMain.handle("vault:load", (_, password) => {
     vaultLock.unlockVault();
     mainWindow.webContents.send("vault:unlocked");
     return { ok: true, data };
-  } catch {
-    return { ok: false };
+  } catch (err) {
+    return {
+      ok: false,
+      message: err?.message || "Invalid password",
+    };
   }
 });
 
@@ -86,7 +94,7 @@ ipcMain.handle("vault:copy", (_e, { id, key }) => {
   const item = vault.items.find((i) => i.id === id);
   if (!item) throw new Error("Item not found");
 
-  // 🔥 field တစ်ခုတည်း
+  //  field
   const value = item[key];
 
   if (typeof value !== "string" || value.length === 0) {
@@ -97,6 +105,43 @@ ipcMain.handle("vault:copy", (_e, { id, key }) => {
 
   clipboard.writeText(String(value));
   return true;
+});
+
+ipcMain.handle("vault:export", async (_, password) => {
+  const vault = vaultStore.getVault();
+  if (!vault) throw new Error("NO_VAULT");
+
+  const { filePath, canceled } = await dialog.showSaveDialog({
+    filters: [{ name: "Thinn Vault", extensions: ["thinn"] }],
+  });
+
+  if (canceled) return;
+
+  const encrypted = encrypt(password, vault); // already encrypted in memory
+  fs.writeFileSync(filePath, encrypted);
+
+  return true;
+});
+
+ipcMain.handle("vault:import", async (_, password) => {
+  const { filePaths, canceled } = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: "Thinn Vault", extensions: ["thinn"] }],
+  });
+
+  if (canceled) return;
+
+  const blob = fs.readFileSync(filePaths[0]);
+  const importedVault = decrypt(password, blob); // throws if wrong
+
+  // schema safety
+  importedVault.items ??= [];
+  importedVault.categories ??= { list: [], activeCategoryId: "all" };
+
+  vaultStore.setVault(importedVault);
+  vaultStorage.save(blob);
+
+  return importedVault;
 });
 
 app.whenReady().then(() => {

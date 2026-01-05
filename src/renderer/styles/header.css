@@ -8,6 +8,16 @@
   background: red !important;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  display: block;
+}
+
 /* ======================
    HEADER WRAPPER
 ====================== */

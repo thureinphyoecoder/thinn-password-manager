@@ -7,17 +7,21 @@ contextBridge.exposeInMainWorld("vault", {
   /* ---------- Vault Lifecycle ---------- */
   save: (password, data) => ipcRenderer.invoke("vault:save", password, data),
   load: (password) => ipcRenderer.invoke("vault:load", password),
+  loadVault: () => ipcRenderer.invoke("vault:loadVault"),
 
-  /* ---------- Auto Lock (ONLY ONE SYSTEM) ---------- */
+  /* ---------- Auto Lock ---------- */
   setAutoLock: (ms) => ipcRenderer.send("SET_AUTO_LOCK", ms),
   activity: () => ipcRenderer.send("vault:activity"),
 
   /* ---------- Vault Data ---------- */
-  loadVault: () => ipcRenderer.invoke("vault:loadVault"),
   addItem: (input) => ipcRenderer.invoke("vault:addItem", input),
-  deleteItem: (id) => ipcRenderer.invoke("vault:deleteItem", id),
   updateItem: (id, patch) => ipcRenderer.invoke("vault:updateItem", id, patch),
+  deleteItem: (id) => ipcRenderer.invoke("vault:deleteItem", id),
   copyField: (id, key) => ipcRenderer.invoke("vault:copy", { id, key }),
+
+  /* ---------- Import / Export ---------- */
+  exportVault: () => ipcRenderer.invoke("vault:export"),
+  importVault: (payload) => ipcRenderer.invoke("vault:import", payload),
 
   /* ---------- Events ---------- */
   onLocked: (cb) => ipcRenderer.on("vault:locked", cb),

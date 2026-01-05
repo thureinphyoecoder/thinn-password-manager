@@ -1,0 +1,278 @@
+body[data-screen="auth"] .app-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.auth-card {
+  width: 420px;
+  padding: 32px;
+
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-card h2 {
+  margin-bottom: 18px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text);
+}
+
+.auth-card input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text);
+
+  font-size: 14px;
+}
+
+.auth-card .password-field {
+  margin-top: 6px;
+}
+
+.auth-card input::placeholder {
+  color: var(--text-muted);
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+/* ======================
+   AUTH CARD ANIMATION
+====================== */
+
+.auth-card {
+  animation: auth-in 0.35s ease-out both;
+}
+
+@keyframes auth-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ======================
+   AUTH ERROR MESSAGE
+====================== */
+
+.auth-card .error {
+  margin-top: 10px;
+  font-size: 13px;
+  text-align: center;
+
+  color: var(--danger);
+  opacity: 0;
+  transform: translateY(-4px);
+
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.auth-card .error.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ======================
+   AUTH EXIT
+====================== */
+
+.auth-exit {
+  animation: auth-out 0.25s ease-in forwards;
+}
+
+@keyframes auth-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* ======================
+   AUTH ACK CHECKBOX
+====================== */
+
+.ack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* hide native */
+.ack input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 18px;
+  height: 18px;
+
+  border-radius: 6px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface-soft);
+
+  display: grid;
+  place-items: center;
+
+  transition: all 0.15s ease;
+}
+
+/* check icon */
+.ack input[type="checkbox"]::after {
+  content: "";
+  width: 6px;
+  height: 10px;
+
+  border-right: 2px solid var(--accent-contrast);
+  border-bottom: 2px solid var(--accent-contrast);
+
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.12s ease;
+}
+
+/* checked */
+.ack input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.ack input[type="checkbox"]:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+
+/* hover */
+.ack:hover input[type="checkbox"] {
+  border-color: var(--accent);
+}
+
+/* ======================
+   PASSWORD STRENGTH BAR
+====================== */
+
+.password-strength {
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.password-strength.show {
+  opacity: 1;
+}
+
+#password-strength-bar {
+  height: 100%;
+  opacity: 0;
+  border-radius: 999px;
+  transition: width 0.25s ease, background-color 0.25s ease, opacity 0.15s ease;
+}
+
+#password-strength-bar.weak {
+  width: 30%;
+  background: var(--danger);
+}
+
+#password-strength-bar.medium {
+  width: 65%;
+  background: var(--warning);
+}
+
+#password-strength-bar.strong {
+  width: 100%;
+  background: var(--success);
+}
+
+#password-strength-bar.weak,
+#password-strength-bar.medium,
+#password-strength-bar.strong {
+  opacity: 1;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shake 0.35s ease;
+}
+
+.input-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 25%, transparent);
+}
+
+/* ======================
+   AUTH SUCCESS ANIMATION
+====================== */
+/* ======================
+   CREATE SUCCESS
+====================== */
+
+.auth-card.success {
+  animation: success-pop 0.45s ease forwards;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+@keyframes success-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Optional: green pulse on button */
+.auth-card.success .btn-primary {
+  background: #22c55e;
+}

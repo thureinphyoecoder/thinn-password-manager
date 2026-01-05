@@ -1,8 +1,10 @@
-import { setHomeView, HomeViews } from "../state.js";
+import { setHomeView, HomeViews, setState, AppStates } from "../state/state.js";
 import { initSettingsTabs } from "./settings.js";
-import { initCategoryEvents } from "./categories.js";
+import { initCategoryEvents } from "../features/categories/categoryEvents.js";
+import { initAccountSettings } from "../features/account/account.js";
 
 import { copyIcon, checkIcon, eyeIcon, editIcon, trashIcon } from "../shared/icon.js";
+import { bindItemActions } from "../features/items/itemEvents.js";
 
 /* =========================
    DOM REFERENCES (HOME)
@@ -11,8 +13,6 @@ const lockBtn = document.getElementById("lock-btn");
 const addBtn = document.getElementById("add-item-btn");
 const emptyState = document.getElementById("vault-empty");
 const list = document.getElementById("vault-list");
-
-const settingsBtn = document.getElementById("settings-btn");
 
 const autoLockRadios = document.querySelectorAll("input[name='autoLock']");
 
@@ -42,15 +42,15 @@ function handleOpenSettings() {
 
   const settingsScreen = document.getElementById("settings-screen");
   const vaultView = document.getElementById("vault-view");
+  const settingsBtn = document.getElementById("settings-btn");
 
-  if (vaultView) vaultView.hidden = true; // 🔥 THIS
-  if (settingsScreen) settingsScreen.hidden = false;
-
+  vaultView && (vaultView.hidden = true);
+  settingsScreen && (settingsScreen.hidden = false);
   settingsBtn?.classList.add("active");
 
   requestAnimationFrame(() => {
-    initSettingsTabs();
-    showPanel("security");
+    initSettingsTabs(); // 🔥 MUST be here
+    initAccountSettings();
     bindAutoLockSettings();
   });
 }
@@ -60,11 +60,16 @@ function handleBackToVault() {
 
   const settingsScreen = document.getElementById("settings-screen");
   const vaultView = document.getElementById("vault-view");
+  const settingsBtn = document.getElementById("settings-btn");
 
-  if (settingsScreen) settingsScreen.hidden = true;
-  if (vaultView) vaultView.hidden = false; // 🔥 THIS
-
+  settingsScreen && (settingsScreen.hidden = true);
+  vaultView && (vaultView.hidden = false);
   settingsBtn?.classList.remove("active");
+
+  requestAnimationFrame(() => {
+    bindHomeEvents();
+    initAvatarMenu(); // 🔥 THIS FIXES AVATAR
+  });
 }
 
 /* =========================
@@ -77,7 +82,25 @@ searchInput?.addEventListener("input", () => {
 
 export function renderHome(vault) {
   lastVault = vault;
-  // safety
+
+  /* =========================
+     USER META (USERNAME)
+  ========================= */
+  const username = vault?.meta?.username || "";
+
+  const avatar = document.querySelector(".avatar-circle");
+  if (avatar) {
+    avatar.textContent = username ? username.slice(0, 2).toUpperCase() : "👤";
+  }
+
+  const settingsUsernameInput = document.querySelector('.account-row input[type="text"]');
+  if (settingsUsernameInput) {
+    settingsUsernameInput.value = username;
+  }
+
+  // =========================
+  // EXISTING LOGIC (DON'T TOUCH)
+  // =========================
   const items = Array.isArray(vault?.items) ? vault.items : [];
 
   if (items.length === 0) {
@@ -87,14 +110,11 @@ export function renderHome(vault) {
     return;
   }
 
-  // show list
   emptyState.hidden = true;
   list.hidden = false;
 
-  // optional: newest first (UX nicer)
-  const sorted = [...items].sort((a, b) => b.updatedAt - a.updatedAt);
-
   renderFilteredItems(items);
+  bindItemActions();
 }
 
 function renderFilteredItems(items) {
@@ -270,7 +290,7 @@ function formatDate(ts) {
    HANDLERS
 ========================= */
 function handleLock() {
-  window.vault.lock();
+  setState(AppStates.LOCKED);
 }
 
 function handleAddItem() {
@@ -311,9 +331,12 @@ function toast(msg) {
    BIND
 ========================= */
 export function bindHomeEvents() {
+  const lockBtn = document.getElementById("lock-btn");
+  const addBtn = document.getElementById("add-item-btn");
+  const settingsBtn = document.getElementById("settings-btn"); // 🔥 MUST
+
   lockBtn?.addEventListener("click", handleLock);
   addBtn?.addEventListener("click", handleAddItem);
-
   settingsBtn?.addEventListener("click", handleOpenSettings);
 
   document.addEventListener("click", (e) => {

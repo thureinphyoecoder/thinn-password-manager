@@ -22,17 +22,20 @@ export function copyIcon() {
   `;
 }
 
-export function checkIcon() {
+export function checkIcon({ size = 24 } = {}) {
   return `
-    <svg viewBox="0 0 24 24" width="14" height="14" class="icon-check">
-      <path
-        d="M5 13l4 4L19 7"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
+    <svg
+      viewBox="0 0 24 24"
+      width="${size}"
+      height="${size}"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon-check"
+    >
+      <path d="M20 6L9 17l-5-5" />
     </svg>
   `;
 }
