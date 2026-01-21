@@ -1,4 +1,4 @@
-import { shake } from "../../shared/shake.js";
+import { shake } from "../../shared/utils/shake.js";
 import { isValidUsername, normalizeUsername } from "../account/username.js";
 
 export function initCreateScreen() {

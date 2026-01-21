@@ -2,16 +2,22 @@ import { CategoryState } from "./categoryState.js";
 import { renderCategories } from "../../ui/index.js";
 import { persistCategories } from "./categoryState.js";
 
-import { openConfirm } from "../../shared/confirm.js";
+import { openConfirm } from "../../shared/utils/confirm.js";
 
 let openedCategoryId = null;
 
 let menu = null;
 
+let isInitialLized = false;
+
 /* ======================
    INIT
 ====================== */
 export function initCategoryEvents() {
+  if (isInitialLized) {
+    return;
+  }
+
   // context menu
   menu = document.getElementById("category-context-menu");
   if (!menu) {
@@ -21,7 +27,7 @@ export function initCategoryEvents() {
   // add category button
   document.getElementById("add-category-btn")?.addEventListener("click", handleAddCategory);
 
-  // 🔥 INLINE INPUT KEY HANDLER (ဒီနေရာ!)
+  //  INLINE INPUT KEY HANDLER (ဒီနေရာ!)
   const input = document.getElementById("category-input");
   if (input) {
     input.addEventListener("keydown", (e) => {
@@ -39,6 +45,8 @@ export function initCategoryEvents() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
+
+  isInitialLized = true;
 }
 
 /* ======================
@@ -76,11 +84,11 @@ function closeCategoryInput() {
 
 function handleAddCategory(e) {
   e.stopPropagation();
-  openCategoryInput(); // ဒါပဲလုပ်ရမယ်
+  openCategoryInput(); 
 }
 
 function handleGlobalClick(e) {
-  // 🔥 MENU ACTION FIRST (အရေးကြီးဆုံး)
+  //  MENU ACTION FIRST 
   const actionBtn = e.target.closest(".dropdown-item");
   if (actionBtn) {
     handleMenuAction(actionBtn.dataset.action);

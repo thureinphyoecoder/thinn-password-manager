@@ -18,11 +18,17 @@ export function initSettingsTabs() {
     };
   });
 
-  // 🔥 THIS IS THE MISSING LINE (ABSOLUTE ROOT CAUSE)
+  //  THIS IS THE MISSING LINE (ABSOLUTE ROOT CAUSE)
   showPanel("security");
 }
 
+let isAutoLockBound = false;
+
 export function initAutoLockSettings() {
+  if (isAutoLockBound) { 
+    return;
+  }
+
   const radios = document.querySelectorAll('input[name="autoLock"]');
 
   radios.forEach((radio) => {
@@ -31,8 +37,10 @@ export function initAutoLockSettings() {
 
       console.log("[AutoLock] set to", value);
 
-      // 🔥 value = 0 → never
+      //  value = 0 → never
       window.vault.setAutoLock(value);
     });
   });
+
+  isAutoLockBound = true;
 }

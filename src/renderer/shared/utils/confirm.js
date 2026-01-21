@@ -1,4 +1,4 @@
-import { trashIcon, checkIcon } from "./icon.js";
+import { trashIcon, checkIcon } from "../components/icon.js";
 
 export function openConfirm({ title, message, onConfirm }) {
   console.log("CONFIRM MODULE LOADED", import.meta.url);
@@ -34,14 +34,20 @@ export function openConfirm({ title, message, onConfirm }) {
   }
 
   function showSuccess(text = "Deleted") {
-    card.innerHTML = `
+    return new Promise((resolve) => {
+        card.innerHTML = `
     <div class="confirm-success">
       ${checkIcon({ size: 20 })}
       <strong>${text}</strong>
     </div>
   `;
-    setTimeout(close, 900); // ✅ single exit
-  }
+    setTimeout(() => {
+      close();
+      resolve();
+    }, 900);
+  
+    })
+  } 
 
   cancelBtn.onclick = close;
 
@@ -51,7 +57,7 @@ export function openConfirm({ title, message, onConfirm }) {
 
     await onConfirm({
       showSuccess: (msg) => {
-        showSuccess(msg); // ✅ call outer function
+        return showSuccess(msg); //  call outer function
       },
     });
   };

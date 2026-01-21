@@ -1,5 +1,5 @@
-import { setState, AppStates } from "../../state/state.js";
-import { shake } from "../../shared/shake.js";
+import { setState, AppStates } from "../../ui/state.js";
+import { shake } from "../../shared/utils/shake.js";
 
 export function initUnlockScreen() {
   const unlockPw = document.getElementById("unlock-pw");

@@ -1,5 +1,4 @@
 import { openConfirm } from "../../shared/confirm.js";
-import { toast } from "../../shared/toast.js";
 
 export function importVault() {
   openConfirm({

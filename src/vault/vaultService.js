@@ -200,6 +200,53 @@ function importVault(data) {
   return vault;
 }
 
+/* =========================
+   Update Username
+========================= */
+
+function updateUsername(newUsername) {
+  if (!currentPassword) throw new Error("Vault Locked");
+
+  const vault = vaultStore.getVault();
+  if (!vault) throw new Error("VAULT_NOT_LOADED");
+
+  vault.meta.username = newUsername.trim();
+  vault.meta.updatedAt = Date.now();
+
+  persist();
+  
+  return vault;
+}
+
+/* =========================
+   CHANGE MASTER PASSWORD
+========================= */
+function changeMasterPassword(oldPassword, newPassword) {
+  if (!oldPassword || !newPassword) throw new Error("INVALID_INPUT");
+  if (oldPassword === newPassword) throw new Error("PASSWORD_SAME");
+
+  const blob = storage.load();
+  if (!blob) throw new Error("NO_VAULT");
+
+  let vault;
+  try {
+    // 1. Old Password နဲ့ Decrypt လုပ်ကြည့်ပါ (မှန်မမှန် စစ်ဆေးရန်)
+    vault = decrypt(oldPassword, blob); 
+  } catch (e) {
+    // Decrypt မအောင်မြင်ပါက (Wrong Password)
+    throw new Error("INCORRECT_CURRENT_PASSWORD");
+  }
+
+  // 2. New Password နဲ့ Encrypt ပြန်လုပ်ပါ
+  const encrypted = encrypt(newPassword, vault);
+  storage.save(encrypted);
+
+  // 3. Current State ကို New Password ဖြင့် အပ်ဒိတ်လုပ်ပါ
+  currentPassword = newPassword; 
+  
+  return { success: true };
+}
+
 module.exports = {
   saveVault,
   unlockVault,
@@ -215,4 +262,8 @@ module.exports = {
 
   importVault,
   exportVault,
+
+  updateUsername,
+  changeMasterPassword,
+
 };

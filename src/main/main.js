@@ -4,12 +4,12 @@ app.disableHardwareAcceleration();
 const fs = require("fs");
 const path = require("path");
 
-const { encrypt, decrypt } = require("./vault/crypto");
+const { encrypt, decrypt } = require("../vault/crypto");
 
-const vaultStorage = require("./vault/storage");
-const vaultLock = require("./vault/vaultLock");
-const vaultService = require("./vault/vaultService");
-const vaultStore = require("./vault/vaultStore");
+const vaultStorage = require("../vault/storage");
+const vaultLock = require("../vault/vaultLock");
+const vaultService = require("../vault/vaultService");
+const vaultStore = require("../vault/vaultStore");
 
 let mainWindow;
 
@@ -18,8 +18,8 @@ function createWindow() {
     width: 1100,
     height: 720,
 
-    minWidth: 960, // 🔒 critical
-    minHeight: 640, // 🔒 critical
+    minWidth: 960, //  critical
+    minHeight: 640, //  critical
 
     resizable: true, // allow resize
     maximizable: true,
@@ -144,6 +144,29 @@ ipcMain.handle("vault:import", async (_, password) => {
   return importedVault;
 });
 
+ipcMain.handle("vault:updateUsername", (_e, newUsername) => {
+  try {
+    const updatedVault = vaultService.updateUsername(newUsername);
+
+    return { ok: true };
+  } catch (err) {
+    throw err;
+  }
+});
+
+//  MASTER PASSWORD CHANGE
+ipcMain.handle("vault:changeMasterPassword", (_e, { oldPassword, newPassword }) => {
+  try {
+    vaultService.changeMasterPassword(oldPassword, newPassword);
+    return { ok: true };
+  } catch (err) {
+    
+    return { 
+      ok: false, 
+      message: err?.message || "Password change failed" 
+    };
+  }
+});
 app.whenReady().then(() => {
   createWindow();
 

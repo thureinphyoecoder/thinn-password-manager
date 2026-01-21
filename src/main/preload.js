@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
+
 contextBridge.exposeInMainWorld("vault", {
   /* ---------- App ---------- */
   getLaunchState: () => ipcRenderer.invoke("app:getLaunchState"),
@@ -22,6 +23,10 @@ contextBridge.exposeInMainWorld("vault", {
   /* ---------- Import / Export ---------- */
   exportVault: () => ipcRenderer.invoke("vault:export"),
   importVault: (payload) => ipcRenderer.invoke("vault:import", payload),
+
+  updateUsername: (newUsername) => ipcRenderer.invoke("vault:updateUsername", newUsername),
+  changeMasterPassword: (oldPassword, newPassword) => 
+    ipcRenderer.invoke("vault:changeMasterPassword", { oldPassword, newPassword }),
 
   /* ---------- Events ---------- */
   onLocked: (cb) => ipcRenderer.on("vault:locked", cb),

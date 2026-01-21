@@ -1,4 +1,4 @@
-import { checkIcon } from "../shared/icon.js";
+import { checkIcon } from "../components/icon.js";
 
 let toastEl = null;
 let timer = null;

@@ -1,8 +1,8 @@
 import { initUnlockScreen } from "../features/auth/unlock.js";
-import { initHomeScreen } from "../ui/home.js";
-import { showScreen, closeAllOverlays, setHeaderEnabled, focusById } from "../ui/index.js";
+import { initHomeScreen } from "./views/home.js";
+import { showScreen, closeAllOverlays, setHeaderEnabled, focusById } from "./index.js";
 import { initCreateScreen } from "../features/auth/create.js";
-import { renderHome, initAvatarMenu } from "../ui/home.js";
+import { renderHome, initAvatarMenu } from "./views/home.js";
 
 const Screens = Object.freeze({
   CREATE: "create",
@@ -109,13 +109,12 @@ async function syncUI(state) {
       showScreen(Screens.HOME);
       setHeaderEnabled(true);
 
-      // 🔥 1. render FIRST
+      //  1. render FIRST
       const vault = await window.vault.loadVault();
       renderHome(vault);
 
-      // 🔥 2. THEN bind
+      //  2. THEN bind
       initHomeScreen(); // lock button, item actions
-      initAvatarMenu(); // username dropdown
 
       break;
     }

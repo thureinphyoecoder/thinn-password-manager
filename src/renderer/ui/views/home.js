@@ -1,10 +1,10 @@
-import { setHomeView, HomeViews, setState, AppStates } from "../state/state.js";
-import { initSettingsTabs } from "./settings.js";
-import { initCategoryEvents } from "../features/categories/categoryEvents.js";
-import { initAccountSettings } from "../features/account/account.js";
+import { setHomeView, HomeViews, setState, AppStates } from "../state.js";
+import { initSettingsTabs } from "../views/settings.js";
+import { initCategoryEvents } from "../../features/categories/categoryEvents.js";
+import { initAccountSettings } from "../../features/account/account.js";
 
-import { copyIcon, checkIcon, eyeIcon, editIcon, trashIcon } from "../shared/icon.js";
-import { bindItemActions } from "../features/items/itemEvents.js";
+import { copyIcon, checkIcon, eyeIcon, editIcon, trashIcon } from "../../shared/components/icon.js";
+import { bindItemActions } from "../../features/items/itemEvents.js";
 
 /* =========================
    DOM REFERENCES (HOME)
@@ -22,7 +22,7 @@ const searchInput = document.querySelector(".header-search");
 let lastVault = null;
 
 function bindAutoLockSettings() {
-  const saved = Number(localStorage.getItem(AUTOLOCK_KEY) ?? 30000);
+  const saved = Number(localStorage.getItem(AUTOLOCK_KEY) ?? 60000);
 
   autoLockRadios.forEach((r) => {
     if (Number(r.value) === saved) r.checked = true;
@@ -49,7 +49,7 @@ function handleOpenSettings() {
   settingsBtn?.classList.add("active");
 
   requestAnimationFrame(() => {
-    initSettingsTabs(); // 🔥 MUST be here
+    initSettingsTabs(); //  MUST be here
     initAccountSettings();
     bindAutoLockSettings();
   });
@@ -68,7 +68,6 @@ function handleBackToVault() {
 
   requestAnimationFrame(() => {
     bindHomeEvents();
-    initAvatarMenu(); // 🔥 THIS FIXES AVATAR
   });
 }
 
@@ -114,7 +113,6 @@ export function renderHome(vault) {
   list.hidden = false;
 
   renderFilteredItems(items);
-  bindItemActions();
 }
 
 function renderFilteredItems(items) {
@@ -333,7 +331,7 @@ function toast(msg) {
 export function bindHomeEvents() {
   const lockBtn = document.getElementById("lock-btn");
   const addBtn = document.getElementById("add-item-btn");
-  const settingsBtn = document.getElementById("settings-btn"); // 🔥 MUST
+  const settingsBtn = document.getElementById("settings-btn"); //  MUST
 
   lockBtn?.addEventListener("click", handleLock);
   addBtn?.addEventListener("click", handleAddItem);
@@ -351,6 +349,9 @@ export function initHomeScreen() {
   initCategoryEvents();
   bindAutoLockSettings();
   bindActivityTracking();
+  initAvatarMenu();
+  bindItemActions();
+
 }
 
 function bindActivityTracking() {

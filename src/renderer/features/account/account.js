@@ -1,49 +1,102 @@
-import { shake } from "../../shared/shake.js";
-import { isValidUsername, normalizeUsername } from "./username.js";
+import { toast } from "../../shared/components/toast.js"; 
+import { shake } from "../../shared/utils/shake.js"; 
+import { isValidUsername } from "./username.js"; 
+import { openChangeMasterPasswordModal } from "../../shared/utils/changeMasterPasswordModa.js";
 
+let isBound = false;
+
+/* =========================
+   INIT ACCOUNT SETTINGS EVENTS
+========================= */
 export function initAccountSettings() {
-  const input = document.querySelector(".account-row input");
-  const btn = document.querySelector(".account-row button");
-  const avatar = document.querySelector(".avatar-circle");
+  if (isBound) return;
 
-  if (!input || !btn) return;
+  const updateUsernameBtn = document.getElementById("update-username-btn");
+  const changeMasterPwBtn = document.getElementById("change-master-pw-btn"); 
+  const usernameInput = document.querySelector('.account-row input[type="text"]');
 
-  btn.addEventListener("click", async () => {
-    const raw = input.value.trim();
+  if (!usernameInput) return; 
 
-    // ---------- VALIDATION ----------
-    if (!raw) {
-      shake(input);
-      return;
+  // Username Update Button
+  if (updateUsernameBtn) {
+    updateUsernameBtn.addEventListener("click", () => {
+      handleUpdateUsername(usernameInput, updateUsernameBtn);
+    });
+  }
+
+  
+  usernameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleUpdateUsername(usernameInput, updateUsernameBtn);
     }
+  });
 
-    if (!isValidUsername(raw)) {
-      shake(input);
+  if (changeMasterPwBtn) {
+    changeMasterPwBtn.addEventListener("click", handleChangeMasterPassword);
+  }
+
+  isBound = true;
+}
+
+/* =========================
+   HANDLE USERNAME UPDATE
+========================= */
+async function handleUpdateUsername(inputEl, btnEl) {
+  const rawUsername = inputEl.value.trim();
+  
+  
+  const currentVault = await window.vault.loadVault(); 
+
+  // ---------- VALIDATION & SHAKE ----------
+  if (!rawUsername) {
+    shake(inputEl); 
+    toast("Username cannot be empty.", 'error');
+    return;
+  }
+  
+  if (!isValidUsername(rawUsername)) {
+    shake(inputEl); 
+    toast("Invalid username format. Use letters and numbers only.", 'error');
+    return;
+  }
+  
+  
+  if (currentVault?.meta?.username === rawUsername) {
+      toast("Username not changed.", 'info');
       return;
+  }
+
+  // ---------- UPDATE VAULT (via IPC) ----------
+  btnEl.disabled = true;
+  try {
+
+    await window.vault.updateUsername(rawUsername);
+    
+   
+    const avatar = document.querySelector(".avatar-circle");
+    if (avatar) {
+      avatar.textContent = rawUsername.slice(0, 2).toUpperCase();
     }
+    inputEl.value = rawUsername; 
 
-    const clean = normalizeUsername(raw);
+    toast("Username updated successfully!", 'success');
+  } catch (error) {
+    console.error("Failed to update username:", error);
+    shake(inputEl); 
+    toast("Update failed. Check app logs.", 'error');
+  } finally {
+    btnEl.disabled = false;
+  }
+}
 
-    if (!/^[a-zA-Z0-9]{1,20}$/.test(clean)) {
-      shake(input);
-      return;
-    }
-
-    // ---------- UPDATE VAULT ----------
-    try {
-      const vault = window.vault.getVault();
-      vault.meta.username = clean;
-      vault.meta.updatedAt = Date.now();
-
-      await window.vault.persist();
-
-      // ---------- UI UPDATE ----------
-      input.value = clean;
-      if (avatar) {
-        avatar.textContent = clean.slice(0, 2).toUpperCase();
-      }
-    } catch {
-      shake(input);
+function handleChangeMasterPassword() {
+  openChangeMasterPasswordModal({
+    onSuccess: () => {
+      toast("Master Password changed successfully!", 'success');
+    },
+    onError: (msg) => {
+     
+      toast(msg || "Password change failed.", 'error');
     }
   });
 }

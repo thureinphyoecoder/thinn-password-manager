@@ -1,10 +1,10 @@
-import { setState, AppStates } from "./state/state.js";
-import { renderHome } from "./ui/home.js";
+import { setState, AppStates } from "./ui/state.js";
+import { renderHome } from "./ui/views/home.js";
 import "./ui/modal.js";
-import "./shared/eyeToggle.js";
-import "./shared/confirm.js";
+import "./shared/utils/eyeToggle.js";
+import "./shared/utils/confirm.js";
 
-import { initAvatarMenu } from "./ui/home.js";
+import { initAvatarMenu } from "./ui/views/home.js";
 
 import { initCreateScreen } from "./features/auth/create.js";
 import { initUnlockScreen } from "./features/auth/unlock.js";
@@ -20,6 +20,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   //  INIT EVENTS (ONCE ONLY)
   initCategoryEvents();
   bindAddItemEvents();
+  initAvatarMenu();
 
   let launch;
   try {
@@ -55,7 +56,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   window.vault.onUnlocked(async () => {
     setState(AppStates.UNLOCKED);
 
-    initAvatarMenu();
     renderCategories();
 
     // 🔥 render vault ONLY (no binding)
