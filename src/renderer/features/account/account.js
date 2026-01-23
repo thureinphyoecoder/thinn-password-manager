@@ -1,7 +1,7 @@
-import { toast } from "../../shared/components/toast.js"; 
-import { shake } from "../../shared/utils/shake.js"; 
-import { isValidUsername } from "./username.js"; 
-import { openChangeMasterPasswordModal } from "../../shared/utils/changeMasterPasswordModa.js";
+import { toast } from "../../shared/components/toast.js";
+import { shake } from "../../shared/utils/shake.js";
+import { isValidUsername } from "./username.js";
+import { openChangeMasterPasswordModal } from "../../shared/utils/changeMasterPasswordModal.js";
 
 let isBound = false;
 
@@ -12,10 +12,10 @@ export function initAccountSettings() {
   if (isBound) return;
 
   const updateUsernameBtn = document.getElementById("update-username-btn");
-  const changeMasterPwBtn = document.getElementById("change-master-pw-btn"); 
+  const changeMasterPwBtn = document.getElementById("change-master-pw-btn");
   const usernameInput = document.querySelector('.account-row input[type="text"]');
 
-  if (!usernameInput) return; 
+  if (!usernameInput) return;
 
   // Username Update Button
   if (updateUsernameBtn) {
@@ -24,9 +24,8 @@ export function initAccountSettings() {
     });
   }
 
-  
-  usernameInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+  usernameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
       handleUpdateUsername(usernameInput, updateUsernameBtn);
     }
   });
@@ -43,47 +42,43 @@ export function initAccountSettings() {
 ========================= */
 async function handleUpdateUsername(inputEl, btnEl) {
   const rawUsername = inputEl.value.trim();
-  
-  
-  const currentVault = await window.vault.loadVault(); 
+
+  const currentVault = await window.vault.loadVault();
 
   // ---------- VALIDATION & SHAKE ----------
   if (!rawUsername) {
-    shake(inputEl); 
-    toast("Username cannot be empty.", 'error');
+    shake(inputEl);
+    toast("Username cannot be empty.", "error");
     return;
   }
-  
+
   if (!isValidUsername(rawUsername)) {
-    shake(inputEl); 
-    toast("Invalid username format. Use letters and numbers only.", 'error');
+    shake(inputEl);
+    toast("Invalid username format. Use letters and numbers only.", "error");
     return;
   }
-  
-  
+
   if (currentVault?.meta?.username === rawUsername) {
-      toast("Username not changed.", 'info');
-      return;
+    toast("Username not changed.", "info");
+    return;
   }
 
   // ---------- UPDATE VAULT (via IPC) ----------
   btnEl.disabled = true;
   try {
-
     await window.vault.updateUsername(rawUsername);
-    
-   
+
     const avatar = document.querySelector(".avatar-circle");
     if (avatar) {
       avatar.textContent = rawUsername.slice(0, 2).toUpperCase();
     }
-    inputEl.value = rawUsername; 
+    inputEl.value = rawUsername;
 
-    toast("Username updated successfully!", 'success');
+    toast("Username updated successfully!", "success");
   } catch (error) {
     console.error("Failed to update username:", error);
-    shake(inputEl); 
-    toast("Update failed. Check app logs.", 'error');
+    shake(inputEl);
+    toast("Update failed. Check app logs.", "error");
   } finally {
     btnEl.disabled = false;
   }
@@ -92,11 +87,10 @@ async function handleUpdateUsername(inputEl, btnEl) {
 function handleChangeMasterPassword() {
   openChangeMasterPasswordModal({
     onSuccess: () => {
-      toast("Master Password changed successfully!", 'success');
+      toast("Master Password changed successfully!", "success");
     },
     onError: (msg) => {
-     
-      toast(msg || "Password change failed.", 'error');
-    }
+      toast(msg || "Password change failed.", "error");
+    },
   });
 }

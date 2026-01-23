@@ -1,8 +1,7 @@
 import { initUnlockScreen } from "../features/auth/unlock.js";
-import { initHomeScreen } from "./views/home.js";
-import { showScreen, closeAllOverlays, setHeaderEnabled, focusById } from "./index.js";
+import { showScreen, closeAllOverlays, setHeaderEnabled } from "../ui/index.js";
 import { initCreateScreen } from "../features/auth/create.js";
-import { renderHome, initAvatarMenu } from "./views/home.js";
+import { renderHome, initHomeScreen } from "../ui/views/home.js";
 
 const Screens = Object.freeze({
   CREATE: "create",
@@ -71,14 +70,6 @@ export function getState() {
  * - ONLY map AppState → screen + basic UI
  */
 
-/* =========================================================
-   HOME SUB-VIEW STATE (LOCAL TO HOME)
-========================================================= */
-function resetHomeUI() {
-  setHomeView(HomeViews.NONE);
-  document.body.dataset.view = "";
-}
-
 async function syncUI(state) {
   closeAllOverlays();
 
@@ -122,6 +113,14 @@ async function syncUI(state) {
     default:
       break;
   }
+}
+
+/* =========================================================
+   HOME SUB-VIEW STATE (LOCAL TO HOME)
+========================================================= */
+function resetHomeUI() {
+  setHomeView(HomeViews.NONE);
+  document.body.dataset.view = "";
 }
 
 /**

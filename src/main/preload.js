@@ -1,12 +1,11 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-
 contextBridge.exposeInMainWorld("vault", {
   /* ---------- App ---------- */
   getLaunchState: () => ipcRenderer.invoke("app:getLaunchState"),
 
   /* ---------- Vault Lifecycle ---------- */
-  save: (password, data) => ipcRenderer.invoke("vault:save", password, data),
+  save: (password, data) => ipcRenderer.invoke("vault:save", { password, data }),
   load: (password) => ipcRenderer.invoke("vault:load", password),
   loadVault: () => ipcRenderer.invoke("vault:loadVault"),
 
@@ -20,12 +19,18 @@ contextBridge.exposeInMainWorld("vault", {
   deleteItem: (id) => ipcRenderer.invoke("vault:deleteItem", id),
   copyField: (id, key) => ipcRenderer.invoke("vault:copy", { id, key }),
 
-  /* ---------- Import / Export ---------- */
-  exportVault: () => ipcRenderer.invoke("vault:export"),
-  importVault: (payload) => ipcRenderer.invoke("vault:import", payload),
+  /* ---------- File Dialog ---------- */
+  pickImportFile: () => ipcRenderer.invoke("vault:pickImportFile"),
+  pickExportFile: () => ipcRenderer.invoke("vault:pickExportFile"),
+
+  /* ---------- Import / Export (Auth) ---------- */
+
+  exportVault: (payload) => ipcRenderer.invoke("vault:export", payload),
+
+  importVault: (filePath, password) => ipcRenderer.invoke("vault:import", { filePath, password }),
 
   updateUsername: (newUsername) => ipcRenderer.invoke("vault:updateUsername", newUsername),
-  changeMasterPassword: (oldPassword, newPassword) => 
+  changeMasterPassword: (oldPassword, newPassword) =>
     ipcRenderer.invoke("vault:changeMasterPassword", { oldPassword, newPassword }),
 
   /* ---------- Events ---------- */

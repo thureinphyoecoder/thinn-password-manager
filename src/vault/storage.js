@@ -12,13 +12,25 @@ function getVaultFile() {
   return vaultFilePath;
 }
 
-function save(blob) {
-  fs.writeFileSync(getVaultFile(), blob);
+function save(encryptedObject) {
+  const file = getVaultFile();
+  const tmp = file + ".tmp";
+
+  // 🔥 CRITICAL FIX
+  const payload = JSON.stringify(encryptedObject);
+
+  fs.writeFileSync(tmp, payload, "utf8");
+  fs.renameSync(tmp, file);
 }
 
 function load() {
-  if (!fs.existsSync(getVaultFile())) return null;
-  return fs.readFileSync(getVaultFile());
+  const file = getVaultFile();
+  if (!fs.existsSync(file)) return null;
+
+  const raw = fs.readFileSync(file, "utf8");
+
+  // 🔥 CRITICAL FIX
+  return JSON.parse(raw);
 }
 
 function hasAccount() {

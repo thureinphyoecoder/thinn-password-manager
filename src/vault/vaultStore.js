@@ -1,4 +1,7 @@
+const { migrateVault } = require("./vaultMigrations");
+
 const DEFAULT_VAULT = {
+  version: 1,
   meta: {
     username: "",
     createdAt: null,
@@ -15,21 +18,28 @@ const listeners = new Set();
    INTERNAL
 ========================= */
 function normalizeVault(input) {
+  // totally invalid
   if (!input || typeof input !== "object") {
     return structuredClone(DEFAULT_VAULT);
   }
 
+  const version = Number(input.version) || 1;
+
+  // 🔁 migrate older versions
+  const migrated = migrateVault(input, version);
+
   return {
+    version: 1,
     meta: {
-      username: input.meta?.username ?? "",
-      createdAt: input.meta?.createdAt ?? Date.now(),
-      updatedAt: input.meta?.updatedAt ?? Date.now(),
+      username: migrated.meta?.username ?? "",
+      createdAt: migrated.meta?.createdAt ?? Date.now(),
+      updatedAt: Date.now(),
     },
     categories:
-      Array.isArray(input.categories) && input.categories.length
-        ? input.categories
+      Array.isArray(migrated.categories) && migrated.categories.length
+        ? migrated.categories
         : structuredClone(DEFAULT_VAULT.categories),
-    items: Array.isArray(input.items) ? input.items : [],
+    items: Array.isArray(migrated.items) ? migrated.items : [],
   };
 }
 

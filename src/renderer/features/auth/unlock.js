@@ -1,4 +1,4 @@
-import { setState, AppStates } from "../../ui/state.js";
+import { setState, AppStates } from "../../state/state.js";
 import { shake } from "../../shared/utils/shake.js";
 
 export function initUnlockScreen() {

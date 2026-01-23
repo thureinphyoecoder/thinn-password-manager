@@ -1,3 +1,4 @@
+const fs = require("fs");
 const crypto = require("crypto");
 const vaultStore = require("./vaultStore");
 const storage = require("./storage");
@@ -5,265 +6,143 @@ const { encrypt, decrypt } = require("./crypto");
 
 let currentPassword = null;
 
-/* =========================
-   CREATE / SAVE (REGISTER)
-========================= */
-function saveVault(password, vaultData) {
-  // ---- SAFETY DEFAULTS ----
-  vaultData.items ??= [];
-  vaultData.categories ??= [{ id: "all", name: "All", system: true }];
+/* ========= HELPERS ========= */
 
-  const encrypted = encrypt(password, vaultData);
-  storage.save(encrypted);
-
-  currentPassword = password;
-  vaultStore.setVault(vaultData);
-}
-
-/* =========================
-   LOAD / UNLOCK
-========================= */
-function unlockVault(password) {
-  const blob = storage.load();
-  if (!blob) throw new Error("NO_VAULT");
-
-  const vault = decrypt(password, blob);
-  currentPassword = password;
-
-  // ===== MIGRATION SAFETY =====
-  vault.items ??= [];
-  vault.categories ??= [{ id: "all", name: "All", system: true }];
-
-  // items safety
-  for (const item of vault.items) {
-    item.id ??= crypto.randomUUID();
-    item.createdAt ??= Date.now();
-    item.updatedAt ??= Date.now();
-    item.categoryId ??= "all";
-  }
-
-  vaultStore.setVault(vault);
-  return vault;
-}
-
-/* =========================
-   INTERNAL PERSIST
-========================= */
 function persist() {
   if (!currentPassword) throw new Error("Vault locked");
 
   const vault = vaultStore.getVault();
-  const encrypted = encrypt(currentPassword, vault);
-  storage.save(encrypted);
+  const json = JSON.stringify(vault);
+  const encrypted = encrypt(json, currentPassword);
+
+  // 🔐 storage expects Buffer
+  storage.save(Buffer.from(JSON.stringify(encrypted), "utf8"));
+}
+
+/* ========= CORE ========= */
+
+function isUnlocked() {
+  return !!currentPassword;
+}
+
+function saveVault(password, vaultData) {
+  vaultData.items ??= [];
+  vaultData.categories ??= [{ id: "all", name: "All", system: true }];
+
+  currentPassword = password;
+  vaultStore.setVault(vaultData);
+  persist();
+}
+
+function unlockVault(password) {
+  const blob = storage.load();
+  if (!blob) throw new Error("NO_VAULT");
+
+  const encrypted = JSON.parse(blob.toString("utf8"));
+  const json = decrypt(encrypted, password);
+  if (!json) throw new Error("INVALID_PASSWORD");
+
+  const vault = JSON.parse(json);
+
+  currentPassword = password;
+  vault.items ??= [];
+  vault.categories ??= [{ id: "all", name: "All", system: true }];
 
   vaultStore.setVault(vault);
-}
-
-/* =========================
-   CATEGORY
-========================= */
-function addCategory(name) {
-  const vault = vaultStore.getVault();
-  if (!vault) throw new Error("Vault not loaded");
-
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("INVALID_CATEGORY");
-
-  const category = {
-    id: crypto.randomUUID(),
-    name: trimmed,
-  };
-
-  vault.categories.push(category);
-  persist();
-  return category;
-}
-
-function renameCategory(id, newName) {
-  const vault = vaultStore.getVault();
-  const cat = vault.categories.find((c) => c.id === id);
-  if (!cat || cat.system) throw new Error("INVALID_CATEGORY");
-
-  cat.name = newName.trim();
-  persist();
-}
-
-function deleteCategory(id) {
-  const vault = vaultStore.getVault();
-  if (id === "all") throw new Error("CANNOT_DELETE_ALL");
-
-  vault.items.forEach((item) => {
-    if (item.categoryId === id) {
-      item.categoryId = "all";
-    }
-  });
-
-  vault.categories = vault.categories.filter((c) => c.id !== id);
-  persist();
-}
-
-/* =========================
-   ITEM
-========================= */
-function addItem(payload) {
-  const vault = vaultStore.getVault();
-  if (!vault) throw new Error("Vault not loaded");
-
-  if (!payload?.site) {
-    throw new Error("INVALID_PAYLOAD");
-  }
-
-  vault.items.push({
-    id: crypto.randomUUID(),
-    ...payload,
-    categoryId: payload.categoryId || "all",
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  });
-
-  persist();
   return vault;
 }
 
-function updateItem(id, patch) {
-  const vault = vaultStore.getVault();
-  if (!vault) throw new Error("Vault not loaded");
-
-  const item = vault.items.find((i) => i.id === id);
-  if (!item) throw new Error("Item not found");
-
-  Object.assign(item, patch, {
-    updatedAt: Date.now(),
-  });
-
-  persist();
-  return vault;
-}
-
-function deleteItem(id) {
-  const vault = vaultStore.getVault();
-  if (!vault) throw new Error("Vault not loaded");
-
-  vault.items = vault.items.filter((i) => i.id !== id);
-  persist();
-  return vault;
-}
-
-/* =========================
-   LOCK
-========================= */
 function lockVault() {
   currentPassword = null;
   vaultStore.setVault(null);
 }
 
-/* =========================
-   EXPORT
-========================= */
-function exportVault() {
+/* ========= ITEMS ========= */
+
+function addItem(input) {
+  if (!currentPassword) throw new Error("Vault locked");
+
   const vault = vaultStore.getVault();
   if (!vault) throw new Error("Vault not loaded");
 
-  // ❗ password မပါ (plain JSON)
-  return {
-    meta: vault.meta,
-    items: vault.items,
-    categories: vault.categories ?? [],
-    exportedAt: Date.now(),
-    version: 1,
+  const item = {
+    id: crypto.randomUUID(),
+    site: input.site ?? "",
+    username: input.username ?? "",
+    password: input.password ?? "",
+    url: input.url ?? "",
+    notes: input.notes ?? "",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
+
+  vault.items.push(item);
+  persist();
+
+  return item;
 }
 
-/* =========================
-   IMPORT
-========================= */
-
-function importVault(data) {
+function updateItem(id, patch) {
   if (!currentPassword) throw new Error("Vault locked");
 
-  if (!data || !Array.isArray(data.items)) {
-    throw new Error("INVALID_IMPORT");
-  }
+  const vault = vaultStore.getVault();
+  const item = vault.items.find((i) => i.id === id);
+  if (!item) throw new Error("Item not found");
 
-  const vault = {
-    meta: {
-      ...data.meta,
-      importedAt: Date.now(),
-    },
-    items: data.items,
-    categories: data.categories ?? [],
-  };
-
-  vaultStore.setVault(vault);
+  Object.assign(item, patch, { updatedAt: Date.now() });
   persist();
 
-  return vault;
+  return item;
 }
 
-/* =========================
-   Update Username
-========================= */
-
-function updateUsername(newUsername) {
-  if (!currentPassword) throw new Error("Vault Locked");
+function deleteItem(id) {
+  if (!currentPassword) throw new Error("Vault locked");
 
   const vault = vaultStore.getVault();
-  if (!vault) throw new Error("VAULT_NOT_LOADED");
+  const before = vault.items.length;
 
-  vault.meta.username = newUsername.trim();
-  vault.meta.updatedAt = Date.now();
-
-  persist();
-  
-  return vault;
-}
-
-/* =========================
-   CHANGE MASTER PASSWORD
-========================= */
-function changeMasterPassword(oldPassword, newPassword) {
-  if (!oldPassword || !newPassword) throw new Error("INVALID_INPUT");
-  if (oldPassword === newPassword) throw new Error("PASSWORD_SAME");
-
-  const blob = storage.load();
-  if (!blob) throw new Error("NO_VAULT");
-
-  let vault;
-  try {
-    // 1. Old Password နဲ့ Decrypt လုပ်ကြည့်ပါ (မှန်မမှန် စစ်ဆေးရန်)
-    vault = decrypt(oldPassword, blob); 
-  } catch (e) {
-    // Decrypt မအောင်မြင်ပါက (Wrong Password)
-    throw new Error("INCORRECT_CURRENT_PASSWORD");
+  vault.items = vault.items.filter((i) => i.id !== id);
+  if (vault.items.length === before) {
+    throw new Error("Item not found");
   }
 
-  // 2. New Password နဲ့ Encrypt ပြန်လုပ်ပါ
-  const encrypted = encrypt(newPassword, vault);
-  storage.save(encrypted);
-
-  // 3. Current State ကို New Password ဖြင့် အပ်ဒိတ်လုပ်ပါ
-  currentPassword = newPassword; 
-  
-  return { success: true };
+  persist();
+  return { ok: true };
 }
+
+/* ========= EXPORT / IMPORT ========= */
+
+function exportVaultToFile(filePath, exportPassword) {
+  if (!currentPassword) throw new Error("Vault locked");
+
+  const vault = vaultStore.getVault();
+  const encrypted = encrypt(JSON.stringify(vault), exportPassword);
+
+  fs.writeFileSync(filePath, JSON.stringify(encrypted, null, 2));
+}
+
+function importVaultFromFile(filePath, importPassword) {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const encrypted = JSON.parse(raw);
+
+  const json = decrypt(encrypted, importPassword);
+  if (!json) throw new Error("INVALID_PASSWORD");
+
+  const vault = JSON.parse(json);
+  vaultStore.setVault(vault);
+  currentPassword = null; // force re-unlock
+}
+
+/* ========= EXPORTS ========= */
 
 module.exports = {
   saveVault,
   unlockVault,
   lockVault,
-
-  addCategory,
-  renameCategory,
-  deleteCategory,
-
+  isUnlocked,
   addItem,
   updateItem,
   deleteItem,
-
-  importVault,
-  exportVault,
-
-  updateUsername,
-  changeMasterPassword,
-
+  exportVaultToFile,
+  importVaultFromFile,
 };

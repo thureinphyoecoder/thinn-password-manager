@@ -1,4 +1,4 @@
-import { setHomeView, HomeViews, setState, AppStates } from "../state.js";
+import { setHomeView, HomeViews, setState, AppStates } from "../../state/state.js";
 import { initSettingsTabs } from "../views/settings.js";
 import { initCategoryEvents } from "../../features/categories/categoryEvents.js";
 import { initAccountSettings } from "../../features/account/account.js";
@@ -303,11 +303,6 @@ function handleAddItem() {
   });
 }
 
-function openEditModal(id) {
-  // next step: load item data & open modal
-  console.log("Edit item:", id);
-}
-
 function toast(msg) {
   const el = document.createElement("div");
   el.textContent = msg;
@@ -329,9 +324,13 @@ function toast(msg) {
    BIND
 ========================= */
 export function bindHomeEvents() {
+  const root = document.body;
+  if (root.dataset.homeBound) return;
+  root.dataset.homeBound = "true";
+
   const lockBtn = document.getElementById("lock-btn");
   const addBtn = document.getElementById("add-item-btn");
-  const settingsBtn = document.getElementById("settings-btn"); //  MUST
+  const settingsBtn = document.getElementById("settings-btn"); // ✅ FIX
 
   lockBtn?.addEventListener("click", handleLock);
   addBtn?.addEventListener("click", handleAddItem);
@@ -351,7 +350,6 @@ export function initHomeScreen() {
   bindActivityTracking();
   initAvatarMenu();
   bindItemActions();
-
 }
 
 function bindActivityTracking() {
@@ -370,6 +368,9 @@ export function initAvatarMenu() {
   const avatarMenu = document.querySelector(".avatar-menu");
 
   if (!avatarBtn || !avatarMenu) return;
+  if (avatarBtn.dataset.bound) return;
+
+  avatarBtn.dataset.bound = "true";
 
   avatarBtn.addEventListener("click", (e) => {
     e.stopPropagation();

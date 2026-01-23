@@ -1,20 +1,18 @@
-import { openConfirm } from "../../shared/confirm.js";
+import { openPasswordPrompt } from "../../shared/components/passwordPromptModal.js";
+import { toast } from "../../shared/components/toast.js";
 
-export function importVault() {
-  openConfirm({
-    title: "Import vault",
-    message: "This will overwrite your current vault.",
-    onConfirm: async ({ showSuccess }) => {
-      const password = prompt("Enter vault password");
-      if (!password) return;
+export async function importVaultUI() {
+  // 1️⃣ pick file first
+  const filePath = await window.vault.pickImportFile();
+  if (!filePath) return;
 
-      await window.vault.importVault(password);
-
-      showSuccess("Imported");
-
-      setTimeout(() => {
-        location.reload();
-      }, 950);
+  // 2️⃣ ask password
+  openPasswordPrompt({
+    title: "Import Vault",
+    description: "Enter the password used when this file was exported.",
+    onConfirm: async (password) => {
+      await window.vault.importVault(filePath, password);
+      toast("Vault imported");
     },
   });
 }
