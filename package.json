@@ -7,12 +7,36 @@
     "start": "electron . --no-sandbox",
     "lint": "node scripts/ci-smoke.mjs --syntax-only",
     "test": "node scripts/ci-smoke.mjs",
-    "ci:check": "node scripts/ci-smoke.mjs"
+    "ci:check": "node scripts/ci-smoke.mjs",
+    "dist:linux": "npx electron-builder --linux deb --publish never",
+    "dist:win": "npx electron-builder --win nsis --publish never"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
+  "build": {
+    "appId": "com.thinn.passwordmanager",
+    "productName": "Thinn Password Manager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "category": "Utility"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    }
+  },
   "devDependencies": {
     "electron": "^39.2.7",
     "electronmon": "^2.0.4"

@@ -86,9 +86,11 @@ GitHub Actions workflows are included:
 
 - `CD Release` (`.github/workflows/cd-release.yml`)
   - Runs on version tags like `v1.0.0` (and manual dispatch)
-  - Runs CI checks
-  - Creates source bundles (`.tar.gz` and `.zip`)
-  - Publishes them to GitHub Release assets
+  - Runs CI checks on Linux and Windows jobs
+  - Builds desktop artifacts:
+    - `.deb` on Linux
+    - `.exe` (NSIS) on Windows
+  - Publishes build outputs to GitHub Release assets
 
 Release trigger example:
 

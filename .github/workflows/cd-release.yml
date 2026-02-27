@@ -10,8 +10,22 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux
+            run: npm run dist:linux
+            artifact_name: linux-deb
+            artifact_path: dist/*.deb
+          - os: windows-latest
+            target: windows
+            run: npm run dist:win
+            artifact_name: windows-exe
+            artifact_path: dist/*.exe
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
@@ -29,17 +43,29 @@ jobs:
       - name: CI checks
         run: npm run ci:check
 
-      - name: Prepare source bundles
-        run: |
-          mkdir -p dist
-          PROJECT_NAME="thinn-password-manager"
-          VERSION="${GITHUB_REF_NAME:-snapshot}"
-          tar --exclude=".git" --exclude="node_modules" -czf "dist/${PROJECT_NAME}-${VERSION}.tar.gz" .
-          zip -r "dist/${PROJECT_NAME}-${VERSION}.zip" . -x ".git/*" "node_modules/*"
+      - name: Build desktop artifact
+        run: ${{ matrix.run }}
 
-      - name: Upload release assets
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Publish GitHub release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/*.tar.gz
-            dist/*.zip
+            dist/**/*.deb
+            dist/**/*.exe
