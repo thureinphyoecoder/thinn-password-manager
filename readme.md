@@ -21,30 +21,21 @@ Thinn Password Manager is a local-only desktop password manager built with Elect
 
 ## Screenshots
 
-Place screenshots in `docs/screenshots/` using these file names:
-
-- `create-account.png`
-- `unlock-vault.png`
-- `settings-security.png`
-- `vault-list.png`
-
-Then README will render them here:
-
 ### Create Account
 
-![Create Account](./docs/screenshots/create-account.png)
+![Create Account](./docs/screenshots/p1.png)
 
 ### Unlock Vault
 
-![Unlock Vault](./docs/screenshots/unlock-vault.png)
+![Unlock Vault](./docs/screenshots/p2.png)
 
 ### Settings (Security)
 
-![Settings Security](./docs/screenshots/settings-security.png)
+![Settings Security](./docs/screenshots/p3.png)
 
 ### Vault List
 
-![Vault List](./docs/screenshots/vault-list.png)
+![Vault List](./docs/screenshots/Screenshot_2026-02-27_20-17-16.png)
 
 ## Security Notes
 
