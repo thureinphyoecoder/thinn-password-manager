@@ -22,7 +22,8 @@
     "appId": "com.thinn.passwordmanager",
     "productName": "Thinn Password Manager",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "build"
     },
     "files": [
       "src/**/*",
@@ -32,12 +33,18 @@
       "target": [
         "deb"
       ],
-      "category": "Utility"
+      "category": "Utility",
+      "icon": "build/icon.png"
     },
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "installerIcon": "build/icon.png",
+      "uninstallerIcon": "build/icon.png"
     }
   },
   "devDependencies": {
