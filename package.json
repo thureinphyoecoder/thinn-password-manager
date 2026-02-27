@@ -49,5 +49,8 @@
   "devDependencies": {
     "electron": "^39.2.7",
     "electronmon": "^2.0.4"
+  },
+  "dependencies": {
+    "argon2": "^0.44.0"
   }
 }

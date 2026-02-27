@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld("vault", {
   updateItem: (id, patch) => ipcRenderer.invoke("vault:updateItem", id, patch),
   deleteItem: (id) => ipcRenderer.invoke("vault:deleteItem", id),
   copyField: (id, key) => ipcRenderer.invoke("vault:copy", { id, key }),
+  getField: (id, key) => ipcRenderer.invoke("vault:getField", { id, key }),
 
   /* ---------- File Dialog ---------- */
   pickImportFile: () => ipcRenderer.invoke("vault:pickImportFile"),

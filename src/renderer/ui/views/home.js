@@ -191,8 +191,7 @@ function renderItemCard(item) {
       }
 
       <!-- PASSWORD ROW -->
-      <div class="vault-row password"
-           data-password="${escapeHtml(item.password)}">
+      <div class="vault-row password">
         <div class="row-label">Password</div>
         <div class="row-value password-value">••••••••••</div>
         <div class="row-actions">

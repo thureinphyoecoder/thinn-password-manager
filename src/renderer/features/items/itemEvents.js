@@ -51,7 +51,7 @@ export function bindItemActions() {
 
     // TOGGLE PASSWORD
     if (e.target.closest("[data-action='toggle-password']")) {
-      handleTogglePassword(card); // Action Logic
+      await handleTogglePassword(card); // Action Logic
     }
 
     // COPY

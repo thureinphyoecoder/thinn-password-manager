@@ -8,10 +8,12 @@ const {
   decryptWithPassword,
   encryptWithKey,
   decryptWithKey,
+  getKdfConfigFromPayload,
 } = require("./crypto");
 
 let sessionKey = null;
 let vaultSalt = null;
+let vaultKdf = null;
 const USERNAME_REGEX = /^[a-zA-Z0-9_-]{1,20}$/;
 const REQUIRED_ENCRYPTED_FIELDS = ["salt", "iv", "tag", "content"];
 
@@ -29,7 +31,8 @@ function persist() {
   const encrypted = encryptWithKey(
     JSON.stringify(vault),
     sessionKey,
-    Buffer.from(vaultSalt, "hex") // reuse SAME salt
+    Buffer.from(vaultSalt, "hex"), // reuse SAME salt
+    vaultKdf
   );
 
   storage.save(encrypted);
@@ -50,7 +53,8 @@ async function saveVault(password, vaultData) {
   const encrypted = await encryptWithPassword(JSON.stringify(vaultData), password);
 
   vaultSalt = encrypted.salt;
-  sessionKey = await deriveKey(password, Buffer.from(vaultSalt, "hex"));
+  vaultKdf = getKdfConfigFromPayload(encrypted);
+  sessionKey = await deriveKey(password, Buffer.from(vaultSalt, "hex"), vaultKdf);
 
   storage.save(encrypted);
   vaultStore.setVault(vaultData);
@@ -60,7 +64,8 @@ async function unlockVault(password) {
   const encrypted = storage.load();
   if (!encrypted || typeof encrypted !== "object") throw new Error("NO_VAULT");
 
-  const key = await deriveKey(password, Buffer.from(encrypted.salt, "hex"));
+  const kdf = getKdfConfigFromPayload(encrypted);
+  const key = await deriveKey(password, Buffer.from(encrypted.salt, "hex"), kdf);
   const json = decryptWithKey(encrypted, key);
   if (!json) throw new Error("INVALID_PASSWORD");
 
@@ -68,6 +73,7 @@ async function unlockVault(password) {
 
   sessionKey = key;
   vaultSalt = encrypted.salt;
+  vaultKdf = kdf;
 
   vaultStore.setVault(vault);
   return vault;
@@ -79,6 +85,8 @@ function lockVault() {
     sessionKey.fill(0);
     sessionKey = null;
   }
+  vaultKdf = null;
+  vaultSalt = null;
   vaultStore.setVault(null);
 }
 
@@ -181,11 +189,14 @@ async function changeMasterPassword(oldPassword, newPassword) {
     return { ok: false, message: "Vault data not found" };
   }
 
-  const oldKey = await deriveKey(oldPassword, Buffer.from(encrypted.salt, "hex"));
+  const oldKdf = getKdfConfigFromPayload(encrypted);
+  const oldKey = await deriveKey(oldPassword, Buffer.from(encrypted.salt, "hex"), oldKdf);
   const decrypted = decryptWithKey(encrypted, oldKey);
   if (!decrypted) {
+    oldKey.fill(0);
     return { ok: false, message: "Current password is incorrect" };
   }
+  oldKey.fill(0);
 
   const vault = vaultStore.getVault();
   if (!vault) {
@@ -200,7 +211,8 @@ async function changeMasterPassword(oldPassword, newPassword) {
   }
 
   vaultSalt = reEncrypted.salt;
-  sessionKey = await deriveKey(newPassword, Buffer.from(vaultSalt, "hex"));
+  vaultKdf = getKdfConfigFromPayload(reEncrypted);
+  sessionKey = await deriveKey(newPassword, Buffer.from(vaultSalt, "hex"), vaultKdf);
 
   return { ok: true };
 }
@@ -236,7 +248,8 @@ async function importVaultFromFile(filePath, importPassword) {
   storage.save(encryptedData);
 
   vaultSalt = encryptedData.salt;
-  sessionKey = await deriveKey(importPassword, Buffer.from(vaultSalt, "hex"));
+  vaultKdf = getKdfConfigFromPayload(encryptedData);
+  sessionKey = await deriveKey(importPassword, Buffer.from(vaultSalt, "hex"), vaultKdf);
 
   vaultStore.setVault(vault);
   return { ok: true };

@@ -50,7 +50,7 @@ If you forget the master password, recovery is not possible.
 ## Stack
 
 - Electron
-- Node.js `crypto` (AES-GCM + scrypt-based key derivation)
+- Node.js `crypto` + `argon2` (AES-GCM + Argon2id key derivation, legacy scrypt-compatible)
 - Vanilla JavaScript (ES modules in renderer, CommonJS in main/vault)
 - HTML/CSS
 

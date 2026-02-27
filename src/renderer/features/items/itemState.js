@@ -55,13 +55,27 @@ export async function handleCopyItem(copyBtn, id, key) {
 }
 
 // TOGGLE PASSWORD Handler
-export function handleTogglePassword(card) {
+export async function handleTogglePassword(card) {
   const row = card.querySelector(".vault-row.password");
   if (!row) return;
 
   const val = row.querySelector(".password-value");
-  const pw = row.dataset.password;
+  if (!val) return;
+  const id = card.dataset.id;
+  if (!id) return;
 
   const visible = val.textContent !== "••••••••••";
-  val.textContent = visible ? "••••••••••" : pw;
+  if (visible) {
+    val.textContent = "••••••••••";
+    return;
+  }
+
+  try {
+    const pw = await window.vault.getField(id, "password");
+    if (typeof pw === "string" && pw.length) {
+      val.textContent = pw;
+    }
+  } catch {
+    val.textContent = "••••••••••";
+  }
 }

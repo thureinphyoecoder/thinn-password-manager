@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, clipboard, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, clipboard, dialog, session } = require("electron");
 const path = require("path");
 
 app.disableHardwareAcceleration();
@@ -10,6 +10,12 @@ const vaultStorage = require("../vault/storage");
 const vaultService = require("../vault/vaultService");
 const vaultLock = require("../vault/vaultLock");
 const vaultStore = require("../vault/vaultStore");
+const CLIPBOARD_CLEAR_MS = 30_000;
+let clipboardTimer = null;
+let lastAppCopiedText = null;
+let unlockFailCount = 0;
+let unlockBlockedUntil = 0;
+const MAX_UNLOCK_BACKOFF_MS = 30_000;
 
 /* =========================
    WINDOW
@@ -28,10 +34,25 @@ function createWindow() {
     icon: path.join(__dirname, "../../build/icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      sandbox: true,
+      nodeIntegration: false,
+      webSecurity: true,
+      devTools: !app.isPackaged,
+      spellcheck: false,
     },
   });
 
   mainWindow.loadFile("src/main/index.html");
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  mainWindow.webContents.on("will-navigate", (event) => {
+    event.preventDefault();
+  });
+
+  // Max-security default: lock immediately when app is minimized.
+  mainWindow.on("minimize", () => {
+    vaultLock.lockVault();
+  });
 }
 
 /* =========================
@@ -58,12 +79,23 @@ ipcMain.on("vault:activity", () => {
    VAULT LIFECYCLE
 ========================= */
 ipcMain.handle("vault:load", async (_, password) => {
+  const now = Date.now();
+  if (now < unlockBlockedUntil) {
+    const waitSeconds = Math.ceil((unlockBlockedUntil - now) / 1000);
+    return { ok: false, message: `Too many attempts. Try again in ${waitSeconds}s` };
+  }
+
   try {
     await vaultService.unlockVault(password);
     vaultLock.unlockVault();
+    unlockFailCount = 0;
+    unlockBlockedUntil = 0;
     mainWindow.webContents.send("vault:unlocked");
     return { ok: true };
   } catch {
+    unlockFailCount += 1;
+    const backoff = Math.min(500 * 2 ** (unlockFailCount - 1), MAX_UNLOCK_BACKOFF_MS);
+    unlockBlockedUntil = Date.now() + backoff;
     return { ok: false, message: "Invalid password" };
   }
 });
@@ -80,6 +112,7 @@ ipcMain.handle("vault:save", async (_, { password, data }) => {
 });
 
 ipcMain.handle("vault:lock", () => {
+  clearClipboardIfOwned();
   vaultService.lockVault();
   vaultLock.lockVault();
   return { ok: true };
@@ -122,7 +155,17 @@ ipcMain.handle("vault:copy", (_e, { id, key }) => {
   if (!item || typeof item[key] !== "string") return false;
 
   clipboard.writeText(item[key]);
+  scheduleClipboardClear(item[key]);
   return true;
+});
+
+ipcMain.handle("vault:getField", (_e, { id, key }) => {
+  const vault = vaultStore.getVault();
+  if (!vault) throw new Error("Vault not loaded");
+
+  const item = vault.items.find((i) => i.id === id);
+  if (!item || typeof item[key] !== "string") return null;
+  return item[key];
 });
 
 /* =========================
@@ -191,14 +234,57 @@ ipcMain.handle("vault:changeMasterPassword", async (_e, { oldPassword, newPasswo
    APP BOOT
 ========================= */
 app.whenReady().then(() => {
+  session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
+    callback(false);
+  });
+
   createWindow();
 
   vaultLock.startAutoLockTimer(() => {
+    clearClipboardIfOwned();
     vaultService.lockVault();
     mainWindow?.webContents.send("vault:locked");
   });
 });
 
 app.on("window-all-closed", () => {
+  clearClipboardIfOwned();
   if (process.platform !== "darwin") app.quit();
 });
+
+function scheduleClipboardClear(copiedText) {
+  if (clipboardTimer) clearTimeout(clipboardTimer);
+  lastAppCopiedText = copiedText;
+
+  clipboardTimer = setTimeout(() => {
+    try {
+      const current = clipboard.readText();
+      // Clear only if clipboard still holds app-copied content.
+      if (current && current === copiedText && current === lastAppCopiedText) {
+        clipboard.clear();
+        lastAppCopiedText = null;
+      }
+    } catch {
+      // Ignore clipboard read/clear failures.
+    } finally {
+      clipboardTimer = null;
+    }
+  }, CLIPBOARD_CLEAR_MS);
+}
+
+function clearClipboardIfOwned() {
+  try {
+    if (clipboardTimer) {
+      clearTimeout(clipboardTimer);
+      clipboardTimer = null;
+    }
+
+    const current = clipboard.readText();
+    if (current && current === lastAppCopiedText) {
+      clipboard.clear();
+    }
+    lastAppCopiedText = null;
+  } catch {
+    // Ignore clipboard clear failures.
+  }
+}
