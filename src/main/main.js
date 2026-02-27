@@ -25,6 +25,7 @@ function createWindow() {
     resizable: true,
     maximizable: true,
     titleBarStyle: "default",
+    icon: path.join(__dirname, "../../build/icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
