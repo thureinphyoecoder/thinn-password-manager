@@ -5,6 +5,7 @@ import { initAccountSettings } from "../../features/account/account.js";
 
 import { copyIcon, checkIcon, eyeIcon, editIcon, trashIcon } from "../../shared/components/icon.js";
 import { bindItemActions } from "../../features/items/itemEvents.js";
+import { CategoryState } from "../../features/categories/categoryState.js";
 
 /* =========================
    DOM REFERENCES (HOME)
@@ -117,14 +118,21 @@ export function renderHome(vault) {
 
 function renderFilteredItems(items) {
   const q = searchInput?.value.trim().toLowerCase() || "";
+  const activeCategoryId = CategoryState.activeCategoryId;
 
-  const filtered = q
-    ? items.filter((item) =>
-        [item.site, item.username, item.url]
-          .filter(Boolean)
-          .some((v) => v.toLowerCase().includes(q))
-      )
-    : items;
+  let filtered = items;
+
+  // 🔥 CATEGORY FILTER FIRST
+  if (activeCategoryId !== "all") {
+    filtered = filtered.filter((item) => item.categoryId === activeCategoryId);
+  }
+
+  // 🔎 SEARCH FILTER SECOND
+  if (q) {
+    filtered = filtered.filter((item) =>
+      [item.site, item.username, item.url].filter(Boolean).some((v) => v.toLowerCase().includes(q))
+    );
+  }
 
   if (filtered.length === 0) {
     list.innerHTML = `<div class="vault-empty-search">No results</div>`;
@@ -132,7 +140,6 @@ function renderFilteredItems(items) {
   }
 
   const sorted = [...filtered].sort((a, b) => b.updatedAt - a.updatedAt);
-
   list.innerHTML = sorted.map(renderItemCard).join("");
 }
 
@@ -287,11 +294,27 @@ function formatDate(ts) {
 /* =========================
    HANDLERS
 ========================= */
-function handleLock() {
-  setState(AppStates.LOCKED);
+async function handleLock() {
+  try {
+    await window.vault.lock();
+  } catch {
+    setState(AppStates.LOCKED);
+  }
 }
 
 function handleAddItem() {
+  const settingsScreen = document.getElementById("settings-screen");
+  const vaultView = document.getElementById("vault-view");
+  const settingsBtn = document.getElementById("settings-btn");
+
+  // If user is in Settings, switch back to Vault first so the add-item flow is visible.
+  if (settingsScreen && !settingsScreen.hidden) {
+    setHomeView(HomeViews.VAULT);
+    settingsScreen.hidden = true;
+    if (vaultView) vaultView.hidden = false;
+    settingsBtn?.classList.remove("active");
+  }
+
   const modal = document.getElementById("add-item-modal");
   if (!modal) return;
 

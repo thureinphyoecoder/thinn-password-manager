@@ -74,7 +74,7 @@
 
 #add-category-btn:hover {
   background: var(--surface-soft);
-  color: var(--brand-primary);
+  color: var(--accent);
   transform: scale(1.05);
 }
 
@@ -98,7 +98,7 @@
   height: 2px;
   border-radius: 2px;
 
-  background: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 /* ======================
@@ -133,6 +133,7 @@
   font-size: 13px;
   color: var(--text);
   text-align: left;
+  position: relative;
 
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease;
@@ -143,9 +144,22 @@
 }
 
 .category-item.active {
-  background: color-mix(in srgb, var(--brand-soft) 75%, transparent);
-  color: var(--brand-primary);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
   font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.category-item.active::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-50%);
 }
 
 .category-item.menu-open {
@@ -419,7 +433,7 @@
 }
 
 .category-rename-input:focus {
-  border-color: var(--brand-primary);
+  border-color: var(--accent);
   background: var(--surface-soft);
 }
 
@@ -555,5 +569,5 @@
 }
 
 .add-category-btn:hover {
-  color: var(--brand-primary);
+  color: var(--accent);
 }

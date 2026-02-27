@@ -1,6 +1,7 @@
 import { CategoryState } from "./categoryState.js";
 import { renderCategories } from "../../ui/index.js";
 import { persistCategories } from "./categoryState.js";
+import { renderHome } from "../../ui/views/home.js";
 
 import { openConfirm } from "../../shared/utils/confirm.js";
 
@@ -9,6 +10,12 @@ let openedCategoryId = null;
 let menu = null;
 
 let isInitialLized = false;
+
+async function refreshVaultList() {
+  const vault = await window.vault.loadVault();
+  if (!vault) return;
+  renderHome(vault);
+}
 
 /* ======================
    INIT
@@ -62,7 +69,7 @@ function openCategoryInput() {
   input.focus();
 }
 
-function submitCategory() {
+async function submitCategory() {
   const input = document.getElementById("category-input");
   const name = input.value.trim();
   if (!name) return;
@@ -75,6 +82,7 @@ function submitCategory() {
   closeCategoryInput();
   renderCategories();
   persistCategories();
+  await refreshVaultList();
 }
 
 function closeCategoryInput() {
@@ -87,7 +95,7 @@ function handleAddCategory(e) {
   openCategoryInput(); 
 }
 
-function handleGlobalClick(e) {
+async function handleGlobalClick(e) {
   //  MENU ACTION FIRST 
   const actionBtn = e.target.closest(".dropdown-item");
   if (actionBtn) {
@@ -111,6 +119,7 @@ function handleGlobalClick(e) {
     CategoryState.activeCategoryId = row.dataset.categoryId;
     renderCategories();
     closeMenu();
+    await refreshVaultList();
     return;
   }
 
@@ -187,6 +196,7 @@ function handleMenuAction(type) {
 
         renderCategories();
         persistCategories();
+        await refreshVaultList();
 
         showSuccess("Deleted");
       },

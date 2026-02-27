@@ -6,8 +6,24 @@ const defaultCategories = [
   { id: "personal", name: "Personal" },
 ];
 
+function normalizeCategories(raw) {
+  const list = Array.isArray(raw) ? raw.filter(Boolean) : [];
+
+  const hasAll = list.some((c) => c?.id === "all");
+  const allCategory = hasAll
+    ? list.find((c) => c.id === "all")
+    : { id: "all", name: "All", system: true };
+
+  const normalized = [
+    { id: "all", name: allCategory?.name || "All", system: true },
+    ...list.filter((c) => c.id !== "all"),
+  ];
+
+  return normalized.length > 1 ? normalized : defaultCategories;
+}
+
 export const CategoryState = {
-  categories: loadCategories() ?? defaultCategories,
+  categories: normalizeCategories(loadCategories() ?? defaultCategories),
   activeCategoryId: "all",
 };
 
