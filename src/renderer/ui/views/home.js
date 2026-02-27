@@ -294,12 +294,12 @@ export function initHomeScreen() {
 }
 
 function bindActivityTracking() {
-  const vaultView = document.getElementById("vault-view");
-  if (!vaultView) return;
+  if (document.body.dataset.activityBound === "true") return;
+  document.body.dataset.activityBound = "true";
 
-  // Activity signal feeds auto-lock timer in main process.
-  ["mousemove", "keydown", "mousedown"].forEach((evt) => {
-    vaultView.addEventListener(evt, () => {
+  // Track user activity globally so modal interactions also refresh auto-lock timer.
+  ["mousemove", "keydown", "mousedown", "touchstart"].forEach((evt) => {
+    document.addEventListener(evt, () => {
       window.vault.activity();
     });
   });

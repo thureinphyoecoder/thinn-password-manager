@@ -2,150 +2,168 @@
 
 Thinn Password Manager is a local-only desktop password manager built with Electron.
 
-All vault data is encrypted and stored on your machine.  
-No account system, no cloud sync, and no background server dependency.
+- No cloud sync
+- No backend server
+- No account system
+- Encrypted vault stored only on your machine
 
-## Core Principles
+## Features
 
-- Local first
-- User-controlled encryption
-- Minimal dependencies
-- Clear and predictable UX
-
-## Current Features
-
-- Master-password protected encrypted vault
+- Create and unlock vault with master password
 - Add, edit, delete password items
-- Category-based organization and filtering
+- Categories with filtering
 - Search by site, username, and URL
-- Manual lock and inactivity auto-lock
-- Account username update
-- Change master password flow
-- Import and export encrypted vault files
+- Manual lock + inactivity auto-lock (30s, 1m, 2m, 3m, 5m, never)
+- Update account username
+- Change master password
+- Import/export encrypted vault files
+- Password visibility toggle (`eye`) in auth/import/export flows
 
-## Security Model (Current)
+## Screenshots
 
-- Vault is encrypted before disk write
-- Master password is not stored directly
-- Vault is unlocked only in active app session
-- Session is locked on demand and by inactivity timer
-- No password recovery mechanism
+Place screenshots in `docs/screenshots/` using these file names:
 
-If master password is lost, vault cannot be recovered.
+- `create-account.png`
+- `unlock-vault.png`
+- `settings-security.png`
+- `vault-list.png`
 
-## Tech Stack
+Then README will render them here:
+
+### Create Account
+
+![Create Account](./docs/screenshots/create-account.png)
+
+### Unlock Vault
+
+![Unlock Vault](./docs/screenshots/unlock-vault.png)
+
+### Settings (Security)
+
+![Settings Security](./docs/screenshots/settings-security.png)
+
+### Vault List
+
+![Vault List](./docs/screenshots/vault-list.png)
+
+## Security Notes
+
+- Vault is encrypted before write to disk
+- Master password is not stored in plaintext
+- Decrypted data exists only in active unlocked session memory
+- Auto-lock and manual lock clear active session state
+- Invalid import files and wrong import passwords are rejected
+
+If you forget the master password, recovery is not possible.
+
+## Stack
 
 - Electron
-- Node.js `crypto`
-- Vanilla JavaScript (ES modules)
-- HTML + CSS
+- Node.js `crypto` (AES-GCM + scrypt-based key derivation)
+- Vanilla JavaScript (ES modules in renderer, CommonJS in main/vault)
+- HTML/CSS
 
-No frontend framework and no UI library.
+## Local Development
 
-## Run Locally
+Requirements:
 
-### Requirements
-
-- Node.js (LTS recommended)
+- Node.js 20+
 - npm
 
-### Install
+Install:
 
 ```bash
 npm install
 ```
 
-### Development
+Run in dev mode:
 
 ```bash
 npm run dev
 ```
 
-### Production-like Run
+Run directly:
 
 ```bash
 npm start
 ```
 
-## Scripts
+## Test
 
-- `npm run dev` - run Electron with `electronmon`
-- `npm start` - run Electron directly
-- `npm test` - run unit tests (`node:test`)
-- `npm run ci:check` - same test command used in CI/CD
+```bash
+npm test
+```
+
+Current suite covers:
+
+- Username validation/normalization
+- Vault lock timing behavior (including 2-minute setting)
+- Vault service lifecycle (save/unlock/CRUD/lock)
+- Import/export success and failure paths
+- Timestamp behavior (`createdAt`, `updatedAt`)
+
+## Build Artifacts
+
+Linux `.deb`:
+
+```bash
+npm run dist:linux
+```
+
+Windows `.exe` (NSIS):
+
+```bash
+npm run dist:win
+```
+
+Output directory:
+
+```text
+dist/
+```
 
 ## CI/CD
 
-GitHub Actions workflows are included:
+GitHub Actions:
 
 - `CI` (`.github/workflows/ci.yml`)
-  - Runs on push to `main` and pull requests targeting `main`
-  - Installs dependencies
-  - Runs `npm test`
+  - Trigger: push/PR on `main`
+  - Runs install + `npm test`
 
 - `CD Release` (`.github/workflows/cd-release.yml`)
-  - Runs on version tags like `v1.0.0` (and manual dispatch)
-  - Runs CI checks on Linux and Windows jobs
-  - Builds desktop artifacts:
-    - `.deb` on Linux
-    - `.exe` (NSIS) on Windows
-  - Publishes build outputs to GitHub Release assets
+  - Trigger: tag push (`v*`) or manual dispatch
+  - Builds Linux `.deb` and Windows `.exe`
+  - Publishes artifacts to GitHub Release assets
 
-Release trigger example:
+Release example:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-## Project Layout
+## Project Structure
 
-Main areas:
+- `src/main/` Electron main process + IPC
+- `src/vault/` crypto/storage/business logic
+- `src/renderer/` UI, state, features, styles
+- `tests/` node:test coverage
+- `build/` icon/build resources
 
-- `src/main/` - Electron main process and IPC handlers
-- `src/vault/` - encryption, storage, vault business logic
-- `src/renderer/` - UI, state, features, styles
+Detailed tree: [file-structure.md](./file-structure.md)
 
-For detailed tree, see [file-structure.md](./file-structure.md).
+## Vault Storage Location (Linux)
 
-## Data Location (Linux)
-
-By default, encrypted vault file is stored in Electron `userData` path, typically:
+Typical Electron userData path:
 
 ```text
 ~/.config/thinn-password-manager/vault.bin
 ```
 
-## Import / Export
+## Troubleshooting
 
-- Export produces an encrypted vault file protected by export password
-- Import replaces current vault with selected encrypted file after password verification
-- Wrong password or invalid file format is rejected
-
-## Known Limits
-
-- No sync / multi-device support
-- No browser extension
-- No recovery for forgotten master password
-- Packaging/release pipeline is still in progress
-
-## Roadmap (Planned)
-
-- Better test coverage
-- Release artifacts (`.deb`, `.exe`)
-- UX polish for settings and item management
-- More validation and edge-case hardening
-
-## Contributing
-
-Issues and pull requests are welcome.
-
-When reporting bugs, include:
-
-- OS version
-- Reproduction steps
-- Expected vs actual behavior
-- Console/log output if available
+- If desktop icon does not update, fully close app and reopen (OS icon cache).
+- If CI dependency install fails intermittently, retry workflow (network issue).
 
 ## License
 
