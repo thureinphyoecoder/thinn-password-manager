@@ -1,7 +1,5 @@
 const { app, BrowserWindow, ipcMain, clipboard, dialog } = require("electron");
 const path = require("path");
-const fs = require("fs");
-const { encrypt, decrypt } = require("../vault/crypto");
 
 app.disableHardwareAcceleration();
 
@@ -58,33 +56,45 @@ ipcMain.on("vault:activity", () => {
 /* =========================
    VAULT LIFECYCLE
 ========================= */
-ipcMain.handle("vault:load", (_, password) => {
+ipcMain.handle("vault:load", async (_, password) => {
   try {
-    const vault = vaultService.unlockVault(password);
+    await vaultService.unlockVault(password);
     vaultLock.unlockVault();
     mainWindow.webContents.send("vault:unlocked");
-    return { ok: true, data: vault };
-  } catch (err) {
+    return { ok: true };
+  } catch {
     return { ok: false, message: "Invalid password" };
   }
 });
 
-ipcMain.handle("vault:save", (_, { password, data }) => {
+ipcMain.handle("vault:save", async (_, { password, data }) => {
   if (typeof password !== "string") {
     throw new Error("Password must be string");
   }
 
-  vaultService.saveVault(password, data);
+  await vaultService.saveVault(password, data);
   vaultLock.unlockVault();
   mainWindow.webContents.send("vault:unlocked");
   return { ok: true };
 });
 
+ipcMain.handle("vault:lock", () => {
+  vaultService.lockVault();
+  vaultLock.lockVault();
+  return { ok: true };
+});
+
 ipcMain.handle("vault:loadVault", () => {
-  return vaultStore.getVault();
+  if (!vaultService.isUnlocked()) return null;
+
+  const vault = vaultStore.getVault();
+  if (!vault) return null;
+
+  return JSON.parse(JSON.stringify(vault));
 });
 
 vaultStore.subscribe(() => {
+  if (!vaultService.isUnlocked()) return;
   mainWindow?.webContents.send("vault:changed");
 });
 
@@ -139,45 +149,41 @@ ipcMain.handle("vault:pickImportFile", async () => {
    EXPORT / IMPORT (PASSWORD PROTECTED)
 ========================= */
 ipcMain.handle("vault:export", async (_, { filePath, exportPassword }) => {
-  const vault = vaultStore.getVault();
-  if (!vault) throw new Error("Vault locked");
-
   if (typeof exportPassword !== "string" || exportPassword.length < 8) {
     throw new Error("Export password must be at least 8 characters");
   }
 
   if (!filePath) throw new Error("No export path");
 
-  const json = JSON.stringify(vault);
-  const encrypted = encrypt(json, exportPassword);
-
-  fs.writeFileSync(filePath, JSON.stringify(encrypted), "utf8");
-
+  await vaultService.exportVaultToFile(filePath, exportPassword);
   return { ok: true };
 });
 
 ipcMain.handle("vault:import", async (_, { filePath, password }) => {
-  const raw = fs.readFileSync(filePath, "utf8");
-  const encrypted = JSON.parse(raw);
+  await vaultService.importVaultFromFile(filePath, password);
+  vaultLock.unlockVault();
+  mainWindow?.webContents.send("vault:unlocked");
 
-  const json = decrypt(encrypted, password);
-  if (!json) throw new Error("Invalid import password");
-
-  const vault = JSON.parse(json);
-  vaultStore.setVault(vault);
-
-  return { ok: true, vault };
+  return { ok: true };
 });
 
 /* =========================
    ACCOUNT
 ========================= */
-ipcMain.handle("vault:updateUsername", (_e, username) => {
-  return vaultService.updateUsername(username);
+ipcMain.handle("vault:updateUsername", async (_e, username) => {
+  try {
+    return await vaultService.updateUsername(username);
+  } catch {
+    return { ok: false, message: "Failed to update username" };
+  }
 });
 
-ipcMain.handle("vault:changeMasterPassword", (_e, { oldPassword, newPassword }) => {
-  return vaultService.changeMasterPassword(oldPassword, newPassword);
+ipcMain.handle("vault:changeMasterPassword", async (_e, { oldPassword, newPassword }) => {
+  try {
+    return await vaultService.changeMasterPassword(oldPassword, newPassword);
+  } catch {
+    return { ok: false, message: "Failed to change password" };
+  }
 });
 
 /* =========================
@@ -187,6 +193,7 @@ app.whenReady().then(() => {
   createWindow();
 
   vaultLock.startAutoLockTimer(() => {
+    vaultService.lockVault();
     mainWindow?.webContents.send("vault:locked");
   });
 });

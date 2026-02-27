@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("vault", {
   /* ---------- Vault Lifecycle ---------- */
   save: (password, data) => ipcRenderer.invoke("vault:save", { password, data }),
   load: (password) => ipcRenderer.invoke("vault:load", password),
+  lock: () => ipcRenderer.invoke("vault:lock"),
   loadVault: () => ipcRenderer.invoke("vault:loadVault"),
 
   /* ---------- Auto Lock ---------- */

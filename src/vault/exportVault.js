@@ -1,12 +1,11 @@
 const fs = require("fs");
-const path = require("path");
 const { dialog } = require("electron");
-const { getEncryptedVaultBlob } = require("./storage");
-const { isVaultUnlocked } = require("./vaultLock");
+const storage = require("./storage");
+const vaultService = require("./vaultService");
 
 async function exportVault() {
   // 🔐 1. Vault must be unlocked
-  if (!isVaultUnlocked()) {
+  if (!vaultService.isUnlocked()) {
     throw new Error("Vault is locked");
   }
 
@@ -22,11 +21,14 @@ async function exportVault() {
   }
 
   // 📦 3. Get encrypted vault (already encrypted)
-  const encryptedPayload = getEncryptedVaultBlob();
+  const encryptedPayload = storage.load();
+  if (!encryptedPayload || typeof encryptedPayload !== "object") {
+    throw new Error("Vault data not found");
+  }
 
   // 🛡 4. Atomic write (safe)
   const tmpPath = `${filePath}.tmp`;
-  fs.writeFileSync(tmpPath, encryptedPayload, "utf8");
+  fs.writeFileSync(tmpPath, JSON.stringify(encryptedPayload), "utf8");
   fs.renameSync(tmpPath, filePath);
 
   return { success: true };

@@ -16,9 +16,14 @@ function save(encryptedObject) {
   const file = getVaultFile();
   const tmp = file + ".tmp";
 
-  // 🔥 CRITICAL FIX
-  const payload = JSON.stringify(encryptedObject);
+  if (Buffer.isBuffer(encryptedObject)) {
+    fs.writeFileSync(tmp, encryptedObject);
+    fs.renameSync(tmp, file);
+    return;
+  }
 
+  const payload =
+    typeof encryptedObject === "string" ? encryptedObject : JSON.stringify(encryptedObject);
   fs.writeFileSync(tmp, payload, "utf8");
   fs.renameSync(tmp, file);
 }
@@ -28,9 +33,11 @@ function load() {
   if (!fs.existsSync(file)) return null;
 
   const raw = fs.readFileSync(file, "utf8");
-
-  // 🔥 CRITICAL FIX
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return raw;
+  }
 }
 
 function hasAccount() {

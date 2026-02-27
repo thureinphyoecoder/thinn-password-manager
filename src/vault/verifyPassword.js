@@ -1,13 +1,12 @@
 const { load } = require("./storage");
-const { decryptVault } = require("./crypto"); // already exists in your project
+const { decrypt } = require("./crypto");
 
 function verifyMasterPassword(password) {
   const encrypted = load();
-  if (!encrypted) return false;
+  if (!encrypted || typeof encrypted !== "object") return false;
 
   try {
-    decryptVault(encrypted, password);
-    return true;
+    return !!decrypt(encrypted, password);
   } catch {
     return false;
   }
