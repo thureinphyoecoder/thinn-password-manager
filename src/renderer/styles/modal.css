@@ -5,7 +5,7 @@
 .add-item-modal {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 950;
 
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(4px);
@@ -72,6 +72,7 @@
 ========================= */
 
 .add-item-card input,
+.add-item-card select,
 .add-item-card textarea {
   width: 100%;
   min-height: 42px;
@@ -92,11 +93,13 @@
 }
 
 .add-item-card input::placeholder,
+.add-item-card select::placeholder,
 .add-item-card textarea::placeholder {
   color: var(--text-muted);
 }
 
 .add-item-card input:focus,
+.add-item-card select:focus,
 .add-item-card textarea:focus {
   outline: none;
   border-color: var(--primary);
@@ -149,10 +152,24 @@
   gap: 10px;
 }
 
+.add-item-footer .ghost-btn,
+.add-item-footer .btn-primary {
+  height: 44px;
+  min-width: 92px;
+}
+
 .add-item-footer .ghost-btn {
-  opacity: 0.7;
+  padding: 0 16px;
+  border-radius: 12px;
+  line-height: 44px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  opacity: 0.85;
 }
 
 .add-item-footer .ghost-btn:hover {
+  border-color: var(--border);
+  background: var(--surface-soft);
   opacity: 1;
 }

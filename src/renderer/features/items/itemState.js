@@ -3,20 +3,35 @@ import { openConfirm } from "../../shared/utils/confirm.js";
 import { checkIcon } from "../../shared/components/icon.js";
 import { toast } from "../../shared/components/toast.js";
 
-import { openEditModal } from "./itemService.js"; 
+import { openEditModal } from "./itemService.js";
 
 /* =========================
    ITEM ACTION HANDLERS
 ========================= */
 
 // DELETE Handler
+// export function handleDeleteItem(id) {
+//   openConfirm({
+//     title: "Delete item",
+//     message: "Delete this item?",
+//     onConfirm: async ({ showSuccess }) => {
+//       const updatedVault = await window.vault.deleteItem(id);
+//       renderHome(updatedVault);
+//       await showSuccess("Deleted");
+//     },
+//   });
+// }
+
 export function handleDeleteItem(id) {
   openConfirm({
     title: "Delete item",
     message: "Delete this item?",
     onConfirm: async ({ showSuccess }) => {
-      const updatedVault = await window.vault.deleteItem(id);
-      renderHome(updatedVault);
+      await window.vault.deleteItem(id);
+
+      const vault = await window.vault.loadVault(); // 🔥 single source
+      renderHome(vault);
+
       await showSuccess("Deleted");
     },
   });
@@ -27,7 +42,7 @@ export async function handleCopyItem(copyBtn, id, key) {
   const ok = await window.vault.copyField(id, key);
 
   if (ok) {
-    toast("Copied", 'success');
+    toast("Copied", "success");
 
     // Check Icon Logic
     const originalIcon = copyBtn.innerHTML;
