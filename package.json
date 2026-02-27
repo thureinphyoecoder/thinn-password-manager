@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "electronmon . --no-sandbox",
     "start": "electron . --no-sandbox",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "node scripts/ci-smoke.mjs --syntax-only",
+    "test": "node scripts/ci-smoke.mjs",
+    "ci:check": "node scripts/ci-smoke.mjs"
   },
   "keywords": [],
   "author": "",

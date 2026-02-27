@@ -7,6 +7,7 @@ const defaultCategories = [
 ];
 
 function normalizeCategories(raw) {
+  // Keep a stable "all" category in front so filters always have a fallback target.
   const list = Array.isArray(raw) ? raw.filter(Boolean) : [];
 
   const hasAll = list.some((c) => c?.id === "all");

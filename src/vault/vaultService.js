@@ -15,7 +15,11 @@ let vaultSalt = null;
 const USERNAME_REGEX = /^[a-zA-Z0-9_-]{1,20}$/;
 const REQUIRED_ENCRYPTED_FIELDS = ["salt", "iv", "tag", "content"];
 
-/* ========= HELPERS ========= */
+/*
+ * Vault service owns encrypted persistence and in-memory unlocked session state.
+ * - `sessionKey` exists only while unlocked.
+ * - disk writes always store encrypted payloads.
+ */
 
 function persist() {
   if (!sessionKey) throw new Error("VAULT_LOCKED");
@@ -37,8 +41,6 @@ function validateEncryptedBlob(payload) {
     (k) => typeof payload[k] === "string" && payload[k].length > 0
   );
 }
-
-/* ========= CORE ========= */
 
 function isUnlocked() {
   return !!sessionKey;
@@ -73,13 +75,12 @@ async function unlockVault(password) {
 
 function lockVault() {
   if (sessionKey) {
-    sessionKey.fill(0); // Memory ထဲက Key ကို အပြီးဖျက်ပစ်တာ (Security Best Practice)
+    // Best effort key scrubbing before dropping reference.
+    sessionKey.fill(0);
     sessionKey = null;
   }
   vaultStore.setVault(null);
 }
-
-/* ========= ITEMS ========= */
 
 function addItem(input) {
   if (!sessionKey) throw new Error("VAULT_LOCKED");
@@ -131,8 +132,6 @@ function deleteItem(id) {
   persist();
   return { ok: true };
 }
-
-/* ========= ACCOUNT ========= */
 
 function updateUsername(username) {
   if (!sessionKey) throw new Error("VAULT_LOCKED");
@@ -205,7 +204,6 @@ async function changeMasterPassword(oldPassword, newPassword) {
   return { ok: true };
 }
 
-/* ========= EXPORT / IMPORT ========= */
 async function exportVaultToFile(filePath, exportPassword) {
   if (!sessionKey) throw new Error("VAULT_LOCKED");
 
@@ -216,6 +214,7 @@ async function exportVaultToFile(filePath, exportPassword) {
 }
 
 async function importVaultFromFile(filePath, importPassword) {
+  // Parse + shape validation first so decrypt path receives expected payload.
   let encryptedData;
   try {
     encryptedData = JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -232,6 +231,7 @@ async function importVaultFromFile(filePath, importPassword) {
 
   const vault = JSON.parse(json);
 
+  // Persist imported encrypted payload as-is and switch active session to it.
   storage.save(encryptedData);
 
   vaultSalt = encryptedData.salt;
@@ -240,8 +240,6 @@ async function importVaultFromFile(filePath, importPassword) {
   vaultStore.setVault(vault);
   return { ok: true };
 }
-
-/* ========= EXPORTS ========= */
 
 module.exports = {
   saveVault,

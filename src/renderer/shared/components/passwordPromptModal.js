@@ -24,7 +24,7 @@ export function openPasswordPrompt({ title, description, onConfirm }) {
 
   cancelBtn.onclick = () => closeModal(modal);
 
-  // 🔥 bind ONCE only
+  // Keep a single click handler and swap the callback via `currentConfirmHandler`.
   if (!confirmBtn.dataset.bound) {
     confirmBtn.dataset.bound = "true";
 

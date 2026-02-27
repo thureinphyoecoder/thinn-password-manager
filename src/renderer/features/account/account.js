@@ -5,9 +5,6 @@ import { openChangeMasterPasswordModal } from "../../shared/utils/changeMasterPa
 
 let isBound = false;
 
-/* =========================
-   INIT ACCOUNT SETTINGS EVENTS
-========================= */
 export function initAccountSettings() {
   if (isBound) return;
 
@@ -19,7 +16,6 @@ export function initAccountSettings() {
 
   if (!usernameInput) return;
 
-  // Username Update Button
   if (updateUsernameBtn) {
     updateUsernameBtn.addEventListener("click", () => {
       handleUpdateUsername(usernameInput, updateUsernameBtn);
@@ -39,14 +35,10 @@ export function initAccountSettings() {
   isBound = true;
 }
 
-/* =========================
-   HANDLE USERNAME UPDATE
-========================= */
 async function handleUpdateUsername(inputEl, btnEl) {
   const rawUsername = inputEl.value.trim();
   const currentVault = await window.vault.loadVault();
 
-  // ---------- VALIDATION & SHAKE ----------
   if (!rawUsername) {
     shake(inputEl);
     toast("Username cannot be empty.", "error");
@@ -64,7 +56,6 @@ async function handleUpdateUsername(inputEl, btnEl) {
     return;
   }
 
-  // ---------- UPDATE VAULT (via IPC) ----------
   if (btnEl) btnEl.disabled = true;
   try {
     const result = await window.vault.updateUsername(rawUsername);

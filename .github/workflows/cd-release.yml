@@ -1,0 +1,45 @@
+name: CD Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: CI checks
+        run: npm run ci:check
+
+      - name: Prepare source bundles
+        run: |
+          mkdir -p dist
+          PROJECT_NAME="thinn-password-manager"
+          VERSION="${GITHUB_REF_NAME:-snapshot}"
+          tar --exclude=".git" --exclude="node_modules" -czf "dist/${PROJECT_NAME}-${VERSION}.tar.gz" .
+          zip -r "dist/${PROJECT_NAME}-${VERSION}.zip" . -x ".git/*" "node_modules/*"
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.zip

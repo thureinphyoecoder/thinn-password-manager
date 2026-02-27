@@ -2,25 +2,26 @@ import { setHomeView, HomeViews, setState, AppStates } from "../../state/state.j
 import { initSettingsTabs } from "../views/settings.js";
 import { initCategoryEvents } from "../../features/categories/categoryEvents.js";
 import { initAccountSettings } from "../../features/account/account.js";
-
-import { copyIcon, checkIcon, eyeIcon, editIcon, trashIcon } from "../../shared/components/icon.js";
+import { copyIcon, eyeIcon, editIcon, trashIcon } from "../../shared/components/icon.js";
 import { bindItemActions } from "../../features/items/itemEvents.js";
 import { CategoryState } from "../../features/categories/categoryState.js";
 
-/* =========================
-   DOM REFERENCES (HOME)
-========================= */
-const lockBtn = document.getElementById("lock-btn");
-const addBtn = document.getElementById("add-item-btn");
 const emptyState = document.getElementById("vault-empty");
 const list = document.getElementById("vault-list");
-
 const autoLockRadios = document.querySelectorAll("input[name='autoLock']");
-
 const AUTOLOCK_KEY = "thinn:autoLock";
-
 const searchInput = document.querySelector(".header-search");
 let lastVault = null;
+
+function setSettingsVisible(visible) {
+  const settingsScreen = document.getElementById("settings-screen");
+  const vaultView = document.getElementById("vault-view");
+  const settingsBtn = document.getElementById("settings-btn");
+
+  if (settingsScreen) settingsScreen.hidden = !visible;
+  if (vaultView) vaultView.hidden = visible;
+  settingsBtn?.classList.toggle("active", visible);
+}
 
 function bindAutoLockSettings() {
   const saved = Number(localStorage.getItem(AUTOLOCK_KEY) ?? 60000);
@@ -40,17 +41,11 @@ function bindAutoLockSettings() {
 
 function handleOpenSettings() {
   setHomeView(HomeViews.SETTINGS);
-
-  const settingsScreen = document.getElementById("settings-screen");
-  const vaultView = document.getElementById("vault-view");
-  const settingsBtn = document.getElementById("settings-btn");
-
-  vaultView && (vaultView.hidden = true);
-  settingsScreen && (settingsScreen.hidden = false);
-  settingsBtn?.classList.add("active");
+  setSettingsVisible(true);
 
   requestAnimationFrame(() => {
-    initSettingsTabs(); //  MUST be here
+    // Tabs and account handlers require settings DOM to be visible first.
+    initSettingsTabs();
     initAccountSettings();
     bindAutoLockSettings();
   });
@@ -58,23 +53,9 @@ function handleOpenSettings() {
 
 function handleBackToVault() {
   setHomeView(HomeViews.VAULT);
-
-  const settingsScreen = document.getElementById("settings-screen");
-  const vaultView = document.getElementById("vault-view");
-  const settingsBtn = document.getElementById("settings-btn");
-
-  settingsScreen && (settingsScreen.hidden = true);
-  vaultView && (vaultView.hidden = false);
-  settingsBtn?.classList.remove("active");
-
-  requestAnimationFrame(() => {
-    bindHomeEvents();
-  });
+  setSettingsVisible(false);
 }
 
-/* =========================
-   RENDER
-========================= */
 searchInput?.addEventListener("input", () => {
   if (!lastVault) return;
   renderFilteredItems(lastVault.items);
@@ -98,9 +79,6 @@ export function renderHome(vault) {
     settingsUsernameInput.value = username;
   }
 
-  // =========================
-  // EXISTING LOGIC (DON'T TOUCH)
-  // =========================
   const items = Array.isArray(vault?.items) ? vault.items : [];
 
   if (items.length === 0) {
@@ -119,15 +97,13 @@ export function renderHome(vault) {
 function renderFilteredItems(items) {
   const q = searchInput?.value.trim().toLowerCase() || "";
   const activeCategoryId = CategoryState.activeCategoryId;
-
   let filtered = items;
 
-  // 🔥 CATEGORY FILTER FIRST
+  // Category filter runs before search so "No results" reflects both conditions.
   if (activeCategoryId !== "all") {
     filtered = filtered.filter((item) => item.categoryId === activeCategoryId);
   }
 
-  // 🔎 SEARCH FILTER SECOND
   if (q) {
     filtered = filtered.filter((item) =>
       [item.site, item.username, item.url].filter(Boolean).some((v) => v.toLowerCase().includes(q))
@@ -141,25 +117,6 @@ function renderFilteredItems(items) {
 
   const sorted = [...filtered].sort((a, b) => b.updatedAt - a.updatedAt);
   list.innerHTML = sorted.map(renderItemCard).join("");
-}
-
-/* =========================
-   ITEM CARD
-========================= */
-function renderRow(label, value, key) {
-  return `
-    <div class="vault-row">
-      <div class="row-label">${label}</div>
-      <div class="row-value">${value}</div>
-
-      <div class="row-actions">
-        <button class="icon-btn sm copy-btn"
-                data-copy="${key}">
-          ${copyIcon()}
-        </button>
-      </div>
-    </div>
-  `;
 }
 
 function renderItemCard(item) {
@@ -262,24 +219,6 @@ function renderItemCard(item) {
 `;
 }
 
-function row(label, value, key) {
-  return `
-    <div class="vault-row">
-      <div class="label">${label}</div>
-      <div class="value">${value}</div>
-      <div class="actions">
-        <button class="icon-btn copy-btn" data-copy="${key}">
-          ${copyIcon()}
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-/* =========================
-   HELPERS
-========================= */
-
 function escapeHtml(str) {
   if (typeof str !== "string") return "";
 
@@ -304,15 +243,10 @@ async function handleLock() {
 
 function handleAddItem() {
   const settingsScreen = document.getElementById("settings-screen");
-  const vaultView = document.getElementById("vault-view");
-  const settingsBtn = document.getElementById("settings-btn");
-
-  // If user is in Settings, switch back to Vault first so the add-item flow is visible.
+  // Add-item belongs to vault view, so bounce back from settings if needed.
   if (settingsScreen && !settingsScreen.hidden) {
     setHomeView(HomeViews.VAULT);
-    settingsScreen.hidden = true;
-    if (vaultView) vaultView.hidden = false;
-    settingsBtn?.classList.remove("active");
+    setSettingsVisible(false);
   }
 
   const modal = document.getElementById("add-item-modal");
@@ -326,26 +260,6 @@ function handleAddItem() {
   });
 }
 
-function toast(msg) {
-  const el = document.createElement("div");
-  el.textContent = msg;
-  el.style.position = "fixed";
-  el.style.bottom = "24px";
-  el.style.right = "24px";
-  el.style.padding = "10px 14px";
-  el.style.borderRadius = "10px";
-  el.style.background = "rgba(0,0,0,.8)";
-  el.style.color = "#fff";
-  el.style.fontSize = "13px";
-  el.style.zIndex = 9999;
-
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1200);
-}
-
-/* =========================
-   BIND
-========================= */
 export function bindHomeEvents() {
   const root = document.body;
   if (root.dataset.homeBound) return;
@@ -353,7 +267,7 @@ export function bindHomeEvents() {
 
   const lockBtn = document.getElementById("lock-btn");
   const addBtn = document.getElementById("add-item-btn");
-  const settingsBtn = document.getElementById("settings-btn"); // ✅ FIX
+  const settingsBtn = document.getElementById("settings-btn");
 
   lockBtn?.addEventListener("click", handleLock);
   addBtn?.addEventListener("click", handleAddItem);
@@ -379,6 +293,7 @@ function bindActivityTracking() {
   const vaultView = document.getElementById("vault-view");
   if (!vaultView) return;
 
+  // Activity signal feeds auto-lock timer in main process.
   ["mousemove", "keydown", "mousedown"].forEach((evt) => {
     vaultView.addEventListener(evt, () => {
       window.vault.activity();

@@ -2,14 +2,11 @@ import { CategoryState } from "./categoryState.js";
 import { renderCategories } from "../../ui/index.js";
 import { persistCategories } from "./categoryState.js";
 import { renderHome } from "../../ui/views/home.js";
-
 import { openConfirm } from "../../shared/utils/confirm.js";
 
 let openedCategoryId = null;
-
 let menu = null;
-
-let isInitialLized = false;
+let isInitialized = false;
 
 async function refreshVaultList() {
   const vault = await window.vault.loadVault();
@@ -17,24 +14,16 @@ async function refreshVaultList() {
   renderHome(vault);
 }
 
-/* ======================
-   INIT
-====================== */
 export function initCategoryEvents() {
-  if (isInitialLized) {
-    return;
-  }
+  if (isInitialized) return;
 
-  // context menu
   menu = document.getElementById("category-context-menu");
   if (!menu) {
     console.warn("[Categories] context menu not found");
   }
 
-  // add category button
   document.getElementById("add-category-btn")?.addEventListener("click", handleAddCategory);
 
-  //  INLINE INPUT KEY HANDLER (ဒီနေရာ!)
   const input = document.getElementById("category-input");
   if (input) {
     input.addEventListener("keydown", (e) => {
@@ -45,20 +34,13 @@ export function initCategoryEvents() {
     console.warn("[Categories] category-input not found");
   }
 
-  // global click
   document.addEventListener("click", handleGlobalClick);
-
-  // escape closes menu
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeMenu();
   });
 
-  isInitialLized = true;
+  isInitialized = true;
 }
-
-/* ======================
-   HANDLERS
-====================== */
 
 function openCategoryInput() {
   const row = document.querySelector(".category-input-row");
@@ -69,41 +51,41 @@ function openCategoryInput() {
   input.focus();
 }
 
+async function setActiveCategory(categoryId) {
+  CategoryState.activeCategoryId = categoryId;
+  renderCategories();
+  await refreshVaultList();
+}
+
 async function submitCategory() {
   const input = document.getElementById("category-input");
   const name = input.value.trim();
   if (!name) return;
 
   const id = crypto.randomUUID();
-
   CategoryState.categories.push({ id, name });
-  CategoryState.activeCategoryId = id;
-
   closeCategoryInput();
-  renderCategories();
   persistCategories();
-  await refreshVaultList();
+  await setActiveCategory(id);
 }
 
 function closeCategoryInput() {
   const row = document.querySelector(".category-input-row");
-  row.hidden = true;
+  if (row) row.hidden = true;
 }
 
 function handleAddCategory(e) {
   e.stopPropagation();
-  openCategoryInput(); 
+  openCategoryInput();
 }
 
 async function handleGlobalClick(e) {
-  //  MENU ACTION FIRST 
   const actionBtn = e.target.closest(".dropdown-item");
   if (actionBtn) {
     handleMenuAction(actionBtn.dataset.action);
     return;
   }
 
-  // open menu
   const moreBtn = e.target.closest(".category-more-btn");
   if (moreBtn) {
     e.stopPropagation();
@@ -113,28 +95,20 @@ async function handleGlobalClick(e) {
     return;
   }
 
-  // select category (not during rename)
   const row = e.target.closest(".category-item");
   if (row && !row.classList.contains("rename-active")) {
-    CategoryState.activeCategoryId = row.dataset.categoryId;
-    renderCategories();
+    await setActiveCategory(row.dataset.categoryId);
     closeMenu();
-    await refreshVaultList();
     return;
   }
 
-  // click inside menu but not on item → do nothing
   if (e.target.closest("#category-context-menu")) {
     return;
   }
 
-  // outside
   closeMenu();
 }
 
-/* ======================
-   MENU
-====================== */
 function clearMenuHighlight() {
   document.querySelector(".category-item.menu-open")?.classList.remove("menu-open");
 }
@@ -142,18 +116,13 @@ function clearMenuHighlight() {
 function openMenuAt(btn) {
   if (!menu) return;
 
-  // clear previous highlight
   clearMenuHighlight();
-
-  // highlight current row
   const row = btn.closest(".category-item");
   row?.classList.add("menu-open");
 
   const rect = btn.getBoundingClientRect();
-
   menu.style.top = `${rect.top}px`;
   menu.style.left = `${rect.right + 8}px`;
-
   menu.hidden = false;
 }
 
@@ -165,9 +134,6 @@ function closeMenu() {
   openedCategoryId = null;
 }
 
-/* ======================
-   ACTIONS
-====================== */
 function handleMenuAction(type) {
   const id = openedCategoryId;
   const cat = CategoryState.categories.find((c) => c.id === id);
@@ -197,7 +163,6 @@ function handleMenuAction(type) {
         renderCategories();
         persistCategories();
         await refreshVaultList();
-
         showSuccess("Deleted");
       },
     });
@@ -253,11 +218,9 @@ function commitRename(row, name) {
   const cat = CategoryState.categories.find((c) => c.id === id);
   if (!cat || !name.trim()) return;
 
-  // update state
   cat.name = name.trim();
   persistCategories();
 
-  // update DOM ONLY (no re-render)
   const label = row.querySelector(".category-label");
   if (label) {
     label.textContent = cat.name;
