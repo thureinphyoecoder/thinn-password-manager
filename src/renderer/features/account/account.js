@@ -13,7 +13,9 @@ export function initAccountSettings() {
 
   const updateUsernameBtn = document.getElementById("update-username-btn");
   const changeMasterPwBtn = document.getElementById("change-master-pw-btn");
-  const usernameInput = document.querySelector('.account-row input[type="text"]');
+  const usernameInput =
+    document.getElementById("account-username-input") ||
+    document.querySelector('.account-row input[type="text"]');
 
   if (!usernameInput) return;
 
@@ -42,7 +44,6 @@ export function initAccountSettings() {
 ========================= */
 async function handleUpdateUsername(inputEl, btnEl) {
   const rawUsername = inputEl.value.trim();
-
   const currentVault = await window.vault.loadVault();
 
   // ---------- VALIDATION & SHAKE ----------
@@ -64,9 +65,12 @@ async function handleUpdateUsername(inputEl, btnEl) {
   }
 
   // ---------- UPDATE VAULT (via IPC) ----------
-  btnEl.disabled = true;
+  if (btnEl) btnEl.disabled = true;
   try {
-    await window.vault.updateUsername(rawUsername);
+    const result = await window.vault.updateUsername(rawUsername);
+    if (!result?.ok) {
+      throw new Error(result?.message || "Update failed");
+    }
 
     const avatar = document.querySelector(".avatar-circle");
     if (avatar) {
@@ -78,9 +82,9 @@ async function handleUpdateUsername(inputEl, btnEl) {
   } catch (error) {
     console.error("Failed to update username:", error);
     shake(inputEl);
-    toast("Update failed. Check app logs.", "error");
+    toast(error?.message || "Update failed. Check app logs.", "error");
   } finally {
-    btnEl.disabled = false;
+    if (btnEl) btnEl.disabled = false;
   }
 }
 

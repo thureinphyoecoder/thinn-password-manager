@@ -1,78 +1,125 @@
-export function openChangeMasterPasswordModal({ onSuccess, onError }) {
-    const modal = document.createElement("div");
-    modal.className = "change-pw-modal confirm-modal";
+import { eyeIcon } from "../components/icon.js";
 
-   modal.innerHTML = `
-    <div class="confirm-card">
+export function openChangeMasterPasswordModal({ onSuccess, onError }) {
+  const existing = document.querySelector(".change-master-password-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.className = "password-prompt-modal change-master-password-modal";
+  modal.innerHTML = `
+    <div class="modal-card">
       <h3>Change Master Password</h3>
-      <p>Enter your current password and a new password.</p>
-      
-      <input type="password" id="current-pw-input" placeholder="Current Password" required>
-      <input type="password" id="new-pw-input" placeholder="New Password" required>
-      
-      <div class="confirm-actions">
-        <button class="btn ghost cancel">Cancel</button>
-        <button class="btn primary confirm" id="change-pw-confirm">Change</button>
+      <p>Enter your current password and a new password (at least 8 characters).</p>
+
+      <div class="password-field">
+        <input type="password" id="cmp-current-password" placeholder="Current password" autocomplete="current-password" />
+        <button class="eye-btn" data-target="cmp-current-password" aria-label="Toggle current password">
+          ${eyeIcon()}
+        </button>
+      </div>
+
+      <div class="password-field">
+        <input type="password" id="cmp-new-password" placeholder="New password" autocomplete="new-password" />
+        <button class="eye-btn" data-target="cmp-new-password" aria-label="Toggle new password">
+          ${eyeIcon()}
+        </button>
+      </div>
+      <div id="cmp-error" class="error hidden"></div>
+
+      <div class="modal-actions">
+        <button class="btn ghost" data-action="cancel">Cancel</button>
+        <button class="btn-primary" data-action="confirm">Change</button>
       </div>
     </div>
   `;
+
   document.body.appendChild(modal);
 
-  const currentPwInput = modal.querySelector('#current-pw-input');
-  const newPwInput = modal.querySelector('#new-pw-input');
-  const confirmBtn = modal.querySelector('#change-pw-confirm');
-  const cancelBtn = modal.querySelector('.cancel');
-  
+  const currentPwInput = modal.querySelector("#cmp-current-password");
+  const newPwInput = modal.querySelector("#cmp-new-password");
+  const errorEl = modal.querySelector("#cmp-error");
+  const confirmBtn = modal.querySelector('[data-action="confirm"]');
+  const cancelBtn = modal.querySelector('[data-action="cancel"]');
+
   let busy = false;
-  
+
+  function showError(message) {
+    errorEl.textContent = message;
+    errorEl.classList.remove("hidden");
+  }
+
+  function clearError() {
+    errorEl.textContent = "";
+    errorEl.classList.add("hidden");
+  }
+
   function close() {
+    document.removeEventListener("keydown", onKeyDown);
     modal.remove();
   }
-  
-  cancelBtn.onclick = close;
 
-  confirmBtn.onclick = async () => {
+  async function submit() {
     if (busy) return;
-    busy = true;
-    
-    const oldPassword = currentPwInput.value;
-    const newPassword = newPwInput.value;
-    
-    // ---------- Validation ----------
+    clearError();
+
+    const oldPassword = currentPwInput.value.trim();
+    const newPassword = newPwInput.value.trim();
+
     if (!oldPassword || !newPassword) {
-      alert("Please fill in both fields.");
-      // shake(modal.querySelector('.confirm-card'));
-      busy = false;
+      showError("Please fill in both fields.");
       return;
     }
+
     if (oldPassword === newPassword) {
-      alert("New password must be different from the current password.");
-      // shake(newPwInput);
-      busy = false;
+      showError("New password must be different from the current password.");
       return;
     }
-    
-    // ---------- IPC Call ----------
+
+    busy = true;
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+
     try {
       const result = await window.vault.changeMasterPassword(oldPassword, newPassword);
-      
-      if (result.ok) {
-        onSuccess();
+
+      if (result?.ok) {
+        onSuccess?.();
         close();
-      } else {
-        alert("Password change failed: " + result.message); // 💡 Error ပြပါ
-        onError(result.message);
-        busy = false; // Error ဖြစ်ရင် နောက်တစ်ကြိမ် ထပ်ကြိုးစားခွင့်ပြုပါ
+        return;
       }
 
-    } catch (err) {
-      alert("An unexpected error occurred.");
-      onError("Unexpected error.");
+      const message = result?.message || "Password change failed.";
+      showError(message);
+      onError?.(message);
+    } catch {
+      const message = "Unexpected error.";
+      showError(message);
+      onError?.(message);
+    } finally {
       busy = false;
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
     }
-  };
+  }
+
+  function onKeyDown(e) {
+    if (e.key === "Escape") close();
+    if (e.key === "Enter") submit();
+  }
+
+  cancelBtn.addEventListener("click", close);
+  confirmBtn.addEventListener("click", submit);
+
+  [currentPwInput, newPwInput].forEach((input) => {
+    input.addEventListener("input", clearError);
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+
+  document.addEventListener("keydown", onKeyDown);
+  currentPwInput.focus();
 }
-
-
 
 
