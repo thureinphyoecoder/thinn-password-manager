@@ -12,9 +12,12 @@
     "dist:win": "npx electron-builder --win nsis --publish never"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "Thu Rein Phyoe",
+    "email": "thureinphyoecoder@users.noreply.github.com"
+  },
   "license": "ISC",
-  "description": "",
+  "description": "Local-only encrypted password manager built with Electron.",
   "build": {
     "appId": "com.thinn.passwordmanager",
     "productName": "Thinn Password Manager",
