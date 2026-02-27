@@ -5,9 +5,8 @@
   "scripts": {
     "dev": "electronmon . --no-sandbox",
     "start": "electron . --no-sandbox",
-    "lint": "node scripts/ci-smoke.mjs --syntax-only",
-    "test": "node scripts/ci-smoke.mjs",
-    "ci:check": "node scripts/ci-smoke.mjs",
+    "test": "node --test",
+    "ci:check": "node --test",
     "dist:linux": "npx electron-builder --linux deb --publish never",
     "dist:win": "npx electron-builder --win nsis --publish never"
   },
@@ -40,11 +39,11 @@
       "target": [
         "nsis"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.ico"
     },
     "nsis": {
-      "installerIcon": "build/icon.png",
-      "uninstallerIcon": "build/icon.png"
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
     }
   },
   "devDependencies": {

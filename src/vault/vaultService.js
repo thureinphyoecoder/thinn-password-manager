@@ -87,6 +87,7 @@ function addItem(input) {
 
   const vault = vaultStore.getVault();
   if (!vault) throw new Error("VAULT_NOT_LOADED");
+  const now = Date.now();
 
   const item = {
     id: crypto.randomUUID(),
@@ -96,8 +97,8 @@ function addItem(input) {
     url: input.url || "",
     notes: input.notes || "",
     categoryId: input.categoryId || "all",
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: now,
+    updatedAt: now,
   };
 
   vault.items.push(item);

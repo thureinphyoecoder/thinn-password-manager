@@ -124,6 +124,10 @@ function renderItemCard(item) {
   const url = escapeHtml(item.url || "");
   const username = escapeHtml(item.username || "");
   const avatar = site ? site[0].toUpperCase() : "?";
+  const showUpdated =
+    Number.isFinite(item.updatedAt) &&
+    Number.isFinite(item.createdAt) &&
+    item.updatedAt > item.createdAt;
 
   return `
   <div class="vault-card" data-id="${item.id}">
@@ -212,7 +216,7 @@ function renderItemCard(item) {
     ========================== -->
     <div class="vault-card__footer">
       <span>Created · ${formatDate(item.createdAt)}</span>
-      <span>Updated · ${formatDate(item.updatedAt)}</span>
+      ${showUpdated ? `<span>Updated · ${formatDate(item.updatedAt)}</span>` : ""}
     </div>
 
   </div>

@@ -71,9 +71,8 @@ npm start
 
 - `npm run dev` - run Electron with `electronmon`
 - `npm start` - run Electron directly
-- `npm run lint` - syntax check for source files
-- `npm test` - CI smoke checks
-- `npm run ci:check` - full CI smoke checks
+- `npm test` - run unit tests (`node:test`)
+- `npm run ci:check` - same test command used in CI/CD
 
 ## CI/CD
 
@@ -82,7 +81,7 @@ GitHub Actions workflows are included:
 - `CI` (`.github/workflows/ci.yml`)
   - Runs on push to `main` and pull requests targeting `main`
   - Installs dependencies
-  - Runs `npm run lint` and `npm test`
+  - Runs `npm test`
 
 - `CD Release` (`.github/workflows/cd-release.yml`)
   - Runs on version tags like `v1.0.0` (and manual dispatch)
